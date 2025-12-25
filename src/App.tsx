@@ -10,6 +10,7 @@ export interface CoverState {
   image: string | null;
   isGradient: boolean;
   ratio: 'vertical' | 'square' | 'horizontal';
+  imageOrientation: 'vertical' | 'square' | 'horizontal';
   titleColor: string;
   categoryColor: string;
   bgColor: string;
@@ -34,6 +35,7 @@ function App() {
     image: null,
     isGradient: true,
     ratio: 'vertical',
+    imageOrientation: 'vertical',
     titleColor: '#FFFFFF',
     categoryColor: '#F5A623',
     bgColor: '#146AFF',

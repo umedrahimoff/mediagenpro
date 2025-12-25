@@ -20,15 +20,15 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             const img = new Image();
             img.onload = () => {
                 const aspect = img.width / img.height;
-                let ratio: 'vertical' | 'square' | 'horizontal' = 'square';
+                let orientation: 'vertical' | 'square' | 'horizontal' = 'square';
 
                 if (aspect <= 0.85) { // Taller than 4:5 (0.8) approx
-                    ratio = 'vertical';
+                    orientation = 'vertical';
                 } else if (aspect >= 1.3) { // Wider than 4:3 approx
-                    ratio = 'horizontal';
+                    orientation = 'horizontal';
                 }
 
-                onChange({ image: url, isGradient: false, ratio });
+                onChange({ image: url, isGradient: false, imageOrientation: orientation });
             };
             img.src = url;
         }

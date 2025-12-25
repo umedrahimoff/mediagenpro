@@ -27,14 +27,12 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
             // Instagram defaults
             if (state.ratio === 'square') {
                 targetHeight = 1080;
-            } else if (state.ratio === 'horizontal') {
-                targetHeight = 608;
+            } else {
+                targetHeight = 1350; // Force 4:5 as default/portrait
             }
         }
 
         const node = ref.current;
-
-        // Calculate scale factor
         const scale = targetWidth / node.clientWidth;
 
         try {
@@ -51,7 +49,6 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
             };
 
             if (format === 'jpeg') {
-                // 0.8 is the sweet spot for web optimization (good quality, small size)
                 options.quality = state.appMode === 'website' ? 0.8 : 0.95;
             }
 
@@ -77,28 +74,31 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         ? { background: `linear-gradient(135deg, ${state.bgColor} 0%, #000 150%)` }
         : { backgroundImage: `url(${state.image})`, backgroundSize: 'cover', backgroundPosition: 'center' };
 
-    const isSplit = !state.isGradient && state.ratio !== 'vertical';
+    // Layout logic for Instagram: Horizontal image -> Split Layout. Others -> Overlay Layout.
+    const isSplit = state.appMode === 'instagram'
+        ? (!state.isGradient && state.imageOrientation === 'horizontal')
+        : (state.appMode === 'website' && false); // We handle website differently or don't use split there
 
-    // Dynamic preview dimensions
+    // Dynamic preview dimensions based on target ratio
     const previewWidth = 360;
     let previewHeight = 450; // default 4:5
 
     if (state.appMode === 'website') {
-        if (state.ratio === 'horizontal') previewHeight = 188; // 1200x628 -> 360x188
+        if (state.ratio === 'horizontal') previewHeight = 188;
         else if (state.ratio === 'square') previewHeight = 360;
         else if (state.ratio === 'vertical') previewHeight = 450;
     } else {
         if (state.ratio === 'square') previewHeight = 360;
-        else if (state.ratio === 'horizontal') previewHeight = 203;
+        else previewHeight = 450;
     }
 
     return (
         <div className="preview-layout">
             <div className="preview-wrapper">
                 <div
-                    className={`cover-node ${isSplit && state.appMode === 'instagram' ? 'split-layout' : ''} ${state.ratio === 'horizontal' ? 'horizontal-ratio' : ''}`}
+                    className={`cover-node ${isSplit ? 'split-layout' : ''} ${state.ratio === 'horizontal' && state.appMode === 'website' ? 'horizontal-ratio' : ''}`}
                     ref={ref}
-                    style={isSplit && state.appMode === 'instagram' ?
+                    style={isSplit ?
                         { width: `${previewWidth}px`, height: `${previewHeight}px`, backgroundColor: state.bgColor } :
                         {
                             ...bgStyle,
