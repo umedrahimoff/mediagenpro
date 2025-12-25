@@ -90,7 +90,7 @@ function App() {
             className={state.appMode === 'instagram' ? 'active' : ''}
             onClick={() => updateState({ appMode: 'instagram', ratio: 'vertical' })}
           >
-            Instagram Poster
+            Instagram
           </button>
           <button
             className={state.appMode === 'linkedin' ? 'active' : ''}
