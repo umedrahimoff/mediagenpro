@@ -70,7 +70,8 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             <div className="logo">
                 <h2>
                     {state.appMode === 'website' ? 'Website Poster Gen' :
-                        state.appMode === 'linkedin' ? 'LinkedIn Mode' : 'Instagram Cover Gen'}
+                        state.appMode === 'linkedin' ? 'LinkedIn Mode' :
+                            state.appMode === 'youtube' ? 'YouTube Banner' : 'Instagram Cover Gen'}
                 </h2>
             </div>
 
@@ -136,6 +137,24 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                         </div>
                     )}
                 </div>
+            ) : state.appMode === 'youtube' ? (
+                <div className="control-group">
+                    <label>YouTube Proportions</label>
+                    <div className="toggle-group">
+                        <button className="active">Banner (2560x1440)</button>
+                    </div>
+                    <div className="safe-zone-toggle" style={{ marginTop: '12px' }}>
+                        <label className="checkbox-container">
+                            <input
+                                type="checkbox"
+                                checked={state.showSafeZones}
+                                onChange={(e) => onChange({ showSafeZones: e.target.checked })}
+                            />
+                            <span className="checkmark"></span>
+                            Show Safe Zone (1546x423)
+                        </label>
+                    </div>
+                </div>
             ) : (
                 <div className="control-group">
                     <label>Proportions</label>
@@ -193,7 +212,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 </div>
             )}
 
-            {state.appMode === 'instagram' ? (
+            {(state.appMode === 'instagram' || state.appMode === 'youtube') ? (
                 <>
                     <div className="control-group">
                         <label>Style Template</label>

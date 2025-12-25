@@ -4,7 +4,7 @@ import { Preview } from './components/Preview/Preview';
 import './App.css';
 
 export interface CoverState {
-  appMode: 'instagram' | 'website' | 'linkedin';
+  appMode: 'instagram' | 'website' | 'linkedin' | 'youtube';
   title: string;
   category: string;
   image: string | null;
@@ -96,13 +96,19 @@ function App() {
             className={state.appMode === 'linkedin' ? 'active' : ''}
             onClick={() => updateState({ appMode: 'linkedin', ratio: 'horizontal' })}
           >
-            LinkedIn Poster
+            LinkedIn
+          </button>
+          <button
+            className={state.appMode === 'youtube' ? 'active' : ''}
+            onClick={() => updateState({ appMode: 'youtube', ratio: 'horizontal' })}
+          >
+            YouTube
           </button>
           <button
             className={state.appMode === 'website' ? 'active' : ''}
             onClick={() => updateState({ appMode: 'website', ratio: 'horizontal' })}
           >
-            Website Poster
+            Website
           </button>
         </div>
       </header>

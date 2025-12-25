@@ -424,3 +424,61 @@
 .gradient-mode .title {
     text-shadow: none;
 }
+
+/* YouTube Banner Styles */
+.youtube-layout .content {
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center;
+    padding: 0;
+    gap: 4px;
+}
+
+.youtube-layout .title {
+    font-size: 16px;
+    /* Scaled down for 360px preview */
+    line-height: 1.2;
+    max-width: 210px;
+    /* Force within safe zone width */
+}
+
+.youtube-layout .category {
+    font-size: 8px;
+    margin-bottom: 0;
+}
+
+.youtube-layout.style-template-bold .title {
+    font-size: 18px;
+}
+
+.yt-safe-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.yt-safe-zone {
+    width: 217px;
+    /* 1546px scaled */
+    height: 59px;
+    /* 423px scaled */
+    border: 1px dashed rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.yt-label {
+    font-family: var(--font-primary);
+    font-size: 8px;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2px 4px;
+    border-radius: 2px;
+    margin-top: -12px;
+}
