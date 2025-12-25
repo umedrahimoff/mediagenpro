@@ -64,7 +64,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
 
         try {
             const func = format === 'png' ? htmlToImage.toPng : htmlToImage.toJpeg;
-            const options: any = {
+            const baseOptions: any = {
                 width: targetWidth,
                 height: targetHeight,
                 style: {
@@ -72,20 +72,49 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                     transformOrigin: 'top left',
                     width: `${node.clientWidth}px`,
                     height: `${node.clientHeight}px`,
-                }
-            };
-
-            if (format === 'jpeg') {
-                options.quality = state.appMode === 'website' ? 0.8 : 0.95;
-            }
-
-            const dataUrl = await func(node, {
-                ...options,
+                },
                 filter: (domNode: any) => {
                     const classList = domNode.classList;
                     return !classList || !classList.contains('ig-ui-overlay');
                 }
-            });
+            };
+
+            let dataUrl: string = '';
+            let quality = state.appMode === 'website' ? 0.85 : 0.95;
+
+            // For Website mode with JPEG, compress until under 500KB
+            if (state.appMode === 'website' && format === 'jpeg') {
+                const maxSizeKB = 500;
+                let attempts = 0;
+                const maxAttempts = 8;
+
+                while (attempts < maxAttempts) {
+                    dataUrl = await htmlToImage.toJpeg(node, { ...baseOptions, quality });
+
+                    // Calculate file size from base64
+                    const base64str = dataUrl.split(',')[1];
+                    const sizeKB = Math.round((base64str.length * 3) / 4 / 1024);
+
+                    console.log(`Attempt ${attempts + 1}: Quality ${quality.toFixed(2)}, Size: ${sizeKB}KB`);
+
+                    if (sizeKB <= maxSizeKB) {
+                        break;
+                    }
+
+                    // Reduce quality for next attempt
+                    quality -= 0.1;
+                    attempts++;
+
+                    if (quality < 0.3) {
+                        alert(`Warning: Image compressed to ${sizeKB}KB (target: ${maxSizeKB}KB). Quality may be reduced.`);
+                        break;
+                    }
+                }
+            } else {
+                // Standard generation for other modes
+                const options = format === 'jpeg' ? { ...baseOptions, quality } : baseOptions;
+                dataUrl = await func(node, options);
+            }
 
             const link = document.createElement('a');
             link.download = `cover-${Date.now()}.${format}`;
