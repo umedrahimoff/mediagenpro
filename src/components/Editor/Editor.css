@@ -1,0 +1,130 @@
+.editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.logo h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary-blue);
+    margin-bottom: var(--spacing-md);
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.control-group label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--color-text-dark);
+    letter-spacing: 0.5px;
+}
+
+textarea,
+input {
+    padding: var(--spacing-md);
+    border: 1px solid #E1E8ED;
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+    resize: vertical;
+    background: #F5F7FA;
+    transition: all 0.2s;
+}
+
+textarea:focus,
+input:focus {
+    outline: none;
+    border-color: var(--color-primary-blue);
+    background: var(--color-white);
+    box-shadow: 0 0 0 3px var(--color-light-blue);
+}
+
+.hint {
+    font-size: 0.75rem;
+    color: #8899A6;
+}
+
+.toggle-group {
+    display: flex;
+    gap: var(--spacing-xs);
+    background: #F0F3F5;
+    padding: 4px;
+    border-radius: var(--border-radius-md);
+}
+
+.toggle-group button {
+    flex: 1;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    background: transparent;
+    color: #667788;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.toggle-group button.active {
+    background: var(--color-white);
+    color: var(--color-primary-blue);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.upload-area {
+    margin-top: var(--spacing-sm);
+}
+
+.upload-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-primary-blue);
+    background: rgba(20, 106, 255, 0.1);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    width: 100%;
+    justify-content: center;
+    border: 1px dashed rgba(20, 106, 255, 0.3);
+    transition: all 0.2s;
+}
+
+.upload-btn:hover {
+    background: rgba(20, 106, 255, 0.15);
+    border-color: var(--color-primary-blue);
+}
+
+.picker-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.color-swatches {
+    display: flex;
+    gap: 10px;
+    padding: 4px;
+}
+
+.swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #E1E8ED;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+    padding: 0;
+}
+
+.swatch:hover {
+    transform: scale(1.1);
+}
+
+.swatch.active {
+    border-color: var(--color-primary-blue);
+    box-shadow: 0 0 0 2px var(--color-light-blue);
+}
