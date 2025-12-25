@@ -399,6 +399,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
+                    <span className="version-tag">v1.3.0</span>
                 </a>
             </footer>
         </div>

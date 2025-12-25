@@ -171,6 +171,17 @@ input:focus {
     color: var(--color-primary-blue);
 }
 
+.version-tag {
+    background: var(--color-light-blue);
+    color: var(--color-primary-blue);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 700;
+    margin-left: 4px;
+    text-transform: none;
+}
+
 .editor-footer strong {
     font-weight: 800;
     letter-spacing: -0.02em;
