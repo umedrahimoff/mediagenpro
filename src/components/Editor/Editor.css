@@ -155,3 +155,34 @@ input:focus {
     font-weight: 800;
     letter-spacing: -0.02em;
 }
+
+.category-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.preset-chip {
+    padding: 6px 12px;
+    background: #F0F3F5;
+    border: 1px solid #E1E8ED;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #667788;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: lowercase;
+}
+
+.preset-chip:hover {
+    background: #E1E8ED;
+    color: var(--color-primary-blue);
+}
+
+.preset-chip.active {
+    background: var(--color-primary-blue);
+    color: var(--color-white);
+    border-color: var(--color-primary-blue);
+}

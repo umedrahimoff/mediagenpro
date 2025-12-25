@@ -134,6 +134,17 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             onChange={(e) => onChange({ category: e.target.value })}
                             placeholder="e.g. VISUAL DESIGN"
                         />
+                        <div className="category-presets">
+                            {['новости', 'инвестиции', 'стартапы', 'аналитика', 'фаундеры'].map(preset => (
+                                <button
+                                    key={preset}
+                                    className={`preset-chip ${state.category.toLowerCase() === preset.toLowerCase() ? 'active' : ''}`}
+                                    onClick={() => onChange({ category: preset.toUpperCase() })}
+                                >
+                                    {preset}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <ColorPicker
