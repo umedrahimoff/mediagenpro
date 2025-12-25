@@ -128,3 +128,30 @@ input:focus {
     border-color: var(--color-primary-blue);
     box-shadow: 0 0 0 2px var(--color-light-blue);
 }
+
+.editor-footer {
+    margin-top: auto;
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid #E1E8ED;
+    text-align: center;
+}
+
+.editor-footer a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+    color: #8899A6;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+}
+
+.editor-footer a:hover {
+    color: var(--color-primary-blue);
+}
+
+.editor-footer strong {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}

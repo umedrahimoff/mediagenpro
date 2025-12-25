@@ -204,6 +204,13 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                     onChangeColor={(c) => onChange({ bgColor: c })}
                 />
             )}
+
+            <footer className="editor-footer">
+                <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
+                    <span>Powered by</span>
+                    <strong>Stanbase</strong>
+                </a>
+            </footer>
         </div>
     );
 };
