@@ -15,6 +15,7 @@ export interface CoverState {
   bgColor: string;
   caption: string;
   captionColor: string;
+  showSafeZones: boolean;
 }
 
 export const BRAND_COLORS = {
@@ -38,6 +39,7 @@ function App() {
     bgColor: '#146AFF',
     caption: 'Source: MediaGen',
     captionColor: '#FFFFFF',
+    showSafeZones: false,
   });
 
   const updateState = (updates: Partial<CoverState>) => {

@@ -55,7 +55,13 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                 options.quality = state.appMode === 'website' ? 0.8 : 0.95;
             }
 
-            const dataUrl = await func(node, options);
+            const dataUrl = await func(node, {
+                ...options,
+                filter: (domNode: any) => {
+                    const classList = domNode.classList;
+                    return !classList || !classList.contains('ig-ui-overlay');
+                }
+            });
 
             const link = document.createElement('a');
             link.download = `cover-${Date.now()}.${format}`;
@@ -100,6 +106,26 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             height: `${previewHeight}px`
                         }}
                 >
+                    {state.showSafeZones && state.appMode === 'instagram' && (
+                        <div className="ig-ui-overlay">
+                            <div className="ig-top-bar">
+                                <div className="ig-user">
+                                    <div className="ig-avatar" />
+                                    <div className="ig-username">mediagen_pro</div>
+                                </div>
+                            </div>
+                            <div className="ig-bottom-actions">
+                                <div className="ig-main-actions">
+                                    <div className="ig-icon" />
+                                    <div className="ig-icon" />
+                                    <div className="ig-icon" />
+                                </div>
+                                <div className="ig-caption-area">
+                                    <strong>mediagen_pro</strong> This is where your caption will appear...
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {state.appMode === 'website' ? (
                         <>
                             {state.caption && (

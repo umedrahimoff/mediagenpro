@@ -105,6 +105,17 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             Square (1:1)
                         </button>
                     </div>
+                    <div className="safe-zone-toggle">
+                        <label className="checkbox-container">
+                            <input
+                                type="checkbox"
+                                checked={state.showSafeZones}
+                                onChange={(e) => onChange({ showSafeZones: e.target.checked })}
+                            />
+                            <span className="checkmark"></span>
+                            Show IG Safe Zones
+                        </label>
+                    </div>
                 </div>
             )}
 
