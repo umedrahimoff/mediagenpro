@@ -236,24 +236,50 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                         </div>
                     )}
 
-                    {state.appMode === 'instagram' && !state.isGradient && state.layoutMode === 'overlay' && (
-                        <div className="control-group">
-                            <label>Visual Effects</label>
-                            <div className="toggle-group">
-                                <button
-                                    className={state.useGlassmorphism ? 'active' : ''}
-                                    onClick={() => onChange({ useGlassmorphism: true })}
-                                >
-                                    Glass Card
-                                </button>
-                                <button
-                                    className={!state.useGlassmorphism ? 'active' : ''}
-                                    onClick={() => onChange({ useGlassmorphism: false })}
-                                >
-                                    Standard
-                                </button>
+                    {state.appMode === 'instagram' && state.layoutMode === 'overlay' && (
+                        <>
+                            <div className="control-group">
+                                <label>Visual Effects</label>
+                                <div className="toggle-group">
+                                    <button
+                                        className={state.useGlassmorphism ? 'active' : ''}
+                                        onClick={() => onChange({ useGlassmorphism: true })}
+                                    >
+                                        Glass Card
+                                    </button>
+                                    <button
+                                        className={!state.useGlassmorphism ? 'active' : ''}
+                                        onClick={() => onChange({ useGlassmorphism: false })}
+                                    >
+                                        Standard
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+
+                            <div className="control-group">
+                                <label>Vertical Alignment</label>
+                                <div className="toggle-group">
+                                    <button
+                                        className={state.contentAlignment === 'flex-start' ? 'active' : ''}
+                                        onClick={() => onChange({ contentAlignment: 'flex-start' })}
+                                    >
+                                        Top
+                                    </button>
+                                    <button
+                                        className={state.contentAlignment === 'center' ? 'active' : ''}
+                                        onClick={() => onChange({ contentAlignment: 'center' })}
+                                    >
+                                        Center
+                                    </button>
+                                    <button
+                                        className={state.contentAlignment === 'flex-end' ? 'active' : ''}
+                                        onClick={() => onChange({ contentAlignment: 'flex-end' })}
+                                    >
+                                        Bottom
+                                    </button>
+                                </div>
+                            </div>
+                        </>
                     )}
 
                     <div className="control-group">
@@ -419,7 +445,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.3.0</span>
+                    <span className="version-tag">v1.4.0</span>
                 </a>
             </footer>
         </div>

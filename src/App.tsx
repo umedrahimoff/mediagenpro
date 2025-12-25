@@ -22,6 +22,7 @@ export interface CoverState {
   showSafeZones: boolean;
   textTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
   useGlassmorphism: boolean;
+  contentAlignment: 'flex-start' | 'center' | 'flex-end';
 }
 
 export const BRAND_COLORS = {
@@ -63,6 +64,7 @@ function App() {
       showSafeZones: false,
       textTransform: 'uppercase',
       useGlassmorphism: false,
+      contentAlignment: 'flex-end',
     };
   });
 

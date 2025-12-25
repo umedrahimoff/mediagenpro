@@ -195,7 +195,10 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                     }}
                                 />
                             )}
-                            <div className={`content ${state.useGlassmorphism ? 'glass-effect' : ''}`}>
+                            <div
+                                className={`content ${state.useGlassmorphism ? 'glass-effect' : ''}`}
+                                style={{ justifyContent: state.contentAlignment }}
+                            >
                                 {state.category && (
                                     <div className="category" style={{ color: state.categoryColor }}>
                                         {state.category}

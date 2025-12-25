@@ -495,7 +495,18 @@
     height: auto !important;
     min-height: 120px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
-    justify-content: center !important;
+}
+
+/* Specific overrides for alignment in Glass mode */
+.content.glass-effect {
+    height: calc(100% - 40px) !important;
+    /* Adjust for vertical margin balance */
+}
+
+/* Gradient mode glass tweaks */
+.gradient-mode .glass-effect {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .glass-effect .title,
@@ -510,6 +521,8 @@
 
 /* Center glass card in story layout */
 .story-layout .content.glass-effect {
-    margin: 40px !important;
+    margin: 30px !important;
     padding: 32px !important;
+    height: auto !important;
+    max-height: 70%;
 }
