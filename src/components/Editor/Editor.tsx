@@ -2,7 +2,7 @@ import React from 'react';
 import type { ChangeEvent } from 'react';
 import { BRAND_COLORS } from '../../App';
 import type { CoverState } from '../../App';
-import { Upload, Palette, X } from 'lucide-react';
+import { Upload, Palette, X, RotateCcw } from 'lucide-react';
 import './Editor.css';
 
 interface EditorProps {
@@ -259,7 +259,12 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             {state.useGlassmorphism && (
                                 <div className="glass-settings-nested" style={{ paddingLeft: '12px', borderLeft: '2px solid var(--color-light-blue)', marginBottom: '16px' }}>
                                     <div className="control-group">
-                                        <label style={{ fontSize: '0.75rem' }}>Blur Intensity: {state.glassBlur}px</label>
+                                        <div className="label-with-reset">
+                                            <label style={{ fontSize: '0.75rem' }}>Blur Intensity: {state.glassBlur}px</label>
+                                            <button className="reset-mini-btn" onClick={() => onChange({ glassBlur: 12 })} title="Reset to 12px">
+                                                <RotateCcw size={10} />
+                                            </button>
+                                        </div>
                                         <input
                                             type="range"
                                             min="4"
@@ -284,19 +289,6 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                                             >
                                                 Fit
                                             </button>
-                                        </div>
-                                    </div>
-                                    <div className="control-group">
-                                        <div className="safe-zone-toggle">
-                                            <label className="checkbox-container">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={state.glassGlow}
-                                                    onChange={(e) => onChange({ glassGlow: e.target.checked })}
-                                                />
-                                                <span className="checkmark"></span>
-                                                <span style={{ fontSize: '0.75rem' }}>Neon Glow Effect</span>
-                                            </label>
                                         </div>
                                     </div>
                                 </div>
@@ -454,9 +446,12 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
 
                         {!state.isGradient && state.image && state.appMode !== 'linkedin' && (
                             <div style={{ marginTop: '16px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                <div className="label-with-reset">
                                     <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Image Darkness</label>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{Math.round(state.overlayOpacity * 100)}%</span>
+                                    <button className="reset-mini-btn" onClick={() => onChange({ overlayOpacity: 0.6 })} title="Reset to 60%">
+                                        <RotateCcw size={10} />
+                                    </button>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 600, marginLeft: 'auto' }}>{Math.round(state.overlayOpacity * 100)}%</span>
                                 </div>
                                 <input
                                     type="range"
@@ -491,7 +486,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.5.0</span>
+                    <span className="version-tag">v1.5.1</span>
                 </a>
             </footer>
         </div>

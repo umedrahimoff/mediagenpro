@@ -501,20 +501,6 @@
     align-self: center;
 }
 
-.glass-glow {
-    box-shadow: 0 0 20px rgba(0, 102, 255, 0.3),
-        0 0 40px rgba(0, 102, 255, 0.1),
-        0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
-    border-color: rgba(0, 102, 255, 0.4) !important;
-}
-
-.gradient-mode .glass-glow {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2),
-        0 0 40px rgba(255, 215, 0, 0.1),
-        0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
-    border-color: rgba(255, 215, 0, 0.3) !important;
-}
-
 /* Specific overrides for alignment in Glass mode */
 .content.glass-effect {
     height: calc(100% - 40px) !important;

@@ -196,7 +196,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                 />
                             )}
                             <div
-                                className={`content ${state.useGlassmorphism ? 'glass-effect' : ''} ${state.useGlassmorphism ? `glass-width-${state.glassWidth}` : ''} ${state.glassGlow ? 'glass-glow' : ''}`}
+                                className={`content ${state.useGlassmorphism ? 'glass-effect' : ''} ${state.useGlassmorphism ? `glass-width-${state.glassWidth}` : ''}`}
                                 style={{
                                     justifyContent: state.contentAlignment,
                                     backdropFilter: state.useGlassmorphism ? `blur(${state.glassBlur}px) saturate(180%)` : undefined,

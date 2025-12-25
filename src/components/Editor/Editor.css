@@ -154,6 +154,33 @@ input:focus {
     box-shadow: 0 0 0 2px var(--color-light-blue);
 }
 
+.label-with-reset {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.reset-mini-btn {
+    background: transparent;
+    border: none;
+    color: #8899A6;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.reset-mini-btn:hover {
+    background: var(--color-light-blue);
+    color: var(--color-primary-blue);
+    opacity: 1;
+}
+
 .editor-footer {
     margin-top: auto;
     padding-top: var(--spacing-xl);

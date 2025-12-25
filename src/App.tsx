@@ -25,7 +25,6 @@ export interface CoverState {
   contentAlignment: 'flex-start' | 'center' | 'flex-end';
   glassBlur: number;
   glassWidth: 'full' | 'fit';
-  glassGlow: boolean;
 }
 
 export const BRAND_COLORS = {
@@ -70,7 +69,6 @@ function App() {
       contentAlignment: 'flex-end',
       glassBlur: 12,
       glassWidth: 'full',
-      glassGlow: false,
     };
   });
 
