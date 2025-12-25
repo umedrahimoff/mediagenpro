@@ -200,6 +200,7 @@
 }
 
 .caption {
+    font-family: var(--font-primary);
     position: absolute;
     bottom: 24px;
     right: 24px;
@@ -242,6 +243,7 @@
 }
 
 .ig-username {
+    font-family: var(--font-primary);
     color: white;
     font-size: 12px;
     font-weight: 600;
@@ -268,6 +270,7 @@
 }
 
 .ig-caption-area {
+    font-family: var(--font-primary);
     color: white;
     font-size: 11px;
     line-height: 1.4;
