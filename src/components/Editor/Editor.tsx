@@ -347,7 +347,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 )}
             </div>
 
-            {state.isGradient && state.appMode === 'instagram' && (
+            {(state.isGradient || state.layoutMode === 'split') && (
                 <ColorPicker
                     label="Background Color"
                     value={state.bgColor}
