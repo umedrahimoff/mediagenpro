@@ -138,6 +138,36 @@
     padding: 20px;
 }
 
+/* Story Layout (9:16) */
+.cover-node.story-layout {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+}
+
+.cover-node.story-layout .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    gap: 24px;
+}
+
+.cover-node.story-layout .title {
+    font-size: 32px;
+    line-height: 1.2;
+}
+
+.cover-node.story-layout .category {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
 .cover-node.split-layout .title {
     font-size: 24px;
     line-height: 1.1;

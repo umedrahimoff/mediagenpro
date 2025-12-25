@@ -27,6 +27,8 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
             // Instagram defaults
             if (state.ratio === 'square') {
                 targetHeight = 1080;
+            } else if (state.ratio === 'story') {
+                targetHeight = 1920;
             } else {
                 targetHeight = 1350; // Force 4:5 as default/portrait
             }
@@ -89,6 +91,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         else if (state.ratio === 'vertical') previewHeight = 450;
     } else {
         if (state.ratio === 'square') previewHeight = 360;
+        else if (state.ratio === 'story') previewHeight = 640;
         else previewHeight = 450;
     }
 
@@ -96,7 +99,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         <div className="preview-layout">
             <div className="preview-wrapper">
                 <div
-                    className={`cover-node ${isSplit ? 'split-layout' : ''} ${state.ratio === 'horizontal' && state.appMode === 'website' ? 'horizontal-ratio' : ''}`}
+                    className={`cover-node ${isSplit ? 'split-layout' : ''} ${state.ratio === 'story' ? 'story-layout' : ''} ${state.ratio === 'horizontal' && state.appMode === 'website' ? 'horizontal-ratio' : ''}`}
                     ref={ref}
                     style={isSplit ?
                         { width: `${previewWidth}px`, height: `${previewHeight}px`, backgroundColor: state.bgColor } :

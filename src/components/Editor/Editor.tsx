@@ -105,6 +105,12 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                         >
                             Square (1:1)
                         </button>
+                        <button
+                            className={state.ratio === 'story' ? 'active' : ''}
+                            onClick={() => onChange({ ratio: 'story' })}
+                        >
+                            Story (9:16)
+                        </button>
                     </div>
                     <div className="safe-zone-toggle">
                         <label className="checkbox-container">

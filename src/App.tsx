@@ -9,7 +9,7 @@ export interface CoverState {
   category: string;
   image: string | null;
   isGradient: boolean;
-  ratio: 'vertical' | 'square' | 'horizontal';
+  ratio: 'vertical' | 'square' | 'horizontal' | 'story';
   imageOrientation: 'vertical' | 'square' | 'horizontal';
   layoutMode: 'overlay' | 'split';
   titleColor: string;
