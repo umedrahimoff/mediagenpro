@@ -151,7 +151,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                         {state.category}
                                     </div>
                                 )}
-                                <div className="title" style={{ color: state.titleColor }}>
+                                <div className="title" style={{ color: state.titleColor, textTransform: state.textTransform }}>
                                     {state.title}
                                 </div>
                             </div>
@@ -172,7 +172,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                         {state.category}
                                     </div>
                                 )}
-                                <div className="title" style={{ color: state.titleColor }}>
+                                <div className="title" style={{ color: state.titleColor, textTransform: state.textTransform }}>
                                     {state.title}
                                 </div>
                             </div>

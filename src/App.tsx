@@ -20,6 +20,7 @@ export interface CoverState {
   caption: string;
   captionColor: string;
   showSafeZones: boolean;
+  textTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
 }
 
 export const BRAND_COLORS = {
@@ -59,6 +60,7 @@ function App() {
       caption: 'stanbase.tech',
       captionColor: '#FFFFFF',
       showSafeZones: false,
+      textTransform: 'uppercase',
     };
   });
 

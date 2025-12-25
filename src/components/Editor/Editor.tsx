@@ -227,6 +227,29 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             rows={4}
                             placeholder={state.template === 'quote' ? "Enter the quote..." : "Enter title..."}
                         />
+                        <div className="toggle-group" style={{ marginTop: '8px' }}>
+                            <button
+                                className={state.textTransform === 'uppercase' ? 'active' : ''}
+                                onClick={() => onChange({ textTransform: 'uppercase' })}
+                                style={{ fontSize: '10px' }}
+                            >
+                                ALL CAPS
+                            </button>
+                            <button
+                                className={state.textTransform === 'capitalize' ? 'active' : ''}
+                                onClick={() => onChange({ textTransform: 'capitalize' })}
+                                style={{ fontSize: '10px' }}
+                            >
+                                Title Case
+                            </button>
+                            <button
+                                className={state.textTransform === 'none' ? 'active' : ''}
+                                onClick={() => onChange({ textTransform: 'none' })}
+                                style={{ fontSize: '10px' }}
+                            >
+                                As Is
+                            </button>
+                        </div>
                     </div>
 
                     <ColorPicker
