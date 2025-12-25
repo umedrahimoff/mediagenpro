@@ -138,45 +138,19 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                     )}
                 </div>
             ) : state.appMode === 'youtube' ? (
-                <>
-                    <div className="control-group">
-                        <div className="safe-zone-toggle">
-                            <label className="checkbox-container">
-                                <input
-                                    type="checkbox"
-                                    checked={state.showSafeZones}
-                                    onChange={(e) => onChange({ showSafeZones: e.target.checked })}
-                                />
-                                <span className="checkmark"></span>
-                                Show Safe Zone (1546x423)
-                            </label>
-                        </div>
+                <div className="control-group">
+                    <div className="safe-zone-toggle">
+                        <label className="checkbox-container">
+                            <input
+                                type="checkbox"
+                                checked={state.showSafeZones}
+                                onChange={(e) => onChange({ showSafeZones: e.target.checked })}
+                            />
+                            <span className="checkmark"></span>
+                            Show Safe Zone (1546x423)
+                        </label>
                     </div>
-
-                    <div className="control-group">
-                        <label>Vertical Alignment</label>
-                        <div className="toggle-group">
-                            <button
-                                className={state.contentAlignment === 'flex-start' ? 'active' : ''}
-                                onClick={() => onChange({ contentAlignment: 'flex-start' })}
-                            >
-                                Top
-                            </button>
-                            <button
-                                className={state.contentAlignment === 'center' ? 'active' : ''}
-                                onClick={() => onChange({ contentAlignment: 'center' })}
-                            >
-                                Center
-                            </button>
-                            <button
-                                className={state.contentAlignment === 'flex-end' ? 'active' : ''}
-                                onClick={() => onChange({ contentAlignment: 'flex-end' })}
-                            >
-                                Bottom
-                            </button>
-                        </div>
-                    </div>
-                </>
+                </div>
             ) : (
                 <div className="control-group">
                     <label>Proportions</label>
@@ -377,28 +351,6 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                                 As Is
                             </button>
                         </div>
-
-                        <div className="control-group" style={{ marginTop: '12px', borderTop: '1px solid #E1E8ED', paddingTop: '12px' }}>
-                            <div className="label-with-reset">
-                                <label style={{ fontSize: '0.75rem', opacity: 0.8 }}>Font Size: {state.appMode === 'youtube' && state.titleFontSize === 22 ? 16 : state.titleFontSize}px</label>
-                                <button
-                                    className="reset-mini-btn"
-                                    onClick={() => onChange({ titleFontSize: state.appMode === 'youtube' ? 16 : 22 })}
-                                    title={`Reset to ${state.appMode === 'youtube' ? 16 : 22}px`}
-                                >
-                                    <RotateCcw size={10} />
-                                </button>
-                            </div>
-                            <input
-                                type="range"
-                                min="8"
-                                max="48"
-                                step="1"
-                                value={state.appMode === 'youtube' && state.titleFontSize === 22 ? 16 : state.titleFontSize}
-                                onChange={(e) => onChange({ titleFontSize: parseInt(e.target.value) })}
-                                className="slider"
-                            />
-                        </div>
                     </div>
 
                     <ColorPicker
@@ -534,7 +486,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.6.0</span>
+                    <span className="version-tag">v1.5.1</span>
                 </a>
             </footer>
         </div>
