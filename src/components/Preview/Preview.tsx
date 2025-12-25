@@ -8,6 +8,21 @@ interface PreviewProps {
     state: CoverState;
 }
 
+// Helper to get transformed text
+const getTransformedText = (text: string, transform: 'none' | 'uppercase' | 'lowercase' | 'capitalize') => {
+    if (!text) return '';
+    if (transform === 'uppercase') return text.toUpperCase();
+    if (transform === 'lowercase') return text.toLowerCase();
+    if (transform === 'capitalize') {
+        return text.toLowerCase().split('\n').map(line =>
+            line.split(' ').map(word =>
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ')
+        ).join('\n');
+    }
+    return text;
+};
+
 export const Preview: React.FC<PreviewProps> = ({ state }) => {
     const ref = useRef<HTMLDivElement>(null);
 
@@ -151,8 +166,8 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                         {state.category}
                                     </div>
                                 )}
-                                <div className="title" style={{ color: state.titleColor, textTransform: state.textTransform }}>
-                                    {state.title}
+                                <div className="title" style={{ color: state.titleColor, textTransform: 'none' }}>
+                                    {getTransformedText(state.title, state.textTransform)}
                                 </div>
                             </div>
                         </>
@@ -172,8 +187,8 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                         {state.category}
                                     </div>
                                 )}
-                                <div className="title" style={{ color: state.titleColor, textTransform: state.textTransform }}>
-                                    {state.title}
+                                <div className="title" style={{ color: state.titleColor, textTransform: 'none' }}>
+                                    {getTransformedText(state.title, state.textTransform)}
                                 </div>
                             </div>
                         </>
