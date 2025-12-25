@@ -126,7 +126,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         <div className="preview-layout">
             <div className="preview-wrapper">
                 <div
-                    className={`cover-node style-template-${state.template} ${state.isGradient ? 'gradient-mode' : ''} ${isSplit ? 'split-layout' : ''} ${state.ratio === 'story' ? 'story-layout' : ''} ${state.appMode === 'youtube' ? 'youtube-layout' : ''} ${(state.ratio === 'horizontal' && (state.appMode === 'website' || state.appMode === 'linkedin')) ? 'horizontal-ratio' : ''}`}
+                    className={`cover-node ${state.appMode !== 'youtube' ? `style-template-${state.template}` : ''} ${state.isGradient ? 'gradient-mode' : ''} ${isSplit ? 'split-layout' : ''} ${state.ratio === 'story' ? 'story-layout' : ''} ${state.appMode === 'youtube' ? 'youtube-layout' : ''} ${(state.ratio === 'horizontal' && (state.appMode === 'website' || state.appMode === 'linkedin')) ? 'horizontal-ratio' : ''}`}
                     ref={ref}
                     style={isSplit ?
                         { width: `${previewWidth}px`, height: `${previewHeight}px`, backgroundColor: state.bgColor } :
