@@ -62,7 +62,10 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 hidden
             />
             <div className="logo">
-                <h2>{state.appMode === 'website' ? 'Website Poster Gen' : 'Instagram Cover Gen'}</h2>
+                <h2>
+                    {state.appMode === 'website' ? 'Website Poster Gen' :
+                        state.appMode === 'linkedin' ? 'LinkedIn Mode' : 'Instagram Cover Gen'}
+                </h2>
             </div>
 
             {state.appMode === 'website' ? (
@@ -86,6 +89,24 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             onClick={() => onChange({ ratio: 'vertical' })}
                         >
                             4:5
+                        </button>
+                    </div>
+                </div>
+            ) : state.appMode === 'linkedin' ? (
+                <div className="control-group">
+                    <label>LinkedIn Proportions</label>
+                    <div className="toggle-group">
+                        <button
+                            className={state.ratio === 'horizontal' ? 'active' : ''}
+                            onClick={() => onChange({ ratio: 'horizontal' })}
+                        >
+                            Feed (1200x627)
+                        </button>
+                        <button
+                            className={state.ratio === 'square' ? 'active' : ''}
+                            onClick={() => onChange({ ratio: 'square' })}
+                        >
+                            Square (1200x1200)
                         </button>
                     </div>
                 </div>
@@ -146,7 +167,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 </div>
             )}
 
-            {state.appMode === 'instagram' ? (
+            {state.appMode !== 'website' ? (
                 <>
                     <div className="control-group">
                         <label>Style Template</label>
@@ -237,7 +258,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             <div className="control-group">
                 <label>Background Style</label>
                 <div className="toggle-group">
-                    {state.appMode === 'instagram' && (
+                    {state.appMode !== 'website' && (
                         <button
                             className={state.isGradient ? 'active' : ''}
                             onClick={() => onChange({ isGradient: true })}

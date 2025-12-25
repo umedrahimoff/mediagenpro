@@ -18,11 +18,16 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         let targetWidth = 1080;
         let targetHeight = 1350;
 
-        if (state.appMode === 'website') {
+        if (state.appMode === 'website' || state.appMode === 'linkedin') {
             targetWidth = 1200;
-            if (state.ratio === 'horizontal') targetHeight = 628;
-            else if (state.ratio === 'square') targetHeight = 1200;
-            else if (state.ratio === 'vertical') targetHeight = 1500;
+            if (state.appMode === 'linkedin') {
+                if (state.ratio === 'horizontal') targetHeight = 627;
+                else targetHeight = 1200;
+            } else {
+                if (state.ratio === 'horizontal') targetHeight = 628;
+                else if (state.ratio === 'square') targetHeight = 1200;
+                else if (state.ratio === 'vertical') targetHeight = 1500;
+            }
         } else {
             // Instagram defaults
             if (state.ratio === 'square') {
@@ -77,7 +82,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         : { backgroundImage: `url(${state.image})`, backgroundSize: 'cover', backgroundPosition: 'center' };
 
     // Layout logic: Use manual layoutMode if image is present
-    const isSplit = state.appMode === 'instagram'
+    const isSplit = (state.appMode === 'instagram' || state.appMode === 'linkedin')
         ? (!state.isGradient && state.image && state.layoutMode === 'split')
         : false;
 
@@ -85,7 +90,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
     const previewWidth = 360;
     let previewHeight = 450; // default 4:5
 
-    if (state.appMode === 'website') {
+    if (state.appMode === 'website' || state.appMode === 'linkedin') {
         if (state.ratio === 'horizontal') previewHeight = 188;
         else if (state.ratio === 'square') previewHeight = 360;
         else if (state.ratio === 'vertical') previewHeight = 450;
@@ -99,7 +104,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         <div className="preview-layout">
             <div className="preview-wrapper">
                 <div
-                    className={`cover-node style-template-${state.template} ${state.isGradient ? 'gradient-mode' : ''} ${isSplit ? 'split-layout' : ''} ${state.ratio === 'story' ? 'story-layout' : ''} ${state.ratio === 'horizontal' && state.appMode === 'website' ? 'horizontal-ratio' : ''}`}
+                    className={`cover-node style-template-${state.template} ${state.isGradient ? 'gradient-mode' : ''} ${isSplit ? 'split-layout' : ''} ${state.ratio === 'story' ? 'story-layout' : ''} ${(state.ratio === 'horizontal' && (state.appMode === 'website' || state.appMode === 'linkedin')) ? 'horizontal-ratio' : ''}`}
                     ref={ref}
                     style={isSplit ?
                         { width: `${previewWidth}px`, height: `${previewHeight}px`, backgroundColor: state.bgColor } :
