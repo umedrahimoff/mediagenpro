@@ -168,6 +168,24 @@
     margin-bottom: 8px;
 }
 
+/* Specific adjustments for Stories with Split Layout */
+.cover-node.story-layout.split-layout .split-image {
+    height: 40%;
+    /* Reduced height to fit horizontal photos better */
+}
+
+.cover-node.story-layout.split-layout .split-content {
+    height: 60%;
+    padding: 40px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.cover-node.story-layout.split-layout .title {
+    font-size: 32px;
+}
+
 .cover-node.split-layout .title {
     font-size: 24px;
     line-height: 1.1;
