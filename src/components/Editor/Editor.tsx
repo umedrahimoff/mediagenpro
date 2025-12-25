@@ -314,7 +314,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             )}
                         </div>
 
-                        {!state.isGradient && state.image && (
+                        {!state.isGradient && state.image && state.appMode !== 'linkedin' && (
                             <div style={{ marginTop: '16px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                                     <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Image Darkness</label>
