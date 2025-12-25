@@ -59,17 +59,21 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         }
 
         const node = ref.current;
-        const scale = targetWidth / node.clientWidth;
+        // If website mode, set node dimensions to target size to avoid scaling issues
+        if (state.appMode === 'website') {
+            node.style.width = `${targetWidth}px`;
+            node.style.height = `${targetHeight}px`;
+        }
+        // For website mode we don't apply additional scaling; pixelRatio set to 1 later
+        const scale = state.appMode === 'website' ? 1 : targetWidth / node.clientWidth;
 
         try {
             const func = format === 'png' ? htmlToImage.toPng : htmlToImage.toJpeg;
 
-            // For Website mode, use canvasWidth/canvasHeight to ensure exact dimensions
             const baseOptions: any = state.appMode === 'website' ? {
-                canvasWidth: targetWidth,
-                canvasHeight: targetHeight,
-                width: node.clientWidth,
-                height: node.clientHeight,
+                width: targetWidth,
+                height: targetHeight,
+                pixelRatio: 1,
                 filter: (domNode: any) => {
                     const classList = domNode.classList;
                     return !classList || !classList.contains('ig-ui-overlay');
