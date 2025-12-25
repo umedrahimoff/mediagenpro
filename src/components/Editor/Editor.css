@@ -271,3 +271,31 @@ input:focus {
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
 }
+
+@media (max-width: 768px) {
+    .toggle-group button {
+        padding: 12px 6px;
+        font-size: 0.85rem;
+    }
+
+    textarea,
+    input {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    .swatch {
+        width: 32px;
+        height: 32px;
+    }
+
+    .preset-chip {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+
+    .upload-btn,
+    .remove-btn {
+        height: 48px;
+    }
+}

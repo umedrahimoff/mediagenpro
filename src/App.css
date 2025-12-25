@@ -71,3 +71,55 @@
   background-color: var(--color-background-gray);
   overflow: auto;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .app-container {
+    height: auto;
+    overflow: auto;
+  }
+
+  .app-nav {
+    flex-direction: column;
+    height: auto;
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .app-body {
+    flex-direction: column-reverse;
+    /* Preview on top, Editor at bottom */
+    height: auto;
+    overflow: visible;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-top: 1px solid #E1E8ED;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    padding: var(--spacing-lg);
+    overflow: visible;
+  }
+
+  .main-content {
+    padding: var(--spacing-md);
+    min-height: 400px;
+    /* Ensure enough space for preview */
+    background: #fff;
+  }
+
+  .nav-tabs {
+    width: 100%;
+  }
+
+  .nav-tabs button {
+    flex: 1;
+    font-size: 0.8rem;
+    padding: 8px 4px;
+  }
+}

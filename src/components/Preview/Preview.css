@@ -3,14 +3,28 @@
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-xl);
+    width: 100%;
 }
 
 .preview-wrapper {
     padding: 2px;
     border: 1px solid #E1E8ED;
-    /* Border for the wrapper, not the cover itself */
     background: white;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transform-origin: top center;
+}
+
+@media (max-width: 400px) {
+    .preview-wrapper {
+        transform: scale(0.85);
+        /* Basic scale for very small phones */
+    }
+}
+
+@media (max-width: 350px) {
+    .preview-wrapper {
+        transform: scale(0.75);
+    }
 }
 
 .cover-node {
@@ -84,6 +98,21 @@
     color: var(--color-text-dark);
     transition: all 0.2s;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+    .download-actions {
+        width: 100%;
+        padding: 0 20px;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .download-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+    }
 }
 
 .download-btn:hover {
