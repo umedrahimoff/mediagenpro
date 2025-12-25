@@ -109,6 +109,26 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             Square (1200x1200)
                         </button>
                     </div>
+
+                    {!state.isGradient && state.image && (
+                        <div style={{ marginTop: '16px' }}>
+                            <label style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: '8px', display: 'block' }}>Layout Type</label>
+                            <div className="toggle-group">
+                                <button
+                                    className={state.layoutMode === 'overlay' ? 'active' : ''}
+                                    onClick={() => onChange({ layoutMode: 'overlay' })}
+                                >
+                                    Overlay
+                                </button>
+                                <button
+                                    className={state.layoutMode === 'split' ? 'active' : ''}
+                                    onClick={() => onChange({ layoutMode: 'split' })}
+                                >
+                                    Split
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="control-group">
