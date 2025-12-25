@@ -90,8 +90,8 @@
   }
 
   .app-body {
-    flex-direction: column-reverse;
-    /* Preview on top, Editor at bottom */
+    flex-direction: column;
+    /* Editor on top, Preview at bottom */
     height: auto;
     overflow: visible;
   }
