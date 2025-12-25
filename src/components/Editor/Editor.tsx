@@ -264,7 +264,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             type="text"
                             value={state.caption}
                             onChange={(e) => onChange({ caption: e.target.value })}
-                            placeholder="e.g. Photo by Standase"
+                            placeholder="e.g. stanbase.tech"
                         />
                     </div>
                     <ColorPicker

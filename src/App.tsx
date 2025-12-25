@@ -45,7 +45,7 @@ function App() {
     titleColor: '#FFFFFF',
     categoryColor: '#F5A623',
     bgColor: '#146AFF',
-    caption: 'Source: MediaGen',
+    caption: 'stanbase.tech',
     captionColor: '#FFFFFF',
     showSafeZones: false,
   });
