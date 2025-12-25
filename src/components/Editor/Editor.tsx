@@ -236,6 +236,26 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                         </div>
                     )}
 
+                    {state.appMode === 'instagram' && !state.isGradient && state.layoutMode === 'overlay' && (
+                        <div className="control-group">
+                            <label>Visual Effects</label>
+                            <div className="toggle-group">
+                                <button
+                                    className={state.useGlassmorphism ? 'active' : ''}
+                                    onClick={() => onChange({ useGlassmorphism: true })}
+                                >
+                                    Glass Card
+                                </button>
+                                <button
+                                    className={!state.useGlassmorphism ? 'active' : ''}
+                                    onClick={() => onChange({ useGlassmorphism: false })}
+                                >
+                                    Standard
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="control-group">
                         <label>{(state.template === 'quote' && state.appMode !== 'youtube') ? 'Quote Text' : 'Title'}</label>
                         <textarea

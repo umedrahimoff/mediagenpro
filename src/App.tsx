@@ -21,6 +21,7 @@ export interface CoverState {
   captionColor: string;
   showSafeZones: boolean;
   textTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
+  useGlassmorphism: boolean;
 }
 
 export const BRAND_COLORS = {
@@ -61,6 +62,7 @@ function App() {
       captionColor: '#FFFFFF',
       showSafeZones: false,
       textTransform: 'uppercase',
+      useGlassmorphism: false,
     };
   });
 

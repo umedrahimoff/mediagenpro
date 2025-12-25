@@ -482,3 +482,34 @@
     border-radius: 2px;
     margin-top: -12px;
 }
+
+/* Glassmorphism Effect */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 16px !important;
+    margin: 20px !important;
+    padding: 24px !important;
+    height: auto !important;
+    min-height: 120px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+    justify-content: center !important;
+}
+
+.glass-effect .title,
+.glass-effect .category {
+    text-shadow: none !important;
+}
+
+.style-template-minimal .content.glass-effect {
+    padding-top: 24px !important;
+    /* Reset minimal padding */
+}
+
+/* Center glass card in story layout */
+.story-layout .content.glass-effect {
+    margin: 40px !important;
+    padding: 32px !important;
+}
