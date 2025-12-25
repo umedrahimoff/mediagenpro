@@ -272,6 +272,25 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                                 </button>
                             )}
                         </div>
+
+                        {!state.isGradient && state.image && (
+                            <div style={{ marginTop: '16px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Image Darkness</label>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{Math.round(state.overlayOpacity * 100)}%</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.05"
+                                    value={state.overlayOpacity}
+                                    onChange={(e) => onChange({ overlayOpacity: parseFloat(e.target.value) })}
+                                    style={{ width: '100%', cursor: 'pointer' }}
+                                />
+                            </div>
+                        )}
+
                         {state.appMode === 'website' && (
                             <span className="hint" style={{ marginTop: '8px', display: 'block' }}>
                                 High-quality compression &lt; 500kb

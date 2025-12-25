@@ -153,7 +153,14 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                         </>
                     ) : (
                         <>
-                            {!state.isGradient && <div className="overlay" />}
+                            {!state.isGradient && (
+                                <div
+                                    className="overlay"
+                                    style={{
+                                        background: `linear-gradient(to bottom, rgba(0,0,0,${state.overlayOpacity * 0.3}), rgba(0,0,0,${state.overlayOpacity}))`
+                                    }}
+                                />
+                            )}
                             <div className="content">
                                 {state.category && (
                                     <div className="category" style={{ color: state.categoryColor }}>
