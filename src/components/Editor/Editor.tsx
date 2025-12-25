@@ -2,7 +2,7 @@ import React from 'react';
 import type { ChangeEvent } from 'react';
 import { BRAND_COLORS } from '../../App';
 import type { CoverState } from '../../App';
-import { Upload, Palette } from 'lucide-react';
+import { Upload, Palette, X } from 'lucide-react';
 import './Editor.css';
 
 interface EditorProps {
@@ -234,9 +234,20 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
 
                 {!state.isGradient && (
                     <div className="upload-area">
-                        <button className="upload-btn" onClick={() => document.getElementById('file-upload')?.click()}>
-                            <Upload size={18} /> {state.image ? 'Replace Image' : 'Upload Image'}
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button className="upload-btn" onClick={() => document.getElementById('file-upload')?.click()} style={{ flex: 1 }}>
+                                <Upload size={16} /> {state.image ? 'Replace' : 'Upload Image'}
+                            </button>
+                            {state.image && (
+                                <button
+                                    className="remove-btn"
+                                    onClick={() => onChange({ image: null, isGradient: true })}
+                                    title="Remove Image"
+                                >
+                                    <X size={16} />
+                                </button>
+                            )}
+                        </div>
                         {state.appMode === 'website' && (
                             <span className="hint" style={{ marginTop: '8px', display: 'block' }}>
                                 High-quality compression &lt; 500kb
