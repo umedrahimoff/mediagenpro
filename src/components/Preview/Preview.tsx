@@ -110,8 +110,8 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                         <div className="ig-ui-overlay">
                             <div className="ig-top-bar">
                                 <div className="ig-user">
-                                    <div className="ig-avatar" />
-                                    <div className="ig-username">mediagen_pro</div>
+                                    <div className="ig-avatar" style={{ backgroundImage: 'url(/stanbase-logo.png)', backgroundSize: 'cover' }} />
+                                    <div className="ig-username">stanbasetech</div>
                                 </div>
                             </div>
                             <div className="ig-bottom-actions">
@@ -121,7 +121,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                     <div className="ig-icon" />
                                 </div>
                                 <div className="ig-caption-area">
-                                    <strong>mediagen_pro</strong> This is where your caption will appear...
+                                    <strong>stanbasetech</strong> Creating the future of startups and venture capital...
                                 </div>
                             </div>
                         </div>
