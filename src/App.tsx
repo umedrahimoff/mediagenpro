@@ -11,6 +11,7 @@ export interface CoverState {
   isGradient: boolean;
   ratio: 'vertical' | 'square' | 'horizontal';
   imageOrientation: 'vertical' | 'square' | 'horizontal';
+  layoutMode: 'overlay' | 'split';
   titleColor: string;
   categoryColor: string;
   bgColor: string;
@@ -36,6 +37,7 @@ function App() {
     isGradient: true,
     ratio: 'vertical',
     imageOrientation: 'vertical',
+    layoutMode: 'overlay',
     titleColor: '#FFFFFF',
     categoryColor: '#F5A623',
     bgColor: '#146AFF',

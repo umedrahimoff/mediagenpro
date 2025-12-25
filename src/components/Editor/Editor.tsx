@@ -28,7 +28,8 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                     orientation = 'horizontal';
                 }
 
-                onChange({ image: url, isGradient: false, imageOrientation: orientation });
+                const newLayout = orientation === 'horizontal' ? 'split' : 'overlay';
+                onChange({ image: url, isGradient: false, imageOrientation: orientation, layoutMode: newLayout });
             };
             img.src = url;
         }
@@ -116,6 +117,26 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             Show IG Safe Zones
                         </label>
                     </div>
+
+                    {!state.isGradient && state.image && (
+                        <div style={{ marginTop: '16px' }}>
+                            <label style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: '8px', display: 'block' }}>Layout Type</label>
+                            <div className="toggle-group">
+                                <button
+                                    className={state.layoutMode === 'overlay' ? 'active' : ''}
+                                    onClick={() => onChange({ layoutMode: 'overlay' })}
+                                >
+                                    Overlay
+                                </button>
+                                <button
+                                    className={state.layoutMode === 'split' ? 'active' : ''}
+                                    onClick={() => onChange({ layoutMode: 'split' })}
+                                >
+                                    Split
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 

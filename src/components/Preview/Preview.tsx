@@ -74,10 +74,10 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         ? { background: `linear-gradient(135deg, ${state.bgColor} 0%, #000 150%)` }
         : { backgroundImage: `url(${state.image})`, backgroundSize: 'cover', backgroundPosition: 'center' };
 
-    // Layout logic for Instagram: Horizontal image -> Split Layout. Others -> Overlay Layout.
+    // Layout logic: Use manual layoutMode if image is present
     const isSplit = state.appMode === 'instagram'
-        ? (!state.isGradient && state.imageOrientation === 'horizontal')
-        : (state.appMode === 'website' && false); // We handle website differently or don't use split there
+        ? (!state.isGradient && state.image && state.layoutMode === 'split')
+        : false;
 
     // Dynamic preview dimensions based on target ratio
     const previewWidth = 360;
