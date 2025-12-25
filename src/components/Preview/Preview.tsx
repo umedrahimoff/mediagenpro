@@ -82,7 +82,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         : { backgroundImage: `url(${state.image})`, backgroundSize: 'cover', backgroundPosition: 'center' };
 
     // Layout logic: Use manual layoutMode if image is present
-    const isSplit = (state.appMode === 'instagram' || state.appMode === 'linkedin')
+    const isSplit = state.appMode === 'instagram'
         ? (!state.isGradient && state.image && state.layoutMode === 'split')
         : false;
 
@@ -134,7 +134,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             </div>
                         </div>
                     )}
-                    {state.appMode === 'website' ? (
+                    {state.appMode === 'website' || state.appMode === 'linkedin' ? (
                         <>
                             {state.caption && (
                                 <div className="caption" style={{ color: state.captionColor }}>

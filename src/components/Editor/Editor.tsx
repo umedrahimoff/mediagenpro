@@ -187,7 +187,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 </div>
             )}
 
-            {state.appMode !== 'website' ? (
+            {state.appMode === 'instagram' ? (
                 <>
                     <div className="control-group">
                         <label>Style Template</label>
