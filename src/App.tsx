@@ -12,6 +12,7 @@ export interface CoverState {
   ratio: 'vertical' | 'square' | 'horizontal' | 'story';
   imageOrientation: 'vertical' | 'square' | 'horizontal';
   layoutMode: 'overlay' | 'split';
+  template: 'bold' | 'minimal' | 'quote';
   titleColor: string;
   categoryColor: string;
   bgColor: string;
@@ -38,6 +39,7 @@ function App() {
     ratio: 'vertical',
     imageOrientation: 'vertical',
     layoutMode: 'overlay',
+    template: 'bold',
     titleColor: '#FFFFFF',
     categoryColor: '#F5A623',
     bgColor: '#146AFF',

@@ -100,6 +100,79 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
+/* --- Style Templates --- */
+
+/* Template: Minimal */
+.style-template-minimal .content,
+.style-template-minimal .split-content {
+    justify-content: flex-start;
+    padding-top: 40px;
+    gap: 8px;
+}
+
+.style-template-minimal .title {
+    font-size: 24px;
+    font-weight: 600;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.style-template-minimal .category {
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+/* Template: Quote */
+.style-template-quote .content,
+.style-template-quote .split-content {
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center;
+}
+
+.style-template-quote .title {
+    font-size: 26px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.style-template-quote .title::before {
+    content: '"';
+    font-size: 40px;
+    display: block;
+    margin-bottom: -10px;
+    opacity: 0.6;
+}
+
+.style-template-quote .category {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--color-white);
+}
+
+.style-template-quote .category::before {
+    content: '— ';
+}
+
+/* Base Template: Bold (Default behavior) */
+.style-template-bold .title {
+    font-size: 32px;
+    font-weight: 900;
+}
+
+.style-template-bold .category {
+    font-size: 16px;
+}
+
+/* Specific tweaks for Story + Quote */
+.story-layout.style-template-quote .title {
+    font-size: 42px;
+}
+
+.story-layout.style-template-quote .title::before {
+    font-size: 60px;
+}
+
 @media (max-width: 768px) {
     .download-actions {
         width: 100%;

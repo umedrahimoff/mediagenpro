@@ -149,12 +149,36 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             {state.appMode === 'instagram' ? (
                 <>
                     <div className="control-group">
-                        <label>Title</label>
+                        <label>Style Template</label>
+                        <div className="toggle-group">
+                            <button
+                                className={state.template === 'bold' ? 'active' : ''}
+                                onClick={() => onChange({ template: 'bold' })}
+                            >
+                                Bold
+                            </button>
+                            <button
+                                className={state.template === 'minimal' ? 'active' : ''}
+                                onClick={() => onChange({ template: 'minimal' })}
+                            >
+                                Minimal
+                            </button>
+                            <button
+                                className={state.template === 'quote' ? 'active' : ''}
+                                onClick={() => onChange({ template: 'quote' })}
+                            >
+                                Quote
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="control-group">
+                        <label>{state.template === 'quote' ? 'Quote Text' : 'Title'}</label>
                         <textarea
                             value={state.title}
                             onChange={(e) => onChange({ title: e.target.value })}
                             rows={4}
-                            placeholder="Enter title..."
+                            placeholder={state.template === 'quote' ? "Enter the quote..." : "Enter title..."}
                         />
                     </div>
 
@@ -165,12 +189,12 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                     />
 
                     <div className="control-group">
-                        <label>Category</label>
+                        <label>{state.template === 'quote' ? 'Author' : 'Category'}</label>
                         <input
                             type="text"
                             value={state.category}
                             onChange={(e) => onChange({ category: e.target.value })}
-                            placeholder="e.g. VISUAL DESIGN"
+                            placeholder={state.template === 'quote' ? "e.g. Steve Jobs" : "e.g. VISUAL DESIGN"}
                         />
                         <div className="category-presets">
                             {['news', 'investments', 'startups', 'analytics', 'founders'].map(preset => (
