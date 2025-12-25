@@ -37,16 +37,15 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
             if (state.appMode === 'youtube') {
                 targetWidth = 2560;
                 targetHeight = 1440;
-            } else {
+            } else if (state.appMode === 'website') {
+                // Website mode ALWAYS outputs 1200x628
                 targetWidth = 1200;
-                if (state.appMode === 'linkedin') {
-                    if (state.ratio === 'horizontal') targetHeight = 627;
-                    else targetHeight = 1200;
-                } else {
-                    if (state.ratio === 'horizontal') targetHeight = 628;
-                    else if (state.ratio === 'square') targetHeight = 1200;
-                    else if (state.ratio === 'vertical') targetHeight = 1500;
-                }
+                targetHeight = 628;
+            } else {
+                // LinkedIn
+                targetWidth = 1200;
+                if (state.ratio === 'horizontal') targetHeight = 627;
+                else targetHeight = 1200;
             }
         } else {
             // Instagram defaults
@@ -139,10 +138,12 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
     const previewWidth = 360;
     let previewHeight = 450; // default 4:5
 
-    if (state.appMode === 'website' || state.appMode === 'linkedin') {
+    if (state.appMode === 'website') {
+        // Website is ALWAYS 1200x628 (aspect ratio ~1.91:1)
+        previewHeight = 188; // 360 / 1.91 ≈ 188
+    } else if (state.appMode === 'linkedin') {
         if (state.ratio === 'horizontal') previewHeight = 188;
-        else if (state.ratio === 'square') previewHeight = 360;
-        else if (state.ratio === 'vertical') previewHeight = 450;
+        else previewHeight = 360; // square
     } else if (state.appMode === 'youtube') {
         previewHeight = 202; // 16:9 for 360 width
     } else {

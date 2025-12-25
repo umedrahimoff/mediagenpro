@@ -77,25 +77,10 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
 
             {state.appMode === 'website' ? (
                 <div className="control-group">
-                    <label>Proportions</label>
+                    <label>Website Proportions</label>
                     <div className="toggle-group">
-                        <button
-                            className={state.ratio === 'horizontal' ? 'active' : ''}
-                            onClick={() => onChange({ ratio: 'horizontal' })}
-                        >
-                            1200x628
-                        </button>
-                        <button
-                            className={state.ratio === 'square' ? 'active' : ''}
-                            onClick={() => onChange({ ratio: 'square' })}
-                        >
-                            Square
-                        </button>
-                        <button
-                            className={state.ratio === 'vertical' ? 'active' : ''}
-                            onClick={() => onChange({ ratio: 'vertical' })}
-                        >
-                            4:5
+                        <button className="active">
+                            1200x628 (Fixed)
                         </button>
                     </div>
                 </div>
