@@ -273,3 +273,50 @@
     line-height: 1.4;
     max-width: 80%;
 }
+
+/* Gradient/No-Photo Mode Styles */
+.cover-node.gradient-mode {
+    justify-content: center;
+    align-items: center;
+}
+
+.cover-node.gradient-mode .content {
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+
+.cover-node.gradient-mode .title {
+    font-size: 32px;
+    text-shadow: none;
+    line-height: 1.2;
+}
+
+.cover-node.gradient-mode .category {
+    text-shadow: none;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+/* Story Gradient/Safe Zone Awareness */
+.cover-node.gradient-mode.story-layout .content {
+    padding-top: 100px;
+    /* Space for IG Top Bar (Avatar/User) */
+    padding-bottom: 180px;
+    /* Space for IG Bottom Bar (Actions/Caption) */
+    display: flex;
+    flex-direction: column;
+}
+
+.cover-node.gradient-mode.story-layout .title {
+    font-size: 40px;
+}
+
+/* Base Category/Title Overrides for Gradient */
+.gradient-mode .category,
+.gradient-mode .title {
+    text-shadow: none;
+}
