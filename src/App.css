@@ -49,11 +49,11 @@
 }
 
 .sidebar {
-  width: 320px;
+  width: 340px;
   flex-shrink: 0;
   background-color: var(--color-white);
   border-right: 1px solid #E1E8ED;
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
   height: 100%;
