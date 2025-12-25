@@ -93,16 +93,16 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                     <label>Proportions</label>
                     <div className="toggle-group">
                         <button
-                            className={state.ratio === 'square' ? 'active' : ''}
-                            onClick={() => onChange({ ratio: 'square' })}
-                        >
-                            Square (1:1)
-                        </button>
-                        <button
                             className={state.ratio === 'vertical' ? 'active' : ''}
                             onClick={() => onChange({ ratio: 'vertical' })}
                         >
                             Portrait (4:5)
+                        </button>
+                        <button
+                            className={state.ratio === 'square' ? 'active' : ''}
+                            onClick={() => onChange({ ratio: 'square' })}
+                        >
+                            Square (1:1)
                         </button>
                     </div>
                 </div>
