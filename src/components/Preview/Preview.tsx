@@ -63,7 +63,18 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
 
         try {
             const func = format === 'png' ? htmlToImage.toPng : htmlToImage.toJpeg;
-            const baseOptions: any = {
+
+            // For Website mode, use canvasWidth/canvasHeight to ensure exact dimensions
+            const baseOptions: any = state.appMode === 'website' ? {
+                canvasWidth: targetWidth,
+                canvasHeight: targetHeight,
+                width: node.clientWidth,
+                height: node.clientHeight,
+                filter: (domNode: any) => {
+                    const classList = domNode.classList;
+                    return !classList || !classList.contains('ig-ui-overlay');
+                }
+            } : {
                 width: targetWidth,
                 height: targetHeight,
                 style: {
