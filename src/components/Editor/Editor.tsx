@@ -167,7 +167,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             placeholder="e.g. VISUAL DESIGN"
                         />
                         <div className="category-presets">
-                            {['новости', 'инвестиции', 'стартапы', 'аналитика', 'фаундеры'].map(preset => (
+                            {['news', 'investments', 'startups', 'analytics', 'founders'].map(preset => (
                                 <button
                                     key={preset}
                                     className={`preset-chip ${state.category.toLowerCase() === preset.toLowerCase() ? 'active' : ''}`}
