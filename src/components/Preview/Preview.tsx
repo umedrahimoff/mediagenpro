@@ -180,7 +180,14 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                         {state.category}
                                     </div>
                                 )}
-                                <div className="title" style={{ color: state.titleColor, textTransform: 'none' }}>
+                                <div
+                                    className="title"
+                                    style={{
+                                        color: state.titleColor,
+                                        textTransform: 'none',
+                                        fontSize: (state.appMode === 'youtube' && state.titleFontSize === 22) ? '16px' : `${state.titleFontSize}px`
+                                    }}
+                                >
                                     {getTransformedText(state.title, state.textTransform)}
                                 </div>
                             </div>
@@ -208,7 +215,14 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                         {state.category}
                                     </div>
                                 )}
-                                <div className="title" style={{ color: state.titleColor, textTransform: 'none' }}>
+                                <div
+                                    className="title"
+                                    style={{
+                                        color: state.titleColor,
+                                        textTransform: 'none',
+                                        fontSize: (state.appMode === 'youtube' && state.titleFontSize === 22) ? '16px' : `${state.titleFontSize}px`
+                                    }}
+                                >
                                     {getTransformedText(state.title, state.textTransform)}
                                 </div>
                             </div>
