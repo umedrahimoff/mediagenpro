@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Editor } from './components/Editor/Editor';
 import { Preview } from './components/Preview/Preview';
 import './App.css';
@@ -30,25 +30,50 @@ export const BRAND_COLORS = {
   white: '#FFFFFF',
 };
 
+const STORAGE_KEY = 'mediagen_pro_state';
+
 function App() {
-  const [state, setState] = useState<CoverState>({
-    appMode: 'instagram',
-    title: 'THE FUTURE OF\nVENTURE CAPITAL',
-    category: 'SaaS Trends',
-    image: null,
-    isGradient: true,
-    ratio: 'vertical',
-    imageOrientation: 'vertical',
-    layoutMode: 'overlay',
-    template: 'bold',
-    overlayOpacity: 0.6,
-    titleColor: '#FFFFFF',
-    categoryColor: '#F5A623',
-    bgColor: '#146AFF',
-    caption: 'stanbase.tech',
-    captionColor: '#FFFFFF',
-    showSafeZones: false,
+  const [state, setState] = useState<CoverState>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to load saved state:', e);
+      }
+    }
+    return {
+      appMode: 'instagram',
+      title: 'THE FUTURE OF\nVENTURE CAPITAL',
+      category: 'SaaS Trends',
+      image: null,
+      isGradient: true,
+      ratio: 'vertical',
+      imageOrientation: 'vertical',
+      layoutMode: 'overlay',
+      template: 'bold',
+      overlayOpacity: 0.6,
+      titleColor: '#FFFFFF',
+      categoryColor: '#F5A623',
+      bgColor: '#146AFF',
+      caption: 'stanbase.tech',
+      captionColor: '#FFFFFF',
+      showSafeZones: false,
+    };
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      // If localStorage is full (e.g. because of a large base64 image),
+      // try saving without the image so at least text is preserved
+      if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+        const stateWithoutImage = { ...state, image: null };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateWithoutImage));
+      }
+    }
+  }, [state]);
 
   const updateState = (updates: Partial<CoverState>) => {
     setState(prev => ({ ...prev, ...updates }));

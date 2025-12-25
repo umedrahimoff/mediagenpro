@@ -14,24 +14,30 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
     const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            const url = URL.createObjectURL(file);
+            const reader = new FileReader();
 
-            // Detect aspect ratio
-            const img = new Image();
-            img.onload = () => {
-                const aspect = img.width / img.height;
-                let orientation: 'vertical' | 'square' | 'horizontal' = 'square';
+            reader.onload = (event) => {
+                const url = event.target?.result as string;
 
-                if (aspect <= 0.85) { // Taller than 4:5 (0.8) approx
-                    orientation = 'vertical';
-                } else if (aspect >= 1.3) { // Wider than 4:3 approx
-                    orientation = 'horizontal';
-                }
+                // Detect aspect ratio
+                const img = new Image();
+                img.onload = () => {
+                    const aspect = img.width / img.height;
+                    let orientation: 'vertical' | 'square' | 'horizontal' = 'square';
 
-                const newLayout = orientation === 'horizontal' ? 'split' : 'overlay';
-                onChange({ image: url, isGradient: false, imageOrientation: orientation, layoutMode: newLayout });
+                    if (aspect <= 0.85) {
+                        orientation = 'vertical';
+                    } else if (aspect >= 1.3) {
+                        orientation = 'horizontal';
+                    }
+
+                    const newLayout = orientation === 'horizontal' ? 'split' : 'overlay';
+                    onChange({ image: url, isGradient: false, imageOrientation: orientation, layoutMode: newLayout });
+                };
+                img.src = url;
             };
-            img.src = url;
+
+            reader.readAsDataURL(file);
         }
     };
 
