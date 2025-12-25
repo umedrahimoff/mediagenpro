@@ -23,6 +23,9 @@ export interface CoverState {
   textTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
   useGlassmorphism: boolean;
   contentAlignment: 'flex-start' | 'center' | 'flex-end';
+  glassBlur: number;
+  glassWidth: 'full' | 'fit';
+  glassGlow: boolean;
 }
 
 export const BRAND_COLORS = {
@@ -65,6 +68,9 @@ function App() {
       textTransform: 'uppercase',
       useGlassmorphism: false,
       contentAlignment: 'flex-end',
+      glassBlur: 12,
+      glassWidth: 'full',
+      glassGlow: false,
     };
   });
 

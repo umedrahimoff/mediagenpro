@@ -74,6 +74,11 @@ input:focus {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.toggle-group.scale-small button {
+    padding: 3px 2px;
+    font-size: 0.7rem;
+}
+
 .upload-area {
     margin-top: var(--spacing-sm);
 }

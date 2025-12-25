@@ -486,8 +486,6 @@
 /* Glassmorphism Effect */
 .glass-effect {
     background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(12px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 16px !important;
     margin: 20px !important;
@@ -495,6 +493,26 @@
     height: auto !important;
     min-height: 120px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+.glass-width-fit {
+    width: fit-content !important;
+    max-width: 90% !important;
+    align-self: center;
+}
+
+.glass-glow {
+    box-shadow: 0 0 20px rgba(0, 102, 255, 0.3),
+        0 0 40px rgba(0, 102, 255, 0.1),
+        0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+    border-color: rgba(0, 102, 255, 0.4) !important;
+}
+
+.gradient-mode .glass-glow {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2),
+        0 0 40px rgba(255, 215, 0, 0.1),
+        0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+    border-color: rgba(255, 215, 0, 0.3) !important;
 }
 
 /* Specific overrides for alignment in Glass mode */

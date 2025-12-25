@@ -256,6 +256,52 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                                 </div>
                             </div>
 
+                            {state.useGlassmorphism && (
+                                <div className="glass-settings-nested" style={{ paddingLeft: '12px', borderLeft: '2px solid var(--color-light-blue)', marginBottom: '16px' }}>
+                                    <div className="control-group">
+                                        <label style={{ fontSize: '0.75rem' }}>Blur Intensity: {state.glassBlur}px</label>
+                                        <input
+                                            type="range"
+                                            min="4"
+                                            max="40"
+                                            value={state.glassBlur}
+                                            onChange={(e) => onChange({ glassBlur: parseInt(e.target.value) })}
+                                            className="slider"
+                                        />
+                                    </div>
+                                    <div className="control-group">
+                                        <label style={{ fontSize: '0.75rem' }}>Card Width</label>
+                                        <div className="toggle-group scale-small">
+                                            <button
+                                                className={state.glassWidth === 'full' ? 'active' : ''}
+                                                onClick={() => onChange({ glassWidth: 'full' })}
+                                            >
+                                                Full
+                                            </button>
+                                            <button
+                                                className={state.glassWidth === 'fit' ? 'active' : ''}
+                                                onClick={() => onChange({ glassWidth: 'fit' })}
+                                            >
+                                                Fit
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="control-group">
+                                        <div className="safe-zone-toggle">
+                                            <label className="checkbox-container">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={state.glassGlow}
+                                                    onChange={(e) => onChange({ glassGlow: e.target.checked })}
+                                                />
+                                                <span className="checkmark"></span>
+                                                <span style={{ fontSize: '0.75rem' }}>Neon Glow Effect</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="control-group">
                                 <label>Vertical Alignment</label>
                                 <div className="toggle-group">
@@ -445,7 +491,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.4.0</span>
+                    <span className="version-tag">v1.5.0</span>
                 </a>
             </footer>
         </div>

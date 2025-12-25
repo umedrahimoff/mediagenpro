@@ -196,8 +196,12 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                 />
                             )}
                             <div
-                                className={`content ${state.useGlassmorphism ? 'glass-effect' : ''}`}
-                                style={{ justifyContent: state.contentAlignment }}
+                                className={`content ${state.useGlassmorphism ? 'glass-effect' : ''} ${state.useGlassmorphism ? `glass-width-${state.glassWidth}` : ''} ${state.glassGlow ? 'glass-glow' : ''}`}
+                                style={{
+                                    justifyContent: state.contentAlignment,
+                                    backdropFilter: state.useGlassmorphism ? `blur(${state.glassBlur}px) saturate(180%)` : undefined,
+                                    WebkitBackdropFilter: state.useGlassmorphism ? `blur(${state.glassBlur}px) saturate(180%)` : undefined,
+                                }}
                             >
                                 {state.category && (
                                     <div className="category" style={{ color: state.categoryColor }}>
