@@ -7,7 +7,7 @@
 }
 
 .app-nav {
-  height: 60px;
+  height: 50px;
   background-color: var(--color-white);
   border-bottom: 1px solid #E1E8ED;
   display: flex;
@@ -49,11 +49,11 @@
 }
 
 .sidebar {
-  width: 400px;
+  width: 320px;
   flex-shrink: 0;
   background-color: var(--color-white);
   border-right: 1px solid #E1E8ED;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
   height: 100%;

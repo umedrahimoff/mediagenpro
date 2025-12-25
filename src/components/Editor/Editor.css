@@ -5,10 +5,10 @@
 }
 
 .logo h2 {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--color-primary-blue);
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 4px;
 }
 
 .control-group {
@@ -19,7 +19,7 @@
 
 .control-group label {
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     color: var(--color-text-dark);
     letter-spacing: 0.5px;
@@ -27,10 +27,10 @@
 
 textarea,
 input {
-    padding: var(--spacing-md);
+    padding: 8px 12px;
     border: 1px solid #E1E8ED;
     border-radius: var(--border-radius-md);
-    font-size: 1rem;
+    font-size: 0.85rem;
     resize: vertical;
     background: #F5F7FA;
     transition: all 0.2s;
@@ -59,12 +59,12 @@ input:focus {
 
 .toggle-group button {
     flex: 1;
-    padding: var(--spacing-sm);
+    padding: 6px 4px;
     border-radius: var(--border-radius-sm);
     background: transparent;
     color: #667788;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     transition: all 0.2s;
 }
 
@@ -111,8 +111,8 @@ input:focus {
 }
 
 .swatch {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     border: 2px solid #E1E8ED;
     cursor: pointer;
@@ -164,11 +164,11 @@ input:focus {
 }
 
 .preset-chip {
-    padding: 6px 12px;
+    padding: 4px 10px;
     background: #F0F3F5;
     border: 1px solid #E1E8ED;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     color: #667788;
     cursor: pointer;
