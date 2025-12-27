@@ -165,6 +165,29 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             Show UI Overlay
                         </label>
                     </div>
+                    <div className="control-group" style={{ marginTop: '16px' }}>
+                        <label>Text Placement</label>
+                        <div className="toggle-group">
+                            <button
+                                className={state.reelsAlignment === 'flex-start' ? 'active' : ''}
+                                onClick={() => onChange({ reelsAlignment: 'flex-start' })}
+                            >
+                                Top
+                            </button>
+                            <button
+                                className={state.reelsAlignment === 'center' ? 'active' : ''}
+                                onClick={() => onChange({ reelsAlignment: 'center' })}
+                            >
+                                Center
+                            </button>
+                            <button
+                                className={state.reelsAlignment === 'flex-end' ? 'active' : ''}
+                                onClick={() => onChange({ reelsAlignment: 'flex-end' })}
+                            >
+                                Bottom
+                            </button>
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <div className="control-group">
@@ -223,7 +246,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 </div>
             )}
 
-            {(state.appMode === 'instagram' || state.appMode === 'youtube') ? (
+            {(state.appMode === 'instagram' || state.appMode === 'youtube' || state.appMode === 'reels') ? (
                 <>
                     {state.appMode === 'instagram' && (
                         <div className="control-group">
@@ -338,8 +361,8 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                     <div className="control-group">
                         <label>{(state.template === 'quote' && state.appMode !== 'youtube') ? 'Quote Text' : 'Title'}</label>
                         <textarea
-                            value={state.title}
-                            onChange={(e) => onChange({ title: e.target.value })}
+                            value={state.appMode === 'reels' ? state.reelsTitle : state.title}
+                            onChange={(e) => onChange(state.appMode === 'reels' ? { reelsTitle: e.target.value } : { title: e.target.value })}
                             rows={4}
                             placeholder={(state.template === 'quote' && state.appMode !== 'youtube') ? "Enter the quote..." : "Enter title..."}
                         />
@@ -378,16 +401,16 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                         <label>{(state.template === 'quote' && state.appMode !== 'youtube') ? 'Author' : 'Category'}</label>
                         <input
                             type="text"
-                            value={state.category}
-                            onChange={(e) => onChange({ category: e.target.value })}
+                            value={state.appMode === 'reels' ? state.reelsCategory : state.category}
+                            onChange={(e) => onChange(state.appMode === 'reels' ? { reelsCategory: e.target.value } : { category: e.target.value })}
                             placeholder={(state.template === 'quote' && state.appMode !== 'youtube') ? "e.g. Steve Jobs" : "e.g. VISUAL DESIGN"}
                         />
                         <div className="category-presets">
                             {['news', 'investments', 'startups', 'analytics', 'founders'].map(preset => (
                                 <button
                                     key={preset}
-                                    className={`preset-chip ${state.category.toLowerCase() === preset.toLowerCase() ? 'active' : ''}`}
-                                    onClick={() => onChange({ category: preset.toUpperCase() })}
+                                    className={`preset-chip ${(state.appMode === 'reels' ? state.reelsCategory : state.category).toLowerCase() === preset.toLowerCase() ? 'active' : ''}`}
+                                    onClick={() => onChange(state.appMode === 'reels' ? { reelsCategory: preset.toUpperCase() } : { category: preset.toUpperCase() })}
                                 >
                                     {preset}
                                 </button>
@@ -501,7 +524,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.6.2</span>
+                    <span className="version-tag">v1.6.3</span>
                 </a>
             </footer>
         </div>

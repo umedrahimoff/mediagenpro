@@ -26,6 +26,9 @@ export interface CoverState {
   glassBlur: number;
   glassWidth: 'full' | 'fit';
   reelsView: 'full' | 'grid';
+  reelsTitle: string;
+  reelsCategory: string;
+  reelsAlignment: 'flex-start' | 'center' | 'flex-end';
 }
 
 export const BRAND_COLORS = {
@@ -71,6 +74,9 @@ function App() {
       glassBlur: 25,
       glassWidth: 'full',
       reelsView: 'full',
+      reelsTitle: 'NEW REEL\nCOMING SOON',
+      reelsCategory: 'Behind the Scenes',
+      reelsAlignment: 'center',
     };
   });
 

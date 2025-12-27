@@ -282,19 +282,19 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             <div
                                 className={`content ${state.useGlassmorphism ? 'glass-effect' : ''} ${state.useGlassmorphism ? `glass-width-${state.glassWidth}` : ''}`}
                                 style={{
-                                    justifyContent: state.contentAlignment,
+                                    justifyContent: state.appMode === 'reels' ? state.reelsAlignment : state.contentAlignment,
                                     backgroundColor: state.useGlassmorphism
                                         ? `rgba(255, 255, 255, ${state.glassBlur / 100})`
                                         : undefined,
                                 }}
                             >
-                                {state.category && (
+                                {(state.appMode === 'reels' ? state.reelsCategory : state.category) && (
                                     <div className="category" style={{ color: state.categoryColor }}>
-                                        {state.category}
+                                        {state.appMode === 'reels' ? state.reelsCategory : state.category}
                                     </div>
                                 )}
                                 <div className="title" style={{ color: state.titleColor, textTransform: 'none' }}>
-                                    {getTransformedText(state.title, state.textTransform)}
+                                    {getTransformedText(state.appMode === 'reels' ? state.reelsTitle : state.title, state.textTransform)}
                                 </div>
                             </div>
                         </>
