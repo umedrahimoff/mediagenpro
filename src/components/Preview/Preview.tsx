@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import type { CoverState } from '../../App';
 import * as htmlToImage from 'html-to-image';
-import { Download, FileType } from 'lucide-react';
+import { Download, FileType, Heart, MessageCircle, Send, MoreHorizontal, Music, ChevronLeft, Camera } from 'lucide-react';
 import './Preview.css';
 
 interface PreviewProps {
@@ -193,15 +193,38 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             </div>
                         </div>
                     )}
+                    {state.appMode === 'reels' && state.reelsView === 'grid' && (
+                        <>
+                            <div className="reel-grid-mask-top" />
+                            <div className="reel-grid-mask-bottom" />
+                        </>
+                    )}
+
                     {state.showSafeZones && state.appMode === 'reels' && (
-                        <div className="reel-safe-overlay">
-                            <div className="reel-safe-center">
-                                <span className="reel-label">Feed Square (1:1)</span>
+                        <div className="reel-ui-realistic">
+                            <div className="reel-top-bar">
+                                <ChevronLeft color="white" size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+                                <span className="reel-header-title">Reels</span>
+                                <Camera color="white" size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
                             </div>
-                            <div className="reel-ui-bottom">
-                                <span className="reel-label">UI Safety</span>
+                            <div className="reel-right-actions">
+                                <div className="action-item"><Heart color="white" size={28} /> <span className="action-text">87K</span></div>
+                                <div className="action-item"><MessageCircle color="white" size={28} /> <span className="action-text">924</span></div>
+                                <div className="action-item"><Send color="white" size={28} /></div>
+                                <div className="action-item"><MoreHorizontal color="white" size={28} /></div>
                             </div>
-                            <div className="reel-ui-right"></div>
+                            <div className="reel-bottom-info">
+                                <div className="user-line">
+                                    <div className="avatar-mock" />
+                                    <span className="username">{state.caption ? state.caption.split(' ')[0].toLowerCase() : 'username'}</span>
+                                    <button className="follow-btn">Follow</button>
+                                </div>
+                                <div className="caption-line">The perfect cover... <span style={{ opacity: 0.7 }}>more</span></div>
+                                <div className="audio-line">
+                                    <Music size={14} />
+                                    <div className="audio-marquee">Original Audio - {state.caption || 'username'}</div>
+                                </div>
+                            </div>
                         </div>
                     )}
                     {state.showSafeZones && state.appMode === 'instagram' && (

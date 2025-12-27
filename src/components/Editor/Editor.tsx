@@ -139,10 +139,19 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 </div>
             ) : state.appMode === 'reels' ? (
                 <div className="control-group">
-                    <label>Reels Format</label>
-                    <div className="toggle-group">
-                        <button className="active">
-                            1080x1920 (Fixed)
+                    <label>View Mode</label>
+                    <div className="toggle-group scale-small" style={{ marginBottom: '12px' }}>
+                        <button
+                            className={state.reelsView === 'full' ? 'active' : ''}
+                            onClick={() => onChange({ reelsView: 'full' })}
+                        >
+                            Full Screen
+                        </button>
+                        <button
+                            className={state.reelsView === 'grid' ? 'active' : ''}
+                            onClick={() => onChange({ reelsView: 'grid' })}
+                        >
+                            Profile Grid
                         </button>
                     </div>
                     <div className="safe-zone-toggle">
@@ -153,7 +162,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                                 onChange={(e) => onChange({ showSafeZones: e.target.checked })}
                             />
                             <span className="checkmark"></span>
-                            Show Safe Zones
+                            Show UI Overlay
                         </label>
                     </div>
                 </div>
@@ -492,7 +501,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.6.1</span>
+                    <span className="version-tag">v1.6.2</span>
                 </a>
             </footer>
         </div>
