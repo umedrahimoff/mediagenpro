@@ -77,11 +77,6 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                 filter: (domNode: any) => {
                     const classList = domNode.classList;
                     return !classList || !classList.contains('ig-ui-overlay');
-                },
-                onClone: (clonedNode: any) => {
-                    if (clonedNode instanceof HTMLElement) {
-                        clonedNode.classList.add('exporting');
-                    }
                 }
             } : {
                 width: targetWidth,
@@ -95,11 +90,6 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                 filter: (domNode: any) => {
                     const classList = domNode.classList;
                     return !classList || !classList.contains('ig-ui-overlay');
-                },
-                onClone: (clonedNode: any) => {
-                    if (clonedNode instanceof HTMLElement) {
-                        clonedNode.classList.add('exporting');
-                    }
                 }
             };
 
@@ -254,8 +244,9 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                 className={`content ${state.useGlassmorphism ? 'glass-effect' : ''} ${state.useGlassmorphism ? `glass-width-${state.glassWidth}` : ''}`}
                                 style={{
                                     justifyContent: state.contentAlignment,
-                                    backdropFilter: state.useGlassmorphism ? `blur(${state.glassBlur}px) saturate(180%)` : undefined,
-                                    WebkitBackdropFilter: state.useGlassmorphism ? `blur(${state.glassBlur}px) saturate(180%)` : undefined,
+                                    backgroundColor: state.useGlassmorphism
+                                        ? `rgba(255, 255, 255, ${state.glassBlur / 100})`
+                                        : undefined,
                                 }}
                             >
                                 {state.category && (

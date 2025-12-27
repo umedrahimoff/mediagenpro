@@ -67,7 +67,7 @@ function App() {
       textTransform: 'uppercase',
       useGlassmorphism: false,
       contentAlignment: 'flex-end',
-      glassBlur: 12,
+      glassBlur: 25,
       glassWidth: 'full',
     };
   });

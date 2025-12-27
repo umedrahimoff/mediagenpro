@@ -245,15 +245,15 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                                 <div className="glass-settings-nested" style={{ paddingLeft: '12px', borderLeft: '2px solid var(--color-light-blue)', marginBottom: '16px' }}>
                                     <div className="control-group">
                                         <div className="label-with-reset">
-                                            <label style={{ fontSize: '0.75rem' }}>Blur Intensity: {state.glassBlur}px</label>
-                                            <button className="reset-mini-btn" onClick={() => onChange({ glassBlur: 12 })} title="Reset to 12px">
+                                            <label style={{ fontSize: '0.75rem' }}>Card Opacity: {state.glassBlur}%</label>
+                                            <button className="reset-mini-btn" onClick={() => onChange({ glassBlur: 25 })} title="Reset to 25%">
                                                 <RotateCcw size={10} />
                                             </button>
                                         </div>
                                         <input
                                             type="range"
-                                            min="4"
-                                            max="40"
+                                            min="10"
+                                            max="95"
                                             value={state.glassBlur}
                                             onChange={(e) => onChange({ glassBlur: parseInt(e.target.value) })}
                                             className="slider"
@@ -471,7 +471,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.5.3</span>
+                    <span className="version-tag">v1.5.4</span>
                 </a>
             </footer>
         </div>
