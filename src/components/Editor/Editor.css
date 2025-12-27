@@ -342,3 +342,48 @@ input:focus {
         height: 48px;
     }
 }
+/* Accordion Sections */
+.editor-section {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.editor-section:last-child {
+    border-bottom: none;
+}
+
+.section-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-dark);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.section-header:hover {
+    color: var(--color-primary-blue);
+    background: none; /* Override default button hover */
+    transform: none;
+    box-shadow: none;
+}
+
+.section-content {
+    padding-bottom: 20px;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Adjust control groups inside sections */
+.section-content .control-group:last-child {
+    margin-bottom: 0;
+}

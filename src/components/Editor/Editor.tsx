@@ -1,14 +1,25 @@
-import React from 'react';
-import type { ChangeEvent } from 'react';
-import { BRAND_COLORS } from '../../App';
-import type { CoverState } from '../../App';
-import { Upload, Palette, X, RotateCcw } from 'lucide-react';
+import React, { useState, ChangeEvent } from 'react';
+import { BRAND_COLORS, CoverState } from '../../App';
+import { Upload, Palette, X, RotateCcw, ChevronDown } from 'lucide-react';
 import './Editor.css';
 
 interface EditorProps {
     state: CoverState;
     onChange: (updates: Partial<CoverState>) => void;
 }
+
+const Section = ({ title, children, defaultOpen = false }: { title: string, children: React.ReactNode, defaultOpen?: boolean }) => {
+    const [isOpen, setIsOpen] = useState(defaultOpen);
+    return (
+        <div className="editor-section">
+            <button className="section-header" onClick={() => setIsOpen(!isOpen)}>
+                <span>{title}</span>
+                <ChevronDown size={16} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.5 }} />
+            </button>
+            {isOpen && <div className="section-content animate-slide-down">{children}</div>}
+        </div>
+    );
+};
 
 export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
     const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -97,288 +108,230 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 </h2>
             </div>
 
-            {state.appMode === 'website' ? (
-                <div className="control-group">
-                    <label>Website Proportions</label>
-                    <div className="toggle-group">
-                        <button className="active">
-                            1200x628 (Fixed)
-                        </button>
-                    </div>
-                </div>
-            ) : state.appMode === 'linkedin' ? (
-                <div className="control-group">
-                    <label>LinkedIn Proportions</label>
-                    <div className="toggle-group">
-                        <button
-                            className={state.ratio === 'horizontal' ? 'active' : ''}
-                            onClick={() => onChange({ ratio: 'horizontal' })}
-                        >
-                            Feed (1200x627)
-                        </button>
-                        <button
-                            className={state.ratio === 'square' ? 'active' : ''}
-                            onClick={() => onChange({ ratio: 'square' })}
-                        >
-                            Square (1200x1200)
-                        </button>
-                    </div>
-
-                    {!state.isGradient && state.image && (
-                        <div style={{ marginTop: '16px' }}>
-                            <label style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: '8px', display: 'block' }}>Layout Type</label>
-                            <div className="toggle-group">
-                                <button
-                                    className={state.layoutMode === 'overlay' ? 'active' : ''}
-                                    onClick={() => onChange({ layoutMode: 'overlay' })}
-                                >
-                                    Overlay
-                                </button>
-                                <button
-                                    className={state.layoutMode === 'split' ? 'active' : ''}
-                                    onClick={() => onChange({ layoutMode: 'split' })}
-                                >
-                                    Split
-                                </button>
-                            </div>
+            <Section title="Layout & Canvas" defaultOpen={true}>
+                {state.appMode === 'website' ? (
+                    <div className="control-group">
+                        <label>Website Proportions</label>
+                        <div className="toggle-group">
+                            <button className="active">1200x628 (Fixed)</button>
                         </div>
-                    )}
-                </div>
-            ) : state.appMode === 'youtube' ? (
-                <div className="control-group">
-                    <div className="safe-zone-toggle">
-                        <label className="checkbox-container">
-                            <input
-                                type="checkbox"
-                                checked={state.showSafeZones}
-                                onChange={(e) => onChange({ showSafeZones: e.target.checked })}
-                            />
-                            <span className="checkmark"></span>
-                            Show Safe Zone (1546x423)
-                        </label>
                     </div>
-                </div>
-            ) : state.appMode === 'reels' ? (
-                <div className="control-group">
-                    <label>View Mode</label>
-                    <div className="toggle-group scale-small" style={{ marginBottom: '12px' }}>
-                        <button
-                            className={state.reelsView === 'full' ? 'active' : ''}
-                            onClick={() => onChange({ reelsView: 'full' })}
-                        >
-                            Full Screen
-                        </button>
-                        <button
-                            className={state.reelsView === 'grid' ? 'active' : ''}
-                            onClick={() => onChange({ reelsView: 'grid' })}
-                        >
-                            Profile Grid
-                        </button>
-                    </div>
-                    <div className="safe-zone-toggle">
-                        <label className="checkbox-container">
-                            <input
-                                type="checkbox"
-                                checked={state.showSafeZones}
-                                onChange={(e) => onChange({ showSafeZones: e.target.checked })}
-                            />
-                            <span className="checkmark"></span>
-                            Show UI Overlay
-                        </label>
-                    </div>
-                    <div className="control-group" style={{ marginTop: '16px' }}>
-                        <label>Text Placement</label>
+                ) : state.appMode === 'linkedin' ? (
+                    <div className="control-group">
+                        <label>LinkedIn Proportions</label>
                         <div className="toggle-group">
                             <button
-                                className={state.reelsAlignment === 'flex-start' ? 'active' : ''}
-                                onClick={() => onChange({ reelsAlignment: 'flex-start' })}
+                                className={state.ratio === 'horizontal' ? 'active' : ''}
+                                onClick={() => onChange({ ratio: 'horizontal' })}
                             >
-                                Top
+                                Feed (1200x627)
                             </button>
                             <button
-                                className={state.reelsAlignment === 'center' ? 'active' : ''}
-                                onClick={() => onChange({ reelsAlignment: 'center' })}
+                                className={state.ratio === 'square' ? 'active' : ''}
+                                onClick={() => onChange({ ratio: 'square' })}
                             >
-                                Center
-                            </button>
-                            <button
-                                className={state.reelsAlignment === 'flex-end' ? 'active' : ''}
-                                onClick={() => onChange({ reelsAlignment: 'flex-end' })}
-                            >
-                                Bottom
+                                Square (1200x1200)
                             </button>
                         </div>
                     </div>
-                </div>
-            ) : (
-                <div className="control-group">
-                    <label>Proportions</label>
-                    <div className="toggle-group">
-                        <button
-                            className={state.ratio === 'vertical' ? 'active' : ''}
-                            onClick={() => onChange({ ratio: 'vertical' })}
-                        >
-                            Portrait (4:5)
-                        </button>
-                        <button
-                            className={state.ratio === 'square' ? 'active' : ''}
-                            onClick={() => onChange({ ratio: 'square' })}
-                        >
-                            Square (1:1)
-                        </button>
-                        <button
-                            className={state.ratio === 'story' ? 'active' : ''}
-                            onClick={() => onChange({ ratio: 'story' })}
-                        >
-                            Story (9:16)
-                        </button>
-                    </div>
-                    <div className="safe-zone-toggle">
-                        <label className="checkbox-container">
-                            <input
-                                type="checkbox"
-                                checked={state.showSafeZones}
-                                onChange={(e) => onChange({ showSafeZones: e.target.checked })}
-                            />
-                            <span className="checkmark"></span>
-                            Show IG Safe Zones
-                        </label>
-                    </div>
-
-                    {!state.isGradient && state.image && (
-                        <div style={{ marginTop: '16px' }}>
-                            <label style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: '8px', display: 'block' }}>Layout Type</label>
-                            <div className="toggle-group">
-                                <button
-                                    className={state.layoutMode === 'overlay' ? 'active' : ''}
-                                    onClick={() => onChange({ layoutMode: 'overlay' })}
-                                >
-                                    Overlay
-                                </button>
-                                <button
-                                    className={state.layoutMode === 'split' ? 'active' : ''}
-                                    onClick={() => onChange({ layoutMode: 'split' })}
-                                >
-                                    Split
-                                </button>
-                            </div>
+                ) : state.appMode === 'youtube' ? (
+                    <div className="control-group">
+                        <div className="safe-zone-toggle">
+                            <label className="checkbox-container">
+                                <input
+                                    type="checkbox"
+                                    checked={state.showSafeZones}
+                                    onChange={(e) => onChange({ showSafeZones: e.target.checked })}
+                                />
+                                <span className="checkmark"></span>
+                                Show Safe Zone (1546x423)
+                            </label>
                         </div>
-                    )}
-                </div>
-            )}
-
-            {(state.appMode === 'instagram' || state.appMode === 'youtube' || state.appMode === 'reels') ? (
-                <>
-                    {state.appMode === 'instagram' && (
+                    </div>
+                ) : state.appMode === 'reels' ? (
+                    <>
                         <div className="control-group">
-                            <label>Style Template</label>
-                            <div className="toggle-group">
+                            <label>View Mode</label>
+                            <div className="toggle-group scale-small" style={{ marginBottom: '12px' }}>
                                 <button
-                                    className={state.template === 'bold' ? 'active' : ''}
-                                    onClick={() => onChange({ template: 'bold' })}
+                                    className={state.reelsView === 'full' ? 'active' : ''}
+                                    onClick={() => onChange({ reelsView: 'full' })}
                                 >
-                                    Bold
+                                    Full Screen
                                 </button>
                                 <button
-                                    className={state.template === 'minimal' ? 'active' : ''}
-                                    onClick={() => onChange({ template: 'minimal' })}
+                                    className={state.reelsView === 'grid' ? 'active' : ''}
+                                    onClick={() => onChange({ reelsView: 'grid' })}
                                 >
-                                    Minimal
-                                </button>
-                                <button
-                                    className={state.template === 'quote' ? 'active' : ''}
-                                    onClick={() => onChange({ template: 'quote' })}
-                                >
-                                    Quote
+                                    Profile Grid
                                 </button>
                             </div>
                         </div>
-                    )}
-
-                    {((state.appMode === 'instagram' && state.layoutMode === 'overlay') || state.appMode === 'reels') && (
-                        <>
-                            <div className="control-group">
-                                <label>Visual Effects</label>
-                                <div className="toggle-group">
-                                    <button
-                                        className={state.useGlassmorphism ? 'active' : ''}
-                                        onClick={() => onChange({ useGlassmorphism: true })}
-                                    >
-                                        Glass Card
-                                    </button>
-                                    <button
-                                        className={!state.useGlassmorphism ? 'active' : ''}
-                                        onClick={() => onChange({ useGlassmorphism: false })}
-                                    >
-                                        Standard
-                                    </button>
-                                </div>
+                        <div className="safe-zone-toggle">
+                            <label className="checkbox-container">
+                                <input
+                                    type="checkbox"
+                                    checked={state.showSafeZones}
+                                    onChange={(e) => onChange({ showSafeZones: e.target.checked })}
+                                />
+                                <span className="checkmark"></span>
+                                Show UI Overlay
+                            </label>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className="control-group">
+                            <label>Proportions</label>
+                            <div className="toggle-group">
+                                <button
+                                    className={state.ratio === 'vertical' ? 'active' : ''}
+                                    onClick={() => onChange({ ratio: 'vertical' })}
+                                >
+                                    Portrait (4:5)
+                                </button>
+                                <button
+                                    className={state.ratio === 'square' ? 'active' : ''}
+                                    onClick={() => onChange({ ratio: 'square' })}
+                                >
+                                    Square (1:1)
+                                </button>
+                                <button
+                                    className={state.ratio === 'story' ? 'active' : ''}
+                                    onClick={() => onChange({ ratio: 'story' })}
+                                >
+                                    Story (9:16)
+                                </button>
                             </div>
+                        </div>
+                        <div className="safe-zone-toggle">
+                            <label className="checkbox-container">
+                                <input
+                                    type="checkbox"
+                                    checked={state.showSafeZones}
+                                    onChange={(e) => onChange({ showSafeZones: e.target.checked })}
+                                />
+                                <span className="checkmark"></span>
+                                Show IG Safe Zones
+                            </label>
+                        </div>
+                    </>
+                )}
+            </Section>
 
-                            {state.useGlassmorphism && (
-                                <div className="glass-settings-nested" style={{ paddingLeft: '12px', borderLeft: '2px solid var(--color-light-blue)', marginBottom: '16px' }}>
-                                    <div className="control-group">
-                                        <div className="label-with-reset">
-                                            <label style={{ fontSize: '0.75rem' }}>Card Opacity: {state.glassBlur}%</label>
-                                            <button className="reset-mini-btn" onClick={() => onChange({ glassBlur: 25 })} title="Reset to 25%">
-                                                <RotateCcw size={10} />
-                                            </button>
-                                        </div>
-                                        <input
-                                            type="range"
-                                            min="10"
-                                            max="95"
-                                            value={state.glassBlur}
-                                            onChange={(e) => onChange({ glassBlur: parseInt(e.target.value) })}
-                                            className="slider"
-                                        />
-                                    </div>
-                                    <div className="control-group">
-                                        <label style={{ fontSize: '0.75rem' }}>Card Width</label>
-                                        <div className="toggle-group scale-small">
-                                            <button
-                                                className={state.glassWidth === 'full' ? 'active' : ''}
-                                                onClick={() => onChange({ glassWidth: 'full' })}
-                                            >
-                                                Full
-                                            </button>
-                                            <button
-                                                className={state.glassWidth === 'fit' ? 'active' : ''}
-                                                onClick={() => onChange({ glassWidth: 'fit' })}
-                                            >
-                                                Fit
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+            <Section title="Background & Image">
+                <div className="control-group">
+                    <label>Background Style</label>
+                    <div className="toggle-group">
+                        {state.appMode !== 'website' && (
+                            <button
+                                className={state.isGradient ? 'active' : ''}
+                                onClick={() => onChange({ isGradient: true })}
+                            >
+                                Brand Gradient
+                            </button>
+                        )}
+                        <button
+                            className={!state.isGradient ? 'active' : ''}
+                            onClick={() => {
+                                onChange({ isGradient: false });
+                                if (!state.image) document.getElementById('file-upload')?.click();
+                            }}
+                        >
+                            {state.appMode === 'website' ? 'Image to Process' : 'Image'}
+                        </button>
+                    </div>
+                </div>
+
+                {!state.isGradient && (
+                    <div className="upload-area">
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button className="upload-btn" onClick={() => document.getElementById('file-upload')?.click()} style={{ flex: 1 }}>
+                                <Upload size={16} /> {state.image ? 'Replace' : 'Upload Image'}
+                            </button>
+                            {state.image && (
+                                <button
+                                    className="remove-btn"
+                                    onClick={() => onChange({ image: null, isGradient: true })}
+                                    title="Remove Image"
+                                >
+                                    <X size={16} />
+                                </button>
                             )}
+                        </div>
 
-                            <div className="control-group">
-                                <label>Vertical Alignment</label>
-                                <div className="toggle-group">
-                                    <button
-                                        className={state.contentAlignment === 'flex-start' ? 'active' : ''}
-                                        onClick={() => onChange({ contentAlignment: 'flex-start' })}
-                                    >
-                                        Top
+                        {!state.isGradient && state.image && state.appMode !== 'linkedin' && (
+                            <div style={{ marginTop: '16px' }}>
+                                <div className="label-with-reset">
+                                    <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Image Darkness</label>
+                                    <button className="reset-mini-btn" onClick={() => onChange({ overlayOpacity: 0.6 })} title="Reset to 60%">
+                                        <RotateCcw size={10} />
                                     </button>
-                                    <button
-                                        className={state.contentAlignment === 'center' ? 'active' : ''}
-                                        onClick={() => onChange({ contentAlignment: 'center' })}
-                                    >
-                                        Center
-                                    </button>
-                                    <button
-                                        className={state.contentAlignment === 'flex-end' ? 'active' : ''}
-                                        onClick={() => onChange({ contentAlignment: 'flex-end' })}
-                                    >
-                                        Bottom
-                                    </button>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 600, marginLeft: 'auto' }}>{Math.round(state.overlayOpacity * 100)}%</span>
                                 </div>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.05"
+                                    value={state.overlayOpacity}
+                                    onChange={(e) => onChange({ overlayOpacity: parseFloat(e.target.value) })}
+                                    style={{ width: '100%', cursor: 'pointer' }}
+                                />
                             </div>
-                        </>
-                    )}
+                        )}
 
+                        {state.appMode === 'website' && (
+                            <span className="hint" style={{ marginTop: '8px', display: 'block' }}>
+                                High-quality compression &lt; 500kb
+                            </span>
+                        )}
+                    </div>
+                )}
+
+                {state.appMode === 'linkedin' && !state.isGradient && state.image && (
+                    <div style={{ marginTop: '16px' }}>
+                        <label style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: '8px', display: 'block' }}>Layout Type</label>
+                        <div className="toggle-group">
+                            <button
+                                className={state.layoutMode === 'overlay' ? 'active' : ''}
+                                onClick={() => onChange({ layoutMode: 'overlay' })}
+                            >
+                                Overlay
+                            </button>
+                            <button
+                                className={state.layoutMode === 'split' ? 'active' : ''}
+                                onClick={() => onChange({ layoutMode: 'split' })}
+                            >
+                                Split
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {state.appMode === 'instagram' && !state.isGradient && state.image && (
+                    <div style={{ marginTop: '16px' }}>
+                        <label style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: '8px', display: 'block' }}>Layout Type</label>
+                        <div className="toggle-group">
+                            <button
+                                className={state.layoutMode === 'overlay' ? 'active' : ''}
+                                onClick={() => onChange({ layoutMode: 'overlay' })}
+                            >
+                                Overlay
+                            </button>
+                            <button
+                                className={state.layoutMode === 'split' ? 'active' : ''}
+                                onClick={() => onChange({ layoutMode: 'split' })}
+                            >
+                                Split
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </Section>
+
+            {(state.appMode === 'instagram' || state.appMode === 'youtube' || state.appMode === 'reels') && (
+                <Section title="Typography">
                     <div className="control-group">
                         <label>{(state.template === 'quote' && state.appMode !== 'youtube') ? 'Quote Text' : 'Title'}</label>
                         <textarea
@@ -444,145 +397,135 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                         value={state.categoryColor}
                         onChangeColor={(c) => onChange({ categoryColor: c })}
                     />
-                </>
-            ) : (
-                <>
-                    <div className="control-group">
-                        <label>Branding Logo</label>
-                        <div className="upload-area" style={{ marginTop: '8px', padding: 0, border: 'none', background: 'transparent' }}>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <button className="upload-btn" onClick={() => document.getElementById('logo-upload')?.click()} style={{ flex: 1, padding: '8px', fontSize: '12px' }}>
-                                    <Upload size={14} /> {state.logo ? 'Change Logo' : 'Upload Logo'}
-                                </button>
-                                {state.logo && (
-                                    <button className="remove-btn" onClick={() => onChange({ logo: null })} title="Remove Logo" style={{ padding: '8px' }}>
-                                        <X size={14} />
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                        {state.logo && (
-                            <div className="glass-settings-nested" style={{ marginTop: '12px', paddingLeft: '12px', borderLeft: '2px solid var(--color-light-blue)' }}>
-                                <div className="control-group">
-                                    <div className="label-with-reset">
-                                        <label style={{ fontSize: '0.75rem' }}>Size: {state.logoSize}%</label>
-                                        <button className="reset-mini-btn" onClick={() => onChange({ logoSize: 100 })}>
-                                            <RotateCcw size={10} />
-                                        </button>
-                                    </div>
-                                    <input type="range" min="20" max="200" value={state.logoSize} onChange={(e) => onChange({ logoSize: parseInt(e.target.value) })} className="slider" />
-                                </div>
-                                <div className="control-group">
-                                    <div className="label-with-reset">
-                                        <label style={{ fontSize: '0.75rem' }}>Opacity: {state.logoOpacity}%</label>
-                                        <button className="reset-mini-btn" onClick={() => onChange({ logoOpacity: 100 })}>
-                                            <RotateCcw size={10} />
-                                        </button>
-                                    </div>
-                                    <input type="range" min="10" max="100" value={state.logoOpacity} onChange={(e) => onChange({ logoOpacity: parseInt(e.target.value) })} className="slider" />
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    <div className="control-group">
-                        <label>Caption / Watermark</label>
-                        <input
-                            type="text"
-                            value={state.caption}
-                            onChange={(e) => onChange({ caption: e.target.value })}
-                            placeholder="e.g. stanbase.tech"
-                        />
-                    </div>
-                    <ColorPicker
-                        label="Caption Color"
-                        value={state.captionColor}
-                        onChangeColor={(c) => onChange({ captionColor: c })}
-                    />
-                </>
+                </Section>
             )}
 
-            <div className="control-group">
-                <label>Background Style</label>
-                <div className="toggle-group">
-                    {state.appMode !== 'website' && (
-                        <button
-                            className={state.isGradient ? 'active' : ''}
-                            onClick={() => onChange({ isGradient: true })}
-                        >
-                            Brand Gradient
-                        </button>
+            {(state.appMode === 'instagram' || state.appMode === 'youtube' || state.appMode === 'reels') && (
+                <Section title="Visual Style & Effects">
+                    {state.appMode === 'instagram' && (
+                        <div className="control-group">
+                            <label>Style Template</label>
+                            <div className="toggle-group">
+                                <button className={state.template === 'bold' ? 'active' : ''} onClick={() => onChange({ template: 'bold' })}>Bold</button>
+                                <button className={state.template === 'minimal' ? 'active' : ''} onClick={() => onChange({ template: 'minimal' })}>Minimal</button>
+                                <button className={state.template === 'quote' ? 'active' : ''} onClick={() => onChange({ template: 'quote' })}>Quote</button>
+                            </div>
+                        </div>
                     )}
-                    <button
-                        className={!state.isGradient ? 'active' : ''}
-                        onClick={() => {
-                            onChange({ isGradient: false });
-                            if (!state.image) document.getElementById('file-upload')?.click();
-                        }}
-                    >
-                        {state.appMode === 'website' ? 'Image to Process' : 'Image'}
-                    </button>
-                </div>
 
-                {!state.isGradient && (
-                    <div className="upload-area">
+                    {((state.appMode === 'instagram' && state.layoutMode === 'overlay') || state.appMode === 'reels') && (
+                        <>
+                            <div className="control-group">
+                                <label>Visual Effects</label>
+                                <div className="toggle-group">
+                                    <button className={state.useGlassmorphism ? 'active' : ''} onClick={() => onChange({ useGlassmorphism: true })}>Glass Card</button>
+                                    <button className={!state.useGlassmorphism ? 'active' : ''} onClick={() => onChange({ useGlassmorphism: false })}>Standard</button>
+                                </div>
+                            </div>
+
+                            {state.useGlassmorphism && (
+                                <div className="glass-settings-nested" style={{ paddingLeft: '12px', borderLeft: '2px solid var(--color-light-blue)', marginBottom: '16px' }}>
+                                    <div className="control-group">
+                                        <div className="label-with-reset">
+                                            <label style={{ fontSize: '0.75rem' }}>Card Opacity: {state.glassBlur}%</label>
+                                            <button className="reset-mini-btn" onClick={() => onChange({ glassBlur: 25 })}><RotateCcw size={10} /></button>
+                                        </div>
+                                        <input type="range" min="10" max="95" value={state.glassBlur} onChange={(e) => onChange({ glassBlur: parseInt(e.target.value) })} className="slider" />
+                                    </div>
+                                    <div className="control-group">
+                                        <label style={{ fontSize: '0.75rem' }}>Card Width</label>
+                                        <div className="toggle-group scale-small">
+                                            <button className={state.glassWidth === 'full' ? 'active' : ''} onClick={() => onChange({ glassWidth: 'full' })}>Full</button>
+                                            <button className={state.glassWidth === 'fit' ? 'active' : ''} onClick={() => onChange({ glassWidth: 'fit' })}>Fit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="control-group">
+                                <label>Vertical Alignment</label>
+                                <div className="toggle-group">
+                                    <button
+                                        className={(state.appMode === 'reels' ? state.reelsAlignment : state.contentAlignment) === 'flex-start' ? 'active' : ''}
+                                        onClick={() => onChange(state.appMode === 'reels' ? { reelsAlignment: 'flex-start' } : { contentAlignment: 'flex-start' })}
+                                    >
+                                        Top
+                                    </button>
+                                    <button
+                                        className={(state.appMode === 'reels' ? state.reelsAlignment : state.contentAlignment) === 'center' ? 'active' : ''}
+                                        onClick={() => onChange(state.appMode === 'reels' ? { reelsAlignment: 'center' } : { contentAlignment: 'center' })}
+                                    >
+                                        Center
+                                    </button>
+                                    <button
+                                        className={(state.appMode === 'reels' ? state.reelsAlignment : state.contentAlignment) === 'flex-end' ? 'active' : ''}
+                                        onClick={() => onChange(state.appMode === 'reels' ? { reelsAlignment: 'flex-end' } : { contentAlignment: 'flex-end' })}
+                                    >
+                                        Bottom
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </Section>
+            )}
+
+            <Section title="Branding">
+                <div className="control-group">
+                    <label>Branding Logo</label>
+                    <div className="upload-area" style={{ marginTop: '8px', padding: 0, border: 'none', background: 'transparent' }}>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                            <button className="upload-btn" onClick={() => document.getElementById('file-upload')?.click()} style={{ flex: 1 }}>
-                                <Upload size={16} /> {state.image ? 'Replace' : 'Upload Image'}
+                            <button className="upload-btn" onClick={() => document.getElementById('logo-upload')?.click()} style={{ flex: 1, padding: '8px', fontSize: '12px' }}>
+                                <Upload size={14} /> {state.logo ? 'Change Logo' : 'Upload Logo'}
                             </button>
-                            {state.image && (
-                                <button
-                                    className="remove-btn"
-                                    onClick={() => onChange({ image: null, isGradient: true })}
-                                    title="Remove Image"
-                                >
-                                    <X size={16} />
+                            {state.logo && (
+                                <button className="remove-btn" onClick={() => onChange({ logo: null })} title="Remove Logo" style={{ padding: '8px' }}>
+                                    <X size={14} />
                                 </button>
                             )}
                         </div>
-
-                        {!state.isGradient && state.image && state.appMode !== 'linkedin' && (
-                            <div style={{ marginTop: '16px' }}>
-                                <div className="label-with-reset">
-                                    <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Image Darkness</label>
-                                    <button className="reset-mini-btn" onClick={() => onChange({ overlayOpacity: 0.6 })} title="Reset to 60%">
-                                        <RotateCcw size={10} />
-                                    </button>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 600, marginLeft: 'auto' }}>{Math.round(state.overlayOpacity * 100)}%</span>
-                                </div>
-                                <input
-                                    type="range"
-                                    min="0"
-                                    max="1"
-                                    step="0.05"
-                                    value={state.overlayOpacity}
-                                    onChange={(e) => onChange({ overlayOpacity: parseFloat(e.target.value) })}
-                                    style={{ width: '100%', cursor: 'pointer' }}
-                                />
-                            </div>
-                        )}
-
-                        {state.appMode === 'website' && (
-                            <span className="hint" style={{ marginTop: '8px', display: 'block' }}>
-                                High-quality compression &lt; 500kb
-                            </span>
-                        )}
                     </div>
-                )}
-            </div>
+                    {state.logo && (
+                        <div className="glass-settings-nested" style={{ marginTop: '12px', paddingLeft: '12px', borderLeft: '2px solid var(--color-light-blue)' }}>
+                            <div className="control-group">
+                                <div className="label-with-reset">
+                                    <label style={{ fontSize: '0.75rem' }}>Size: {state.logoSize}%</label>
+                                    <button className="reset-mini-btn" onClick={() => onChange({ logoSize: 100 })}><RotateCcw size={10} /></button>
+                                </div>
+                                <input type="range" min="20" max="200" value={state.logoSize} onChange={(e) => onChange({ logoSize: parseInt(e.target.value) })} className="slider" />
+                            </div>
+                            <div className="control-group">
+                                <div className="label-with-reset">
+                                    <label style={{ fontSize: '0.75rem' }}>Opacity: {state.logoOpacity}%</label>
+                                    <button className="reset-mini-btn" onClick={() => onChange({ logoOpacity: 100 })}><RotateCcw size={10} /></button>
+                                </div>
+                                <input type="range" min="10" max="100" value={state.logoOpacity} onChange={(e) => onChange({ logoOpacity: parseInt(e.target.value) })} className="slider" />
+                            </div>
+                        </div>
+                    )}
+                </div>
 
-            {(state.isGradient || state.layoutMode === 'split') && (
+                <div className="control-group">
+                    <label>Caption / Watermark</label>
+                    <input
+                        type="text"
+                        value={state.caption}
+                        onChange={(e) => onChange({ caption: e.target.value })}
+                        placeholder="e.g. stanbase.tech"
+                    />
+                </div>
                 <ColorPicker
-                    label="Background Color"
-                    value={state.bgColor}
-                    onChangeColor={(c) => onChange({ bgColor: c })}
+                    label="Caption Color"
+                    value={state.captionColor}
+                    onChangeColor={(c) => onChange({ captionColor: c })}
                 />
-            )}
+            </Section>
 
-            <footer className="editor-footer">
+            <footer>
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.7.0</span>
+                    <span className="version-tag">v2.0.0</span>
                 </a>
             </footer>
         </div>
