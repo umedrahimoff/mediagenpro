@@ -71,7 +71,8 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <h2>
                     {state.appMode === 'website' ? 'Website' :
                         state.appMode === 'linkedin' ? 'LinkedIn' :
-                            state.appMode === 'youtube' ? 'YouTube' : 'Instagram'}
+                            state.appMode === 'reels' ? 'Reels' :
+                                state.appMode === 'youtube' ? 'YouTube' : 'Instagram'}
                 </h2>
             </div>
 
@@ -136,6 +137,26 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                         </label>
                     </div>
                 </div>
+            ) : state.appMode === 'reels' ? (
+                <div className="control-group">
+                    <label>Reels Format</label>
+                    <div className="toggle-group">
+                        <button className="active">
+                            1080x1920 (Fixed)
+                        </button>
+                    </div>
+                    <div className="safe-zone-toggle">
+                        <label className="checkbox-container">
+                            <input
+                                type="checkbox"
+                                checked={state.showSafeZones}
+                                onChange={(e) => onChange({ showSafeZones: e.target.checked })}
+                            />
+                            <span className="checkmark"></span>
+                            Show Safe Zones
+                        </label>
+                    </div>
+                </div>
             ) : (
                 <div className="control-group">
                     <label>Proportions</label>
@@ -156,13 +177,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             className={state.ratio === 'story' ? 'active' : ''}
                             onClick={() => onChange({ ratio: 'story' })}
                         >
-                            Story
-                        </button>
-                        <button
-                            className={state.ratio === 'reel' ? 'active' : ''}
-                            onClick={() => onChange({ ratio: 'reel' })}
-                        >
-                            Reel
+                            Story (9:16)
                         </button>
                     </div>
                     <div className="safe-zone-toggle">
@@ -477,7 +492,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.6.0</span>
+                    <span className="version-tag">v1.6.1</span>
                 </a>
             </footer>
         </div>

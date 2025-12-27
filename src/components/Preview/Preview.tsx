@@ -33,10 +33,13 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         let targetWidth = 1080;
         let targetHeight = 1350;
 
-        if (state.appMode === 'website' || state.appMode === 'linkedin' || state.appMode === 'youtube') {
+        if (state.appMode === 'website' || state.appMode === 'linkedin' || state.appMode === 'youtube' || state.appMode === 'reels') {
             if (state.appMode === 'youtube') {
                 targetWidth = 2560;
                 targetHeight = 1440;
+            } else if (state.appMode === 'reels') {
+                targetWidth = 1080;
+                targetHeight = 1920;
             } else if (state.appMode === 'website') {
                 // Website mode ALWAYS outputs 1200x628
                 targetWidth = 1200;
@@ -51,7 +54,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
             // Instagram defaults
             if (state.ratio === 'square') {
                 targetHeight = 1080;
-            } else if (state.ratio === 'story' || state.ratio === 'reel') {
+            } else if (state.ratio === 'story') {
                 targetHeight = 1920;
             } else {
                 targetHeight = 1350; // Force 4:5 as default/portrait
@@ -156,6 +159,8 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
     if (state.appMode === 'website') {
         // Website is ALWAYS 1200x628 (aspect ratio ~1.91:1)
         previewHeight = 188; // 360 / 1.91 ≈ 188
+    } else if (state.appMode === 'reels') {
+        previewHeight = 640;
     } else if (state.appMode === 'linkedin') {
         if (state.ratio === 'horizontal') previewHeight = 188;
         else previewHeight = 360; // square
@@ -163,7 +168,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         previewHeight = 202; // 16:9 for 360 width
     } else {
         if (state.ratio === 'square') previewHeight = 360;
-        else if (state.ratio === 'story' || state.ratio === 'reel') previewHeight = 640;
+        else if (state.ratio === 'story') previewHeight = 640;
         else previewHeight = 450;
     }
 
@@ -171,7 +176,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         <div className="preview-layout">
             <div className="preview-wrapper">
                 <div
-                    className={`cover-node ${state.appMode !== 'youtube' ? `style-template-${state.template}` : ''} ${state.isGradient ? 'gradient-mode' : ''} ${isSplit ? 'split-layout' : ''} ${(state.ratio === 'story' || state.ratio === 'reel') ? 'story-layout' : ''} ${state.appMode === 'youtube' ? 'youtube-layout' : ''} ${(state.ratio === 'horizontal' && (state.appMode === 'website' || state.appMode === 'linkedin')) ? 'horizontal-ratio' : ''}`}
+                    className={`cover-node ${state.appMode !== 'youtube' ? `style-template-${state.template}` : ''} ${state.isGradient ? 'gradient-mode' : ''} ${isSplit ? 'split-layout' : ''} ${(state.ratio === 'story' || state.appMode === 'reels') ? 'story-layout' : ''} ${state.appMode === 'youtube' ? 'youtube-layout' : ''} ${(state.ratio === 'horizontal' && (state.appMode === 'website' || state.appMode === 'linkedin')) ? 'horizontal-ratio' : ''}`}
                     ref={ref}
                     style={isSplit ?
                         { width: `${previewWidth}px`, height: `${previewHeight}px`, backgroundColor: state.bgColor } :
@@ -188,7 +193,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             </div>
                         </div>
                     )}
-                    {state.showSafeZones && state.ratio === 'reel' && (
+                    {state.showSafeZones && state.appMode === 'reels' && (
                         <div className="reel-safe-overlay">
                             <div className="reel-safe-center">
                                 <span className="reel-label">Feed Square (1:1)</span>
@@ -199,7 +204,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             <div className="reel-ui-right"></div>
                         </div>
                     )}
-                    {state.showSafeZones && state.appMode === 'instagram' && state.ratio !== 'reel' && (
+                    {state.showSafeZones && state.appMode === 'instagram' && (
                         <div className="ig-ui-overlay">
                             <div className="ig-top-bar">
                                 <div className="ig-user">
