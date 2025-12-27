@@ -524,7 +524,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.6.3</span>
+                    <span className="version-tag">v1.6.4</span>
                 </a>
             </footer>
         </div>

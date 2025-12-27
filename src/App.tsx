@@ -41,43 +41,46 @@ export const BRAND_COLORS = {
 
 const STORAGE_KEY = 'mediagen_pro_state';
 
+const DEFAULT_STATE: CoverState = {
+  appMode: 'instagram',
+  title: 'THE FUTURE OF\nVENTURE CAPITAL',
+  category: 'SaaS Trends',
+  image: null,
+  isGradient: true,
+  ratio: 'vertical',
+  imageOrientation: 'vertical',
+  layoutMode: 'overlay',
+  template: 'bold',
+  overlayOpacity: 0.6,
+  titleColor: '#FFFFFF',
+  categoryColor: '#F5A623',
+  bgColor: '#146AFF',
+  caption: 'stanbase.tech',
+  captionColor: '#FFFFFF',
+  showSafeZones: false,
+  textTransform: 'uppercase',
+  useGlassmorphism: false,
+  contentAlignment: 'flex-end',
+  glassBlur: 25,
+  glassWidth: 'full',
+  reelsView: 'full',
+  reelsTitle: 'NEW REEL\nCOMING SOON',
+  reelsCategory: 'Behind the Scenes',
+  reelsAlignment: 'center',
+};
+
 function App() {
   const [state, setState] = useState<CoverState>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        return { ...DEFAULT_STATE, ...parsed };
       } catch (e) {
         console.error('Failed to load saved state:', e);
       }
     }
-    return {
-      appMode: 'instagram',
-      title: 'THE FUTURE OF\nVENTURE CAPITAL',
-      category: 'SaaS Trends',
-      image: null,
-      isGradient: true,
-      ratio: 'vertical',
-      imageOrientation: 'vertical',
-      layoutMode: 'overlay',
-      template: 'bold',
-      overlayOpacity: 0.6,
-      titleColor: '#FFFFFF',
-      categoryColor: '#F5A623',
-      bgColor: '#146AFF',
-      caption: 'stanbase.tech',
-      captionColor: '#FFFFFF',
-      showSafeZones: false,
-      textTransform: 'uppercase',
-      useGlassmorphism: false,
-      contentAlignment: 'flex-end',
-      glassBlur: 25,
-      glassWidth: 'full',
-      reelsView: 'full',
-      reelsTitle: 'NEW REEL\nCOMING SOON',
-      reelsCategory: 'Behind the Scenes',
-      reelsAlignment: 'center',
-    };
+    return DEFAULT_STATE;
   });
 
   useEffect(() => {
