@@ -274,7 +274,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                         </div>
                     )}
 
-                    {state.appMode === 'instagram' && state.layoutMode === 'overlay' && (
+                    {((state.appMode === 'instagram' && state.layoutMode === 'overlay') || state.appMode === 'reels') && (
                         <>
                             <div className="control-group">
                                 <label>Visual Effects</label>
@@ -524,7 +524,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.6.4</span>
+                    <span className="version-tag">v1.6.5</span>
                 </a>
             </footer>
         </div>
