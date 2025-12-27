@@ -41,6 +41,20 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
         }
     };
 
+    const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const url = event.target?.result as string;
+                onChange({ logo: url });
+            };
+
+            reader.readAsDataURL(file);
+        }
+    };
+
     const ColorPicker = ({ label, value, onChangeColor }: { label: string, value: string, onChangeColor: (c: string) => void }) => (
         <div className="control-group">
             <label className="picker-label"><Palette size={14} /> {label}</label>
@@ -65,6 +79,13 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
+                hidden
+            />
+            <input
+                id="logo-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleLogoUpload}
                 hidden
             />
             <div className="logo">
@@ -427,6 +448,43 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             ) : (
                 <>
                     <div className="control-group">
+                        <label>Branding Logo</label>
+                        <div className="upload-area" style={{ marginTop: '8px', padding: 0, border: 'none', background: 'transparent' }}>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button className="upload-btn" onClick={() => document.getElementById('logo-upload')?.click()} style={{ flex: 1, padding: '8px', fontSize: '12px' }}>
+                                    <Upload size={14} /> {state.logo ? 'Change Logo' : 'Upload Logo'}
+                                </button>
+                                {state.logo && (
+                                    <button className="remove-btn" onClick={() => onChange({ logo: null })} title="Remove Logo" style={{ padding: '8px' }}>
+                                        <X size={14} />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        {state.logo && (
+                            <div className="glass-settings-nested" style={{ marginTop: '12px', paddingLeft: '12px', borderLeft: '2px solid var(--color-light-blue)' }}>
+                                <div className="control-group">
+                                    <div className="label-with-reset">
+                                        <label style={{ fontSize: '0.75rem' }}>Size: {state.logoSize}%</label>
+                                        <button className="reset-mini-btn" onClick={() => onChange({ logoSize: 100 })}>
+                                            <RotateCcw size={10} />
+                                        </button>
+                                    </div>
+                                    <input type="range" min="20" max="200" value={state.logoSize} onChange={(e) => onChange({ logoSize: parseInt(e.target.value) })} className="slider" />
+                                </div>
+                                <div className="control-group">
+                                    <div className="label-with-reset">
+                                        <label style={{ fontSize: '0.75rem' }}>Opacity: {state.logoOpacity}%</label>
+                                        <button className="reset-mini-btn" onClick={() => onChange({ logoOpacity: 100 })}>
+                                            <RotateCcw size={10} />
+                                        </button>
+                                    </div>
+                                    <input type="range" min="10" max="100" value={state.logoOpacity} onChange={(e) => onChange({ logoOpacity: parseInt(e.target.value) })} className="slider" />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div className="control-group">
                         <label>Caption / Watermark</label>
                         <input
                             type="text"
@@ -524,7 +582,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.6.6</span>
+                    <span className="version-tag">v1.7.0</span>
                 </a>
             </footer>
         </div>

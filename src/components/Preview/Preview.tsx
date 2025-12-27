@@ -193,6 +193,14 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             </div>
                         </div>
                     )}
+                    {state.logo && (
+                        <div className="branding-logo" style={{
+                            opacity: state.logoOpacity / 100,
+                            width: `${state.logoSize}px`
+                        }}>
+                            <img src={state.logo} alt="" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                        </div>
+                    )}
                     {state.appMode === 'reels' && state.reelsView === 'grid' && (
                         <>
                             <div className="reel-grid-mask-top" />

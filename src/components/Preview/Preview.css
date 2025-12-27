@@ -740,3 +740,20 @@
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
+
+/* Branding Logo Styles */
+.branding-logo {
+    position: absolute;
+    top: 32px;
+    left: 32px;
+    z-index: 20;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* For Reels/Story layout, center the logo at the top */
+.story-layout .branding-logo {
+    top: 80px; /* Safe distance from top UI */
+    left: 50%;
+    transform: translateX(-50%);
+}

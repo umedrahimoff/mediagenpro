@@ -29,6 +29,9 @@ export interface CoverState {
   reelsTitle: string;
   reelsCategory: string;
   reelsAlignment: 'flex-start' | 'center' | 'flex-end';
+  logo: string | null;
+  logoSize: number;
+  logoOpacity: number;
 }
 
 export const BRAND_COLORS = {
@@ -67,6 +70,9 @@ const DEFAULT_STATE: CoverState = {
   reelsTitle: 'NEW REEL\nCOMING SOON',
   reelsCategory: 'Behind the Scenes',
   reelsAlignment: 'center',
+  logo: null,
+  logoSize: 100, // px or relative scale
+  logoOpacity: 100,
 };
 
 function App() {
