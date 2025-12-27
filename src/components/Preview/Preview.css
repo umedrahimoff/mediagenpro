@@ -732,3 +732,11 @@
     text-overflow: ellipsis;
     max-width: 150px;
 }
+
+/* Fix: Ensure Glass Card takes full width in Reels/Story mode (overriding center alignment) */
+.cover-node.story-layout .content.glass-effect:not(.glass-width-fit) {
+    width: 100% !important;
+    align-self: stretch !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
