@@ -156,7 +156,13 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             className={state.ratio === 'story' ? 'active' : ''}
                             onClick={() => onChange({ ratio: 'story' })}
                         >
-                            Story (9:16)
+                            Story
+                        </button>
+                        <button
+                            className={state.ratio === 'reel' ? 'active' : ''}
+                            onClick={() => onChange({ ratio: 'reel' })}
+                        >
+                            Reel
                         </button>
                     </div>
                     <div className="safe-zone-toggle">
@@ -471,7 +477,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 <a href="https://stanbase.tech/" target="_blank" rel="noopener noreferrer">
                     <span>Powered by</span>
                     <strong>Stanbase</strong>
-                    <span className="version-tag">v1.5.4</span>
+                    <span className="version-tag">v1.6.0</span>
                 </a>
             </footer>
         </div>

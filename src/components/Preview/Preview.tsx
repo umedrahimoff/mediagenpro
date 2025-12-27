@@ -51,7 +51,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
             // Instagram defaults
             if (state.ratio === 'square') {
                 targetHeight = 1080;
-            } else if (state.ratio === 'story') {
+            } else if (state.ratio === 'story' || state.ratio === 'reel') {
                 targetHeight = 1920;
             } else {
                 targetHeight = 1350; // Force 4:5 as default/portrait
@@ -163,7 +163,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         previewHeight = 202; // 16:9 for 360 width
     } else {
         if (state.ratio === 'square') previewHeight = 360;
-        else if (state.ratio === 'story') previewHeight = 640;
+        else if (state.ratio === 'story' || state.ratio === 'reel') previewHeight = 640;
         else previewHeight = 450;
     }
 
@@ -171,7 +171,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         <div className="preview-layout">
             <div className="preview-wrapper">
                 <div
-                    className={`cover-node ${state.appMode !== 'youtube' ? `style-template-${state.template}` : ''} ${state.isGradient ? 'gradient-mode' : ''} ${isSplit ? 'split-layout' : ''} ${state.ratio === 'story' ? 'story-layout' : ''} ${state.appMode === 'youtube' ? 'youtube-layout' : ''} ${(state.ratio === 'horizontal' && (state.appMode === 'website' || state.appMode === 'linkedin')) ? 'horizontal-ratio' : ''}`}
+                    className={`cover-node ${state.appMode !== 'youtube' ? `style-template-${state.template}` : ''} ${state.isGradient ? 'gradient-mode' : ''} ${isSplit ? 'split-layout' : ''} ${(state.ratio === 'story' || state.ratio === 'reel') ? 'story-layout' : ''} ${state.appMode === 'youtube' ? 'youtube-layout' : ''} ${(state.ratio === 'horizontal' && (state.appMode === 'website' || state.appMode === 'linkedin')) ? 'horizontal-ratio' : ''}`}
                     ref={ref}
                     style={isSplit ?
                         { width: `${previewWidth}px`, height: `${previewHeight}px`, backgroundColor: state.bgColor } :
@@ -188,7 +188,18 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             </div>
                         </div>
                     )}
-                    {state.showSafeZones && state.appMode === 'instagram' && (
+                    {state.showSafeZones && state.ratio === 'reel' && (
+                        <div className="reel-safe-overlay">
+                            <div className="reel-safe-center">
+                                <span className="reel-label">Feed Square (1:1)</span>
+                            </div>
+                            <div className="reel-ui-bottom">
+                                <span className="reel-label">UI Safety</span>
+                            </div>
+                            <div className="reel-ui-right"></div>
+                        </div>
+                    )}
+                    {state.showSafeZones && state.appMode === 'instagram' && state.ratio !== 'reel' && (
                         <div className="ig-ui-overlay">
                             <div className="ig-top-bar">
                                 <div className="ig-user">
