@@ -77,6 +77,11 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                 filter: (domNode: any) => {
                     const classList = domNode.classList;
                     return !classList || !classList.contains('ig-ui-overlay');
+                },
+                onClone: (clonedNode: any) => {
+                    if (clonedNode instanceof HTMLElement) {
+                        clonedNode.classList.add('exporting');
+                    }
                 }
             } : {
                 width: targetWidth,
@@ -90,6 +95,11 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                 filter: (domNode: any) => {
                     const classList = domNode.classList;
                     return !classList || !classList.contains('ig-ui-overlay');
+                },
+                onClone: (clonedNode: any) => {
+                    if (clonedNode instanceof HTMLElement) {
+                        clonedNode.classList.add('exporting');
+                    }
                 }
             };
 
