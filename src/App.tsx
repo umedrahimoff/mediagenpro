@@ -19,6 +19,7 @@ export interface CoverState {
   bgColor: string;
   caption: string;
   captionColor: string;
+  showWatermark: boolean;
   showSafeZones: boolean;
   textTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
   useGlassmorphism: boolean;
@@ -60,6 +61,8 @@ const DEFAULT_STATE: CoverState = {
   bgColor: '#146AFF',
   caption: 'stanbase.tech',
   captionColor: '#FFFFFF',
+   // По умолчанию watermark выключен для не‑инстаграм режимов
+  showWatermark: false,
   showSafeZones: false,
   textTransform: 'uppercase',
   useGlassmorphism: false,

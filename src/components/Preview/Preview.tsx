@@ -255,14 +255,10 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             </div>
                         </div>
                     )}
-                    {state.appMode === 'website' || state.appMode === 'linkedin' ? (
-                        <>
-                            {state.caption && (
-                                <div className="caption" style={{ color: state.captionColor }}>
-                                    {state.caption}
-                                </div>
-                            )}
-                        </>
+                    {((state.appMode === 'website' || state.appMode === 'linkedin') && state.showWatermark && state.caption) ? (
+                        <div className="caption" style={{ color: state.captionColor }}>
+                            {state.caption}
+                        </div>
                     ) : isSplit ? (
                         <>
                             <div className="split-image" style={{ backgroundImage: `url(${state.image})` }} />

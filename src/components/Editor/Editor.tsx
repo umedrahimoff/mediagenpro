@@ -72,6 +72,16 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
         </div>
     );
 
+    const isWatermarkToggleMode =
+        state.appMode === 'linkedin' ||
+        state.appMode === 'youtube' ||
+        state.appMode === 'website';
+
+    const shouldShowCaptionControls =
+        state.appMode === 'instagram' ||
+        state.appMode === 'reels' ||
+        (isWatermarkToggleMode && state.showWatermark);
+
     return (
         <div className="editor">
             <input
@@ -484,20 +494,45 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                             </div>
                         )}
                     </div>
-                    <div className="control-group">
-                        <label>Caption / Watermark</label>
-                        <input
-                            type="text"
-                            value={state.caption}
-                            onChange={(e) => onChange({ caption: e.target.value })}
-                            placeholder="e.g. stanbase.tech"
-                        />
-                    </div>
-                    <ColorPicker
-                        label="Caption Color"
-                        value={state.captionColor}
-                        onChangeColor={(c) => onChange({ captionColor: c })}
-                    />
+
+                    {isWatermarkToggleMode && (
+                        <div className="control-group">
+                            <label>Watermark</label>
+                            <div className="toggle-group">
+                                <button
+                                    className={state.showWatermark ? 'active' : ''}
+                                    onClick={() => onChange({ showWatermark: true })}
+                                >
+                                    On
+                                </button>
+                                <button
+                                    className={!state.showWatermark ? 'active' : ''}
+                                    onClick={() => onChange({ showWatermark: false })}
+                                >
+                                    Off
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {shouldShowCaptionControls && (
+                        <>
+                            <div className="control-group">
+                                <label>Caption / Watermark</label>
+                                <input
+                                    type="text"
+                                    value={state.caption}
+                                    onChange={(e) => onChange({ caption: e.target.value })}
+                                    placeholder="e.g. stanbase.tech"
+                                />
+                            </div>
+                            <ColorPicker
+                                label="Caption Color"
+                                value={state.captionColor}
+                                onChangeColor={(c) => onChange({ captionColor: c })}
+                            />
+                        </>
+                    )}
                 </>
             )}
 
