@@ -46,9 +46,9 @@ export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, o
         <Dialog.Portal>
           <Dialog.Overlay className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/60" />
           <Dialog.Content className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-1/2 left-1/2 z-50 max-h-[min(90vh,720px)] w-[min(calc(100vw-24px),400px)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-border bg-card p-4 shadow-lg outline-none">
-            <Dialog.Title className="text-sm font-semibold text-foreground">Кадрирование фона</Dialog.Title>
+            <Dialog.Title className="text-sm font-semibold text-foreground">Crop background</Dialog.Title>
             <Dialog.Description className="mt-1 text-[11px] leading-snug text-muted-foreground">
-              Подстройте видимую область под текущий формат обложки.
+              Adjust the visible area for the current cover format.
             </Dialog.Description>
 
             {(() => {
@@ -73,7 +73,7 @@ export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, o
             <div className="mt-4 flex flex-col gap-3">
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between gap-2">
-                  <Label className="text-[11px] text-muted-foreground">Горизонталь</Label>
+                  <Label className="text-[11px] text-muted-foreground">Horizontal</Label>
                   <span className="text-[11px] tabular-nums text-muted-foreground">{focus.imageFocusX}%</span>
                 </div>
                 <Slider
@@ -86,7 +86,7 @@ export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, o
               </div>
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between gap-2">
-                  <Label className="text-[11px] text-muted-foreground">Вертикаль</Label>
+                  <Label className="text-[11px] text-muted-foreground">Vertical</Label>
                   <span className="text-[11px] tabular-nums text-muted-foreground">{focus.imageFocusY}%</span>
                 </div>
                 <Slider
@@ -99,7 +99,7 @@ export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, o
               </div>
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between gap-2">
-                  <Label className="text-[11px] text-muted-foreground">Масштаб</Label>
+                  <Label className="text-[11px] text-muted-foreground">Zoom</Label>
                   <span className="text-[11px] tabular-nums text-muted-foreground">{focus.imageZoom}%</span>
                 </div>
                 <Slider
@@ -115,7 +115,7 @@ export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, o
             <div className="mt-4 flex justify-end gap-2">
               <Dialog.Close asChild>
                 <Button type="button" variant="outline" size="sm" className="h-8 text-xs">
-                  Отмена
+                  Cancel
                 </Button>
               </Dialog.Close>
               <Button
@@ -127,7 +127,7 @@ export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, o
                   onOpenChange(false);
                 }}
               >
-                Готово
+                Done
               </Button>
             </div>
           </Dialog.Content>

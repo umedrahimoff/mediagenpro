@@ -12,11 +12,40 @@ export type GradientPresetId =
   | 'mac_ventura'
   | 'mac_sonoma';
 
+/** Направление линейного градиента (угол CSS): куда «тянется» переход между стопами. */
+export type GradientFlowId =
+  | 'to-top'
+  | 'to-bottom'
+  | 'to-left'
+  | 'to-right'
+  | 'diag-tr'
+  | 'diag-br'
+  | 'diag-bl'
+  | 'diag-tl';
+
+/** Форма градиента: линейный или радиал / «пятно» из угла. */
+export type GradientGeometryId =
+  | 'linear'
+  | 'radial_center'
+  | 'radial_spot_tl'
+  | 'radial_spot_tr'
+  | 'radial_spot_bl'
+  | 'radial_spot_br';
+
+/** Один цветовой стоп градиента (% вдоль линии или радиуса). */
+export interface GradientStop {
+  color: string;
+  percent: number;
+}
+
 /** Горизонтальное выравнивание заголовка в анонсе (формат «Мероприятие»). */
 export type EventTitleAlign = 'left' | 'center' | 'right';
 
 /** Угол мелкой подписи-источника фото (водяной знак). */
 export type PhotoCreditCorner = 'br' | 'bl' | 'tr' | 'tl';
+
+/** Текстура поверх фона. Новый вариант — дописать union, coverOverlayTextures.ts и Preview.css. */
+export type CoverOverlayTextureId = 'none' | 'paper_grain' | 'fine_halftone';
 
 export interface EventSpeaker {
   name: string;
@@ -43,6 +72,19 @@ export interface CoverState {
   isGradient: boolean;
   /** Пресет градиента фона; «бренд» использует bgColor как стартовый цвет. */
   gradientPreset: GradientPresetId;
+  /** Направление градиента (угол линии перехода) для всех пресетов. */
+  gradientFlow: GradientFlowId;
+  /** Линейный / радиал / пятно из угла. */
+  gradientGeometry: GradientGeometryId;
+  /**
+   * Ручные стопы: null — цвета из пресета; массив из ≥2 — только он (игнор палитры пресета).
+   * Добавлять стопы — расширять массив в редакторе (лимит в sanitize).
+   */
+  gradientCustomStops: GradientStop[] | null;
+  /** Текстура поверх фона (градиент / сплошной / фото). */
+  overlayTexture: CoverOverlayTextureId;
+  /** Непрозрачность текстуры, 0–100. */
+  overlayTextureOpacity: number;
   ratio: 'vertical' | 'square' | 'horizontal' | 'story';
   imageOrientation: 'vertical' | 'square' | 'horizontal';
   layoutMode: 'overlay' | 'split';

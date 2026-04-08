@@ -40,17 +40,43 @@
     padding: 28px 22px 32px;
 }
 
+/* Текстуры поверх фона: новый вариант — класс cover-overlay-texture--<id> */
+.cover-overlay-texture {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-repeat: repeat;
+    mix-blend-mode: soft-light;
+}
+
+.cover-overlay-texture--paper-grain {
+    background-size: 128px 128px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+.cover-overlay-texture--fine-halftone {
+    background-size: 5px 5px;
+    mix-blend-mode: overlay;
+    background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 0.6px, transparent 0.7px);
+}
+
 /* Backgrounds */
 .overlay {
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: 2;
 }
 
 .content {
     position: relative;
-    z-index: 2;
-    height: 100%;
+    z-index: 3;
+    /* flex-колонка карточки: одна in-flow зона под текст; иначе height:100% + длинный блок мероприятия
+       даёт min-height по контенту и justify-content из редактора перестаёт работать (особенно с логотипами). */
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -186,7 +212,7 @@
     height: 48px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -265,11 +291,11 @@
     letter-spacing: 2px;
 }
 
-/* Template: Quote */
+/* Template: Quote — без !important, чтобы Vertical alignment из редактора (inline) применялся и к мероприятиям */
 .style-template-quote .content,
 .style-template-quote .split-content {
-    justify-content: center !important;
-    align-items: center !important;
+    justify-content: center;
+    align-items: center;
     text-align: center;
 }
 
@@ -348,14 +374,23 @@
 }
 
 .cover-node.split-layout.horizontal-ratio {
-    flex-direction: row;
-    /* Split left/right or keep top/bottom? */
+    flex-direction: column;
+}
+
+/* Fills space under in-flow branding; holds image + text (split). */
+.split-layout-body {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
 }
 
 .split-image {
     width: 100%;
-    height: 55%;
-    flex-shrink: 0;
+    flex: 11 1 0%;
+    min-height: 0;
     position: relative;
     overflow: hidden;
 }
@@ -368,27 +403,34 @@
     height: 100%;
 }
 
+.cover-node.horizontal-ratio .split-layout-body {
+    flex-direction: row;
+}
+
 .cover-node.horizontal-ratio .split-image {
-    height: 100%;
+    flex: 0 0 40%;
     width: 40%;
+    height: 100%;
 }
 
 .split-content {
     width: 100%;
-    height: 45%;
+    flex: 9 1 0%;
+    min-height: 0;
     padding: 24px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 8px;
     position: relative;
-    z-index: 2;
+    z-index: 3;
     overflow: hidden;
 }
 
 .cover-node.horizontal-ratio .split-content {
-    height: 100%;
+    flex: 1 1 0%;
     width: 60%;
+    height: 100%;
     padding: 20px;
 }
 
@@ -396,14 +438,15 @@
 .cover-node.story-layout {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     text-align: center;
     padding: 60px 40px;
 }
 
 .cover-node.story-layout .content {
-    flex: 1;
+    flex: 1 1 0;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -424,12 +467,11 @@
 
 /* Specific adjustments for Stories with Split Layout */
 .cover-node.story-layout.split-layout .split-image {
-    height: 40%;
-    /* Reduced height to fit horizontal photos better */
+    flex: 4 1 0%;
 }
 
 .cover-node.story-layout.split-layout .split-content {
-    height: 60%;
+    flex: 6 1 0%;
     padding: 40px;
     justify-content: center;
     align-items: center;
@@ -624,7 +666,8 @@
 .cover-node.gradient-mode .content {
     align-items: stretch !important;
     width: 100%;
-    height: 100%;
+    flex: 1 1 0;
+    min-height: 0;
     padding: 0;
     min-width: 0;
     box-sizing: border-box;
@@ -662,34 +705,12 @@
     flex-direction: column;
 }
 
-/* С логотипами: не меньше safe zone сверху и не меньше резерва под полосу логотипов */
+/* Logos are in-flow above .content; keep bottom safe zone only */
 .cover-node.has-branding-logos.gradient-mode.story-layout .content {
-    padding-top: max(100px, var(--branding-content-offset, 132px));
+    padding-top: 48px;
     padding-bottom: 180px;
     padding-left: 0;
     padding-right: 0;
-}
-
-/* Резерв под абсолютные логотипы (ниже .gradient-mode .content, иначе padding перебивается) */
-.cover-node.has-branding-logos:not(.gradient-mode):not(.split-layout) .content {
-    padding-top: var(--branding-content-offset, 108px);
-    box-sizing: border-box;
-}
-
-.cover-node.has-branding-logos.gradient-mode:not(.story-layout) .content {
-    padding-top: var(--branding-content-offset, 108px);
-    padding-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
-    box-sizing: border-box;
-}
-
-.cover-node.has-branding-logos.split-layout .split-content {
-    padding-top: var(--branding-content-offset, 108px);
-    padding-right: 20px;
-    padding-bottom: 24px;
-    padding-left: 20px;
-    box-sizing: border-box;
 }
 
 .cover-node.gradient-mode.story-layout .title {
@@ -1018,20 +1039,20 @@
     margin-right: 0 !important;
 }
 
-/* Branding logos: один ряд по центру, выровнено с полями карточки */
+/* Branding logos: in-flow so vertical alignment applies below this row */
 .branding-logos-strip {
-    position: absolute;
-    top: 24px;
-    left: 22px;
-    right: 22px;
+    position: relative;
     z-index: 20;
+    flex-shrink: 0;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     pointer-events: none;
     user-select: none;
-    padding-bottom: 4px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
 }
 
 .branding-logos-row {
@@ -1060,9 +1081,7 @@
 }
 
 .branding-logos-strip--website {
-    top: 10px;
-    left: 12px;
-    right: 12px;
+    margin-bottom: 10px;
     gap: 4px;
 }
 
@@ -1070,9 +1089,8 @@
     gap: 5px;
 }
 
-/* Story: ниже условной зоны статус-бара, как в IG */
+/* Story: extra top spacing inside safe padding */
 .story-layout .branding-logos-strip {
-    top: 56px;
-    left: 20px;
-    right: 20px;
+    margin-top: 4px;
+    margin-bottom: 20px;
 }

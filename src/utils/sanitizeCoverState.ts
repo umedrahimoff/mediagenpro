@@ -3,12 +3,16 @@ import type {
   CoverFontPreset,
   EventSpeaker,
   EventTitleAlign,
+  GradientFlowId,
   GradientPresetId,
+  GradientStop,
   PhotoCreditCorner,
   PostFormat,
 } from '../types/cover';
 import { isCoverFontPreset } from '../constants/coverFonts';
-import { isGradientPresetId } from '../constants/gradientPresets';
+import { isCoverOverlayTextureId } from '../constants/coverOverlayTextures';
+import { isGradientGeometryId } from '../constants/coverGradientGeometry';
+import { isGradientFlowId, isGradientPresetId } from '../constants/gradientPresets';
 import { DEFAULT_STATE, STORAGE_KEY } from '../constants/coverDefaults';
 import { MAX_LOGOS, type LogoTint } from './logoLayout';
 
@@ -55,6 +59,24 @@ const EVENT_TITLE_ALIGNS = new Set<EventTitleAlign>(['left', 'center', 'right'])
 const PHOTO_CREDIT_CORNERS = new Set<PhotoCreditCorner>(['br', 'bl', 'tr', 'tl']);
 
 const MAX_EVENT_SPEAKERS = 6;
+
+const MAX_GRADIENT_STOPS = 10;
+
+function sanitizeGradientStopsArray(raw: unknown): GradientStop[] | null | undefined {
+  if (raw === null) return null;
+  if (!Array.isArray(raw)) return undefined;
+  const out: GradientStop[] = [];
+  for (const item of raw.slice(0, MAX_GRADIENT_STOPS)) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+    const o = item as Record<string, unknown>;
+    const color = typeof o.color === 'string' ? o.color.slice(0, 32) : '#000000';
+    const p = typeof o.percent === 'number' && Number.isFinite(o.percent) ? o.percent : 0;
+    out.push({ color, percent: Math.min(100, Math.max(0, p)) });
+  }
+  out.sort((a, b) => a.percent - b.percent);
+  if (out.length < 2) return null;
+  return out;
+}
 
 function sanitizeEventSpeakers(raw: unknown): EventSpeaker[] | undefined {
   if (!Array.isArray(raw)) return undefined;
@@ -132,6 +154,34 @@ export function sanitizeStoredCoverState(raw: unknown): Partial<CoverState> {
   const gp = src.gradientPreset;
   if (typeof gp === 'string' && isGradientPresetId(gp)) {
     partial.gradientPreset = gp as GradientPresetId;
+  }
+
+  const gf = src.gradientFlow;
+  if (typeof gf === 'string' && isGradientFlowId(gf)) {
+    partial.gradientFlow = gf as GradientFlowId;
+  }
+
+  const ggeom = src.gradientGeometry;
+  if (typeof ggeom === 'string' && isGradientGeometryId(ggeom)) {
+    partial.gradientGeometry = ggeom;
+  }
+
+  const gcs = src.gradientCustomStops;
+  if (gcs === null) {
+    partial.gradientCustomStops = null;
+  } else {
+    const stops = sanitizeGradientStopsArray(gcs);
+    if (stops !== undefined) partial.gradientCustomStops = stops;
+  }
+
+  const otx = src.overlayTexture;
+  if (typeof otx === 'string' && isCoverOverlayTextureId(otx)) {
+    partial.overlayTexture = otx;
+  }
+
+  const oto = src.overlayTextureOpacity;
+  if (typeof oto === 'number' && Number.isFinite(oto)) {
+    partial.overlayTextureOpacity = Math.min(100, Math.max(0, Math.round(oto)));
   }
 
   const eta = src.eventTitleAlign;

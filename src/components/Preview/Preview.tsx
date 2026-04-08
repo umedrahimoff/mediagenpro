@@ -8,21 +8,12 @@ import { cn } from '@/lib/utils';
 import { logoTintFilter, widthForLogoInRow } from '@/utils/logoLayout';
 import { coverImageLayerStyle } from '@/utils/coverImageLayerStyle';
 import { coverFontStack } from '@/constants/coverFonts';
-import { resolveCoverGradient } from '@/constants/gradientPresets';
+import { COVER_OVERLAY_TEXTURE_META } from '@/constants/coverOverlayTextures';
+import { resolveCoverBackgroundCss } from '@/utils/coverBackground';
 import './Preview.css';
 
 interface PreviewProps {
     state: CoverState;
-}
-
-/** Вертикальный резерв под абсолютную полосу логотипов (отступ до текста), px. */
-function brandingTopReservePx(state: Pick<CoverState, 'logos' | 'appMode' | 'ratio' | 'logoSize'>): number {
-    if (state.logos.length === 0) return 0;
-    if (state.appMode === 'website') return 56;
-    const stripTop = state.ratio === 'story' ? 56 : 24;
-    const rowH = Math.min(58, Math.round(30 + state.logoSize * 0.24));
-    const gapBelowLogos = 32;
-    return stripTop + rowH + gapBelowLogos;
 }
 
 const getTransformedText = (text: string, transform: 'none' | 'uppercase' | 'lowercase' | 'capitalize') => {
@@ -229,7 +220,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         } catch (err) {
             console.error('Failed to generate image', err);
             const msg = err instanceof Error ? err.message : String(err);
-            alert(`Не удалось создать изображение.${msg ? ` ${msg}` : ''}`);
+            alert(`Could not create image.${msg ? ` ${msg}` : ''}`);
         } finally {
             if (state.appMode === 'website') {
                 node.style.width = prevWidth;
@@ -238,14 +229,25 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         }
     };
 
+    const isSplit =
+        state.appMode === 'instagram' && !state.isGradient && state.image && state.layoutMode === 'split';
+
     const bgStyle: React.CSSProperties = state.isGradient
-        ? { background: resolveCoverGradient(state.gradientPreset, state.bgColor) }
+        ? {
+              background: resolveCoverBackgroundCss(
+                  state.gradientPreset,
+                  state.bgColor,
+                  state.gradientFlow,
+                  state.gradientGeometry,
+                  state.gradientCustomStops
+              ),
+          }
         : !state.image
           ? { backgroundColor: state.bgColor }
           : {};
 
-    const isSplit =
-        state.appMode === 'instagram' && !state.isGradient && state.image && state.layoutMode === 'split';
+    const overlayTextureSuffix = COVER_OVERLAY_TEXTURE_META[state.overlayTexture].cssSuffix;
+    const showOverlayTexture = !isSplit && state.overlayTexture !== 'none' && overlayTextureSuffix;
 
     const previewWidth = 360;
     let previewHeight = 450;
@@ -259,7 +261,6 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
     }
 
     const hasBrandingLogos = state.logos.length > 0;
-    const brandingReserve = brandingTopReservePx(state);
 
     const coverClassName = [
         'cover-node',
@@ -278,13 +279,6 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
         ['--font-primary' as string]: coverFontStack(state.coverFontPreset),
     } as React.CSSProperties;
 
-    const brandingVars =
-        hasBrandingLogos && brandingReserve > 0
-            ? ({
-                  ['--branding-content-offset' as string]: `${brandingReserve}px`,
-              } as React.CSSProperties)
-            : {};
-
     return (
         <div className="preview-layout">
             <div className="preview-wrapper">
@@ -295,20 +289,25 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                         isSplit
                             ? {
                                   ...coverFontVars,
-                                  ...brandingVars,
                                   width: `${previewWidth}px`,
                                   height: `${previewHeight}px`,
                                   backgroundColor: state.bgColor,
                               }
                             : {
                                   ...coverFontVars,
-                                  ...brandingVars,
                                   ...bgStyle,
                                   width: `${previewWidth}px`,
                                   height: `${previewHeight}px`,
                               }
                     }
                 >
+                    {showOverlayTexture && (
+                        <div
+                            className={cn('cover-overlay-texture', `cover-overlay-texture--${overlayTextureSuffix}`)}
+                            style={{ opacity: state.overlayTextureOpacity / 100 }}
+                            aria-hidden
+                        />
+                    )}
                     {!state.isGradient && state.image && !isSplit && (
                         <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden>
                             <img src={state.image} alt="" className="block h-full w-full" style={coverImageLayerStyle(state)} />
@@ -398,7 +397,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             <PhotoCreditMark state={state} />
                         </>
                     ) : isSplit ? (
-                        <>
+                        <div className="split-layout-body">
                             <div className="split-image">
                                 <img
                                     src={state.image!}
@@ -408,10 +407,16 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                 />
                                 <PhotoCreditMark state={state} inSplit />
                             </div>
-                            <div className="split-content" style={{ backgroundColor: state.bgColor }}>
+                            <div
+                                className="split-content"
+                                style={{
+                                    backgroundColor: state.bgColor,
+                                    justifyContent: state.contentAlignment,
+                                }}
+                            >
                                 <InstagramContentBlock state={state} />
                             </div>
-                        </>
+                        </div>
                     ) : (
                         <>
                             {!state.isGradient && (

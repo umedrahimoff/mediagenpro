@@ -22,6 +22,11 @@ export const DEFAULT_STATE: CoverState = {
   imageZoom: 100,
   isGradient: true,
   gradientPreset: 'brand',
+  gradientFlow: 'diag-br',
+  gradientGeometry: 'linear',
+  gradientCustomStops: null,
+  overlayTexture: 'none',
+  overlayTextureOpacity: 22,
   ratio: 'vertical',
   imageOrientation: 'vertical',
   layoutMode: 'overlay',
@@ -47,4 +52,24 @@ export const DEFAULT_STATE: CoverState = {
   eventTitleAlign: 'left',
   eventMeta: '',
   eventSpeakers: [],
+};
+
+/** Сброс всего, что относится к градиенту и связанному фону (текстура, фирменный цвет). */
+export const GRADIENT_BACKGROUND_DEFAULTS: Pick<
+  CoverState,
+  | 'gradientPreset'
+  | 'gradientFlow'
+  | 'gradientGeometry'
+  | 'gradientCustomStops'
+  | 'bgColor'
+  | 'overlayTexture'
+  | 'overlayTextureOpacity'
+> = {
+  gradientPreset: DEFAULT_STATE.gradientPreset,
+  gradientFlow: DEFAULT_STATE.gradientFlow,
+  gradientGeometry: DEFAULT_STATE.gradientGeometry,
+  gradientCustomStops: DEFAULT_STATE.gradientCustomStops,
+  bgColor: DEFAULT_STATE.bgColor,
+  overlayTexture: DEFAULT_STATE.overlayTexture,
+  overlayTextureOpacity: DEFAULT_STATE.overlayTextureOpacity,
 };

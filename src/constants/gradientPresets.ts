@@ -1,6 +1,6 @@
-import type { GradientPresetId } from '../types/cover';
+import type { GradientFlowId, GradientPresetId, GradientStop } from '../types/cover';
 
-/** Порядок в UI. */
+/** Order in the editor UI. */
 export const GRADIENT_PRESET_ORDER: GradientPresetId[] = [
   'brand',
   'mac_big_sur',
@@ -14,24 +14,24 @@ export const GRADIENT_PRESET_META: Record<
   { label: string; hint: string }
 > = {
   brand: {
-    label: 'Бренд',
-    hint: 'От выбранного фирменного цвета к тёмному, как раньше',
+    label: 'Brand',
+    hint: 'From your accent color toward dark; direction is set separately',
   },
   mac_big_sur: {
     label: 'Mac · Big Sur',
-    hint: 'Тёплый сине‑фиолетово‑розовый, в духе обоев Big Sur',
+    hint: 'Warm blue–violet–pink, Big Sur wallpaper vibe',
   },
   mac_monterey: {
     label: 'Mac · Monterey',
-    hint: 'Глубокий сине‑бирюзовый, холодный macOS',
+    hint: 'Deep blue–teal, cool macOS',
   },
   mac_ventura: {
     label: 'Mac · Ventura',
-    hint: 'Ночной фиолетово‑синий',
+    hint: 'Night purple–blue',
   },
   mac_sonoma: {
     label: 'Mac · Sonoma',
-    hint: 'Тёплый закат / терракота',
+    hint: 'Warm sunset / terracotta',
   },
 };
 
@@ -41,55 +41,117 @@ export function isGradientPresetId(v: string): v is GradientPresetId {
   return IDS.has(v as GradientPresetId);
 }
 
-/** Итоговый CSS для `background` на обложке. */
-export function resolveCoverGradient(preset: GradientPresetId, accentHex: string): string {
+/**
+ * 3×3 flow grid (compass directions); empty center clarifies where the gradient pulls from.
+ */
+export const GRADIENT_FLOW_GRID: (GradientFlowId | null)[][] = [
+  ['diag-tl', 'to-top', 'diag-tr'],
+  ['to-left', null, 'to-right'],
+  ['diag-bl', 'to-bottom', 'diag-br'],
+];
+
+export const GRADIENT_FLOW_META: Record<GradientFlowId, { label: string }> = {
+  'to-top': { label: 'Bottom to top' },
+  'to-bottom': { label: 'Top to bottom' },
+  'to-left': { label: 'Right to left' },
+  'to-right': { label: 'Left to right' },
+  'diag-tr': { label: 'Diagonal ↗' },
+  'diag-br': { label: 'Diagonal ↘ (default)' },
+  'diag-bl': { label: 'Diagonal ↙' },
+  'diag-tl': { label: 'Diagonal ↖' },
+};
+
+const FLOW_IDS = new Set<GradientFlowId>(
+  GRADIENT_FLOW_GRID.flat().filter((x): x is GradientFlowId => x !== null)
+);
+
+export function isGradientFlowId(v: string): v is GradientFlowId {
+  return FLOW_IDS.has(v as GradientFlowId);
+}
+
+/** `linear-gradient` angle in degrees (0° = upward in CSS). */
+export function gradientFlowToDeg(flow: GradientFlowId): number {
+  switch (flow) {
+    case 'to-top':
+      return 0;
+    case 'to-bottom':
+      return 180;
+    case 'to-right':
+      return 90;
+    case 'to-left':
+      return 270;
+    case 'diag-tr':
+      return 45;
+    case 'diag-br':
+      return 135;
+    case 'diag-bl':
+      return 225;
+    case 'diag-tl':
+      return 315;
+    default:
+      return 135;
+  }
+}
+
+/** Preset color stops (linear and radial). */
+export function getPresetGradientStops(preset: GradientPresetId, accentHex: string): GradientStop[] {
   const a = accentHex.trim() || '#146AFF';
   switch (preset) {
     case 'brand':
-      return `linear-gradient(135deg, ${a} 0%, #0a0a14 42%, #000000 100%)`;
+      return [
+        { color: a, percent: 0 },
+        { color: '#0a0a14', percent: 42 },
+        { color: '#000000', percent: 100 },
+      ];
     case 'mac_big_sur':
       return [
-        'linear-gradient(168deg,',
-        '#1a237e 0%,',
-        '#283593 18%,',
-        '#6a1b9a 42%,',
-        '#ad1457 68%,',
-        '#ff6f00 88%,',
-        '#ffb74d 100%',
-        ')',
-      ].join(' ');
+        { color: '#1a237e', percent: 0 },
+        { color: '#283593', percent: 18 },
+        { color: '#6a1b9a', percent: 42 },
+        { color: '#ad1457', percent: 68 },
+        { color: '#ff6f00', percent: 88 },
+        { color: '#ffb74d', percent: 100 },
+      ];
     case 'mac_monterey':
       return [
-        'linear-gradient(152deg,',
-        '#020617 0%,',
-        '#0c4a6e 28%,',
-        '#0e7490 52%,',
-        '#155e75 72%,',
-        '#134e4a 100%',
-        ')',
-      ].join(' ');
+        { color: '#020617', percent: 0 },
+        { color: '#0c4a6e', percent: 28 },
+        { color: '#0e7490', percent: 52 },
+        { color: '#155e75', percent: 72 },
+        { color: '#134e4a', percent: 100 },
+      ];
     case 'mac_ventura':
       return [
-        'linear-gradient(160deg,',
-        '#0c0a1a 0%,',
-        '#1e1b4b 30%,',
-        '#312e81 55%,',
-        '#4c1d95 78%,',
-        '#1e1b4b 100%',
-        ')',
-      ].join(' ');
+        { color: '#0c0a1a', percent: 0 },
+        { color: '#1e1b4b', percent: 30 },
+        { color: '#312e81', percent: 55 },
+        { color: '#4c1d95', percent: 78 },
+        { color: '#1e1b4b', percent: 100 },
+      ];
     case 'mac_sonoma':
       return [
-        'linear-gradient(155deg,',
-        '#1c0a05 0%,',
-        '#431407 22%,',
-        '#7c2d12 48%,',
-        '#c2410c 72%,',
-        '#ea580c 88%,',
-        '#fb923c 100%',
-        ')',
-      ].join(' ');
+        { color: '#1c0a05', percent: 0 },
+        { color: '#431407', percent: 22 },
+        { color: '#7c2d12', percent: 48 },
+        { color: '#c2410c', percent: 72 },
+        { color: '#ea580c', percent: 88 },
+        { color: '#fb923c', percent: 100 },
+      ];
     default:
-      return resolveCoverGradient('brand', a);
+      return getPresetGradientStops('brand', a);
   }
+}
+
+function buildLinearFromStops(deg: number, stops: GradientStop[]): string {
+  const body = stops.map((s) => `${s.color} ${Math.min(100, Math.max(0, s.percent))}%`).join(', ');
+  return `linear-gradient(${deg}deg, ${body})`;
+}
+
+/** Final CSS `background` (linear preset — legacy path). */
+export function resolveCoverGradient(
+  preset: GradientPresetId,
+  accentHex: string,
+  flow: GradientFlowId
+): string {
+  return buildLinearFromStops(gradientFlowToDeg(flow), getPresetGradientStops(preset, accentHex));
 }

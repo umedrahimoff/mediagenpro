@@ -1,9 +1,55 @@
 import React, { type ChangeEvent, useState } from 'react';
-import type { CoverFontPreset, CoverState } from '@/types/cover';
-import { GRADIENT_PRESET_META, GRADIENT_PRESET_ORDER } from '@/constants/gradientPresets';
+import type {
+  CoverFontPreset,
+  CoverOverlayTextureId,
+  CoverState,
+  GradientFlowId,
+  GradientGeometryId,
+  GradientStop,
+} from '@/types/cover';
+import { GRADIENT_BACKGROUND_DEFAULTS } from '@/constants/coverDefaults';
+import { COVER_OVERLAY_TEXTURE_META, COVER_OVERLAY_TEXTURE_ORDER } from '@/constants/coverOverlayTextures';
+import {
+  GRADIENT_GEOMETRY_META,
+  GRADIENT_GEOMETRY_ORDER,
+} from '@/constants/coverGradientGeometry';
+import {
+  getPresetGradientStops,
+  GRADIENT_FLOW_GRID,
+  GRADIENT_FLOW_META,
+  GRADIENT_PRESET_META,
+  GRADIENT_PRESET_ORDER,
+} from '@/constants/gradientPresets';
 import { COVER_FONT_PRESETS, COVER_FONT_PRESET_ORDER } from '@/constants/coverFonts';
 import { ColorPicker } from './ColorPicker';
-import { Upload, X, RotateCcw, ChevronDown } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowDownLeft,
+  ArrowDownRight,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowUpLeft,
+  ArrowUpRight,
+  ChevronDown,
+  Plus,
+  RotateCcw,
+  Trash2,
+  Upload,
+  X,
+} from 'lucide-react';
+
+const GRADIENT_FLOW_ICONS: Record<GradientFlowId, LucideIcon> = {
+  'to-top': ArrowUp,
+  'to-bottom': ArrowDown,
+  'to-left': ArrowLeft,
+  'to-right': ArrowRight,
+  'diag-tl': ArrowUpLeft,
+  'diag-tr': ArrowUpRight,
+  'diag-bl': ArrowDownLeft,
+  'diag-br': ArrowDownRight,
+};
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -23,6 +69,17 @@ import { ImageCropDialog, type PendingBackgroundImage } from './ImageCropDialog'
 
 const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
 const MAX_EVENT_SPEAKERS = 6;
+const MAX_CUSTOM_GRADIENT_STOPS = 8;
+
+function hexForNativeColorInput(hex: string): string {
+  const h = hex.trim();
+  if (/^#[0-9A-Fa-f]{6}$/.test(h)) return h.toUpperCase();
+  if (/^#[0-9A-Fa-f]{3}$/.test(h)) {
+    const x = h.slice(1);
+    return `#${x[0]}${x[0]}${x[1]}${x[1]}${x[2]}${x[2]}`.toUpperCase();
+  }
+  return '#808080';
+}
 
 interface EditorProps {
   state: CoverState;
@@ -60,7 +117,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
 
   const readImageFile = (file: File, onReady: (dataUrl: string) => void) => {
     if (file.size > MAX_IMAGE_BYTES) {
-      alert(`Файл слишком большой (макс. ${MAX_IMAGE_BYTES / (1024 * 1024)} МБ).`);
+      alert(`File too large (max ${MAX_IMAGE_BYTES / (1024 * 1024)} MB).`);
       return;
     }
     const reader = new FileReader();
@@ -108,7 +165,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (state.logos.length >= MAX_LOGOS) {
-      alert(`Можно не больше ${MAX_LOGOS} логотипов.`);
+      alert(`At most ${MAX_LOGOS} logos allowed.`);
       e.target.value = '';
       return;
     }
@@ -162,15 +219,15 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
         </h2>
         {state.appMode === 'instagram' && (
           <p className="mt-0.5 text-[10px] leading-snug text-muted-foreground">
-            {state.postFormat === 'news' && 'Новости и инфопосты'}
-            {state.postFormat === 'event' && 'Анонсы: спикеры, дата и место'}
-            {state.postFormat === 'promo' && 'Промо — пока те же поля, что у новостей'}
+            {state.postFormat === 'news' && 'News and info posts'}
+            {state.postFormat === 'event' && 'Events: speakers, date & place'}
+            {state.postFormat === 'promo' && 'Promo — same fields as news for now'}
           </p>
         )}
       </div>
 
-      <EditorSection title="Шрифт обложки">
-        <FieldLabel>Пресет</FieldLabel>
+      <EditorSection title="Cover font">
+        <FieldLabel>Preset</FieldLabel>
         <ToggleGroup
           type="single"
           spacing={0}
@@ -281,32 +338,202 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             </ToggleGroup>
             {state.isGradient && (
               <div className="flex flex-col gap-2 border-t border-border pt-2.5">
-                <FieldLabel>Пресет градиента</FieldLabel>
-                <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-                  {GRADIENT_PRESET_ORDER.map((id) => (
-                    <Button
-                      key={id}
-                      type="button"
-                      variant={state.gradientPreset === id ? 'default' : 'outline'}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 w-full gap-1.5 text-[11px]"
+                  title="Brand preset, linear, default flow, no custom stops, accent color and texture as on first load"
+                  onClick={() => onChange({ ...GRADIENT_BACKGROUND_DEFAULTS })}
+                >
+                  <RotateCcw className="size-3" />
+                  Reset gradient settings
+                </Button>
+                <Collapsible defaultOpen={false} className="rounded-md border border-border bg-muted/15">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 px-2.5 py-2 text-left text-[11px] font-medium text-muted-foreground hover:bg-muted/40 [&[data-state=open]>svg]:rotate-180">
+                    <span>Gradient settings</span>
+                    <ChevronDown className="size-3.5 shrink-0 opacity-70 transition-transform" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="flex flex-col gap-2 border-t border-border px-2 pb-2.5 pt-2">
+                    <FieldLabel>Gradient preset</FieldLabel>
+                    <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                      {GRADIENT_PRESET_ORDER.map((id) => (
+                        <Button
+                          key={id}
+                          type="button"
+                          variant={state.gradientPreset === id ? 'default' : 'outline'}
+                          size="sm"
+                          className="h-auto min-h-8 w-full whitespace-normal px-2 py-2 text-center text-[11px] leading-snug"
+                          onClick={() => onChange({ gradientPreset: id })}
+                        >
+                          {GRADIENT_PRESET_META[id].label}
+                        </Button>
+                      ))}
+                    </div>
+                    <FieldLabel>Gradient shape</FieldLabel>
+                    <ToggleGroup
+                      type="single"
+                      spacing={0}
+                      variant="outline"
                       size="sm"
-                      className="h-auto min-h-8 w-full whitespace-normal px-2 py-2 text-center text-[11px] leading-snug"
-                      onClick={() => onChange({ gradientPreset: id })}
+                      value={state.gradientGeometry}
+                      onValueChange={(v) => v && onChange({ gradientGeometry: v as GradientGeometryId })}
+                      className={cn('grid w-full grid-cols-2 gap-1', compactToggle)}
                     >
-                      {GRADIENT_PRESET_META[id].label}
-                    </Button>
-                  ))}
-                </div>
-                <p className="text-[10px] leading-snug text-muted-foreground">
-                  {GRADIENT_PRESET_META[state.gradientPreset].hint}
-                </p>
-                <ColorPicker
-                  label="Фирменный цвет"
-                  value={state.bgColor}
-                  onChangeColor={(c) => onChange({ bgColor: c })}
-                />
-                <p className="text-[10px] leading-snug text-muted-foreground">
-                  Для пресета «Бренд» — старт градиента; также фон split и другие элементы с этим цветом.
-                </p>
+                      {GRADIENT_GEOMETRY_ORDER.map((id) => (
+                        <ToggleGroupItem
+                          key={id}
+                          value={id}
+                          title={GRADIENT_GEOMETRY_META[id].hint}
+                          className="h-auto min-h-8 whitespace-normal px-1.5 py-1.5 text-[10px] leading-tight"
+                        >
+                          {GRADIENT_GEOMETRY_META[id].label}
+                        </ToggleGroupItem>
+                      ))}
+                    </ToggleGroup>
+                    {state.gradientGeometry === 'linear' ? (
+                      <>
+                        <FieldLabel>Direction (linear)</FieldLabel>
+                        <ToggleGroup
+                          type="single"
+                          spacing={0}
+                          variant="outline"
+                          size="sm"
+                          value={state.gradientFlow}
+                          onValueChange={(v) => v && onChange({ gradientFlow: v as GradientFlowId })}
+                          className={cn('grid w-full grid-cols-3 gap-1', compactToggle)}
+                        >
+                          {GRADIENT_FLOW_GRID.flatMap((row, ri) =>
+                            row.map((cell, ci) =>
+                              cell === null ? (
+                                <span key={`gf-${ri}-${ci}`} className="h-8 min-h-8" aria-hidden />
+                              ) : (
+                                <ToggleGroupItem
+                                  key={cell}
+                                  value={cell}
+                                  className="h-8 min-h-8 w-full p-0 [&_svg]:size-3.5"
+                                  title={GRADIENT_FLOW_META[cell].label}
+                                >
+                                  {(() => {
+                                    const Icon = GRADIENT_FLOW_ICONS[cell];
+                                    return <Icon aria-hidden />;
+                                  })()}
+                                </ToggleGroupItem>
+                              )
+                            )
+                          )}
+                        </ToggleGroup>
+                        <p className="text-[10px] leading-snug text-muted-foreground">
+                          Same preset stops; in linear mode only the blend angle changes.
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-[10px] leading-snug text-muted-foreground">
+                        Radial and corner spots use the same preset colors along the radius.
+                      </p>
+                    )}
+                    <p className="text-[10px] leading-snug text-muted-foreground">
+                      {GRADIENT_PRESET_META[state.gradientPreset].hint}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="custom-gradient-stops"
+                        checked={state.gradientCustomStops !== null}
+                        onCheckedChange={(c) =>
+                          onChange(
+                            c === true
+                              ? {
+                                  gradientCustomStops: getPresetGradientStops(
+                                    state.gradientPreset,
+                                    state.bgColor
+                                  ),
+                                }
+                              : { gradientCustomStops: null }
+                          )
+                        }
+                      />
+                      <Label htmlFor="custom-gradient-stops" className="text-xs font-normal leading-snug">
+                        Custom stops (% and color)
+                      </Label>
+                    </div>
+                    {state.gradientCustomStops !== null && (
+                      <div className="flex flex-col gap-1.5 rounded-md border border-border bg-muted/20 p-2">
+                        {state.gradientCustomStops.map((stop, i) => (
+                          <div key={`gs-${i}`} className="flex items-center gap-1.5">
+                            <input
+                              type="color"
+                              className="h-7 w-9 shrink-0 cursor-pointer overflow-hidden rounded border border-border bg-transparent p-0"
+                              value={hexForNativeColorInput(stop.color)}
+                              onChange={(e) => {
+                                const next: GradientStop[] = [...state.gradientCustomStops!];
+                                next[i] = { ...next[i], color: e.target.value.toUpperCase() };
+                                onChange({ gradientCustomStops: next });
+                              }}
+                              title="Color"
+                            />
+                            <Input
+                              type="number"
+                              min={0}
+                              max={100}
+                              className="h-7 w-14 text-xs tabular-nums"
+                              value={stop.percent}
+                              onChange={(e) => {
+                                const v = Math.min(100, Math.max(0, parseInt(e.target.value, 10) || 0));
+                                const next: GradientStop[] = [...state.gradientCustomStops!];
+                                next[i] = { ...next[i], percent: v };
+                                onChange({ gradientCustomStops: next });
+                              }}
+                            />
+                            <span className="text-[10px] text-muted-foreground">%</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon-xs"
+                              className="ml-auto shrink-0"
+                              title="Remove stop"
+                              disabled={state.gradientCustomStops!.length <= 2}
+                              onClick={() =>
+                                onChange({
+                                  gradientCustomStops: state.gradientCustomStops!.filter((_, j) => j !== i),
+                                })
+                              }
+                            >
+                              <Trash2 className="size-3" />
+                            </Button>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 gap-1 text-[11px]"
+                          disabled={state.gradientCustomStops!.length >= MAX_CUSTOM_GRADIENT_STOPS}
+                          onClick={() => {
+                            const arr = state.gradientCustomStops!;
+                            const last = arr[arr.length - 1];
+                            onChange({
+                              gradientCustomStops: [
+                                ...arr,
+                                { color: '#FFFFFF', percent: Math.min(100, (last?.percent ?? 0) + 8) },
+                              ],
+                            });
+                          }}
+                        >
+                          <Plus className="size-3" />
+                          Stop
+                        </Button>
+                      </div>
+                    )}
+                    <ColorPicker
+                      label="Accent color"
+                      value={state.bgColor}
+                      onChangeColor={(c) => onChange({ bgColor: c })}
+                    />
+                    <p className="text-[10px] leading-snug text-muted-foreground">
+                      For the Brand preset — gradient start; also split background and other elements using this color.
+                    </p>
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
             )}
           </div>
@@ -370,15 +597,15 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
 
             {state.image && !state.isGradient && (
               <div className="flex flex-col gap-2">
-                <FieldLabel>Источник фото (водяной знак)</FieldLabel>
+                <FieldLabel>Photo credit (watermark)</FieldLabel>
                 <Input
                   className="h-7 text-xs"
                   value={state.photoCredit}
                   onChange={(e) => onChange({ photoCredit: e.target.value })}
-                  placeholder="Напр. Unsplash / автор"
+                  placeholder="e.g. Unsplash / author"
                   maxLength={200}
                 />
-                <Label className="text-[10px] font-normal text-muted-foreground">Угол на обложке</Label>
+                <Label className="text-[10px] font-normal text-muted-foreground">Corner on cover</Label>
                 <ToggleGroup
                   type="single"
                   spacing={0}
@@ -388,16 +615,16 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                   onValueChange={(v) => v && onChange({ photoCreditCorner: v as CoverState['photoCreditCorner'] })}
                   className={cn('grid w-full grid-cols-4 gap-1', compactToggle)}
                 >
-                  <ToggleGroupItem value="tl" title="Слева сверху" className="text-xs">
+                  <ToggleGroupItem value="tl" title="Top left" className="text-xs">
                     ↖
                   </ToggleGroupItem>
-                  <ToggleGroupItem value="tr" title="Справа сверху" className="text-xs">
+                  <ToggleGroupItem value="tr" title="Top right" className="text-xs">
                     ↗
                   </ToggleGroupItem>
-                  <ToggleGroupItem value="bl" title="Слева снизу" className="text-xs">
+                  <ToggleGroupItem value="bl" title="Bottom left" className="text-xs">
                     ↙
                   </ToggleGroupItem>
-                  <ToggleGroupItem value="br" title="Справа снизу" className="text-xs">
+                  <ToggleGroupItem value="br" title="Bottom right" className="text-xs">
                     ↘
                   </ToggleGroupItem>
                 </ToggleGroup>
@@ -431,18 +658,57 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             </ToggleGroup>
           </div>
         )}
+
+        <div className="mt-2 flex flex-col gap-2 border-t border-border pt-2.5">
+          <FieldLabel>Texture over background</FieldLabel>
+          <ToggleGroup
+            type="single"
+            spacing={0}
+            variant="outline"
+            size="sm"
+            value={state.overlayTexture}
+            onValueChange={(v) => v && onChange({ overlayTexture: v as CoverOverlayTextureId })}
+            className={cn('grid w-full grid-cols-1 gap-1 sm:grid-cols-3', compactToggle)}
+          >
+            {COVER_OVERLAY_TEXTURE_ORDER.map((id) => (
+              <ToggleGroupItem key={id} value={id} className="text-[11px]">
+                {COVER_OVERLAY_TEXTURE_META[id].label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+          {state.overlayTexture !== 'none' && (
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-[10px] font-normal text-muted-foreground">Texture strength</Label>
+              <Slider
+                min={5}
+                max={100}
+                step={1}
+                value={[state.overlayTextureOpacity]}
+                onValueChange={([v]) => onChange({ overlayTextureOpacity: v ?? 22 })}
+              />
+            </div>
+          )}
+          <p className="text-[10px] leading-snug text-muted-foreground">
+            New texture: extend types/cover.ts, coverOverlayTextures.ts, and a class in Preview.css.
+          </p>
+          {state.appMode === 'instagram' && state.layoutMode === 'split' && state.image && (
+            <p className="text-[10px] leading-snug text-amber-700 dark:text-amber-500">
+              Texture is disabled on preview in split layout with a photo.
+            </p>
+          )}
+        </div>
       </EditorSection>
 
       {state.appMode === 'instagram' && state.postFormat === 'event' && (
-        <EditorSection title="Мероприятие">
+        <EditorSection title="Event">
           <div className="flex flex-col gap-2">
-            <FieldLabel>Заголовок на обложке</FieldLabel>
+            <FieldLabel>Title on cover</FieldLabel>
             <div className="grid grid-cols-3 gap-1">
               {(
                 [
-                  { value: 'left' as const, label: 'Слева' },
-                  { value: 'center' as const, label: 'Центр' },
-                  { value: 'right' as const, label: 'Справа' },
+                  { value: 'left' as const, label: 'Left' },
+                  { value: 'center' as const, label: 'Center' },
+                  { value: 'right' as const, label: 'Right' },
                 ] as const
               ).map(({ value, label }) => (
                 <Button
@@ -459,24 +725,24 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <FieldLabel>Дата и место</FieldLabel>
+            <FieldLabel>Date & place</FieldLabel>
             <Textarea
               rows={2}
               className="min-h-[2.75rem] py-1.5 text-xs"
               value={state.eventMeta}
               onChange={(e) => onChange({ eventMeta: e.target.value })}
-              placeholder="Напр. 12 апреля · 18:00 · Dubai"
+              placeholder="e.g. Apr 12 · 6:00 PM · Dubai"
             />
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between gap-2">
-              <FieldLabel>Спикеры</FieldLabel>
+              <FieldLabel>Speakers</FieldLabel>
               <span className="text-[10px] tabular-nums text-muted-foreground">
                 {state.eventSpeakers.length}/{MAX_EVENT_SPEAKERS}
               </span>
             </div>
             <p className="text-[10px] leading-snug text-muted-foreground">
-              Слева фото на обложке, справа имя и компания; без фото — инициал.
+              Photo on the left on the cover, name and company on the right; without photo — initial.
             </p>
             {state.eventSpeakers.map((sp, index) => (
               <div
@@ -491,7 +757,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                       setSpeakerPhotoIdx(index);
                       document.getElementById('speaker-photo-upload')?.click();
                     }}
-                    title="Фото спикера"
+                    title="Speaker photo"
                   >
                     {sp.photo ? (
                       <img src={sp.photo} alt="" className="size-full object-cover" />
@@ -509,7 +775,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                         );
                         onChange({ eventSpeakers: next });
                       }}
-                      placeholder="Имя и фамилия"
+                      placeholder="Full name"
                     />
                     <Input
                       className="h-7 text-xs"
@@ -520,7 +786,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                         );
                         onChange({ eventSpeakers: next });
                       }}
-                      placeholder="Компания"
+                      placeholder="Company"
                     />
                   </div>
                   <Button
@@ -528,7 +794,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                     variant="ghost"
                     size="icon-xs"
                     className="shrink-0"
-                    title="Удалить"
+                    title="Remove"
                     onClick={() =>
                       onChange({
                         eventSpeakers: state.eventSpeakers.filter((_, i) => i !== index),
@@ -552,7 +818,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 })
               }
             >
-              Добавить спикера
+              Add speaker
             </Button>
           </div>
         </EditorSection>
@@ -565,7 +831,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
               {state.template === 'quote'
                 ? 'Quote text'
                 : state.postFormat === 'event'
-                  ? 'Заголовок / тема'
+                  ? 'Headline / topic'
                   : 'Title'}
             </FieldLabel>
             <Textarea
@@ -575,10 +841,10 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
               onChange={(e) => onChange({ title: e.target.value })}
               placeholder={
                 state.template === 'quote'
-                  ? 'Enter the quote…'
+                  ? 'Enter quote text…'
                   : state.postFormat === 'event'
-                    ? 'Тема сессии или название события'
-                    : 'Enter title…'
+                    ? 'Session topic or event name'
+                    : 'Enter headline…'
               }
             />
             <ToggleGroup
@@ -594,10 +860,10 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 ALL CAPS
               </ToggleGroupItem>
               <ToggleGroupItem value="capitalize" className="flex-1">
-                Title case
+                Title Case
               </ToggleGroupItem>
               <ToggleGroupItem value="none" className="flex-1">
-                As is
+                As typed
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
@@ -609,7 +875,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
               {state.template === 'quote'
                 ? 'Author'
                 : state.postFormat === 'event'
-                  ? 'Серия / организатор'
+                  ? 'Series / organizer'
                   : 'Category'}
             </FieldLabel>
             <Input
@@ -620,26 +886,42 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 state.template === 'quote'
                   ? 'e.g. Steve Jobs'
                   : state.postFormat === 'event'
-                    ? 'Напр. STANBASE MEETUP'
+                    ? 'e.g. STANBASE MEETUP'
                     : 'e.g. VISUAL DESIGN'
               }
             />
             <div className="flex flex-wrap gap-1.5">
               {(state.postFormat === 'event'
-                ? ['MEETUP', 'SUMMIT', 'WEBINAR', 'PANEL', 'FORUM']
-                : ['news', 'investments', 'startups', 'analytics', 'founders']
+                ? (
+                    [
+                      { value: 'MEETUP', label: 'Meetup' },
+                      { value: 'SUMMIT', label: 'Summit' },
+                      { value: 'WEBINAR', label: 'Webinar' },
+                      { value: 'PANEL', label: 'Panel' },
+                      { value: 'FORUM', label: 'Forum' },
+                    ] as const
+                  )
+                : (
+                    [
+                      { value: 'NEWS', label: 'News' },
+                      { value: 'INVESTMENTS', label: 'Investments' },
+                      { value: 'STARTUPS', label: 'Startups' },
+                      { value: 'ANALYTICS', label: 'Analytics' },
+                      { value: 'FOUNDERS', label: 'Founders' },
+                    ] as const
+                  )
               ).map((preset) => (
                 <Button
-                  key={preset}
+                  key={preset.value}
                   type="button"
                   variant={
-                    state.category.toLowerCase() === preset.toLowerCase() ? 'default' : 'outline'
+                    state.category.toUpperCase() === preset.value ? 'default' : 'outline'
                   }
                   size="xs"
-                  className="rounded-full capitalize"
-                  onClick={() => onChange({ category: preset.toUpperCase() })}
+                  className="rounded-full text-[11px]"
+                  onClick={() => onChange({ category: preset.value })}
                 >
-                  {preset}
+                  {preset.label}
                 </Button>
               ))}
             </div>
@@ -780,7 +1062,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             </span>
           </div>
           <p className="text-[10px] leading-snug text-muted-foreground">
-            Один ряд по центру; ширина уменьшается, если логотипов больше.
+            One centered row; width shrinks when there are more logos.
           </p>
           {state.logos.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
@@ -800,7 +1082,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                     variant="destructive"
                     size="icon-xs"
                     className="absolute -right-1 -top-1 size-5 min-w-5 rounded-full p-0 shadow-sm"
-                    title="Удалить"
+                    title="Remove"
                     onClick={() => removeLogoAt(index)}
                   >
                     <X className="size-2.5" />
@@ -819,18 +1101,18 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
               onClick={() => document.getElementById('logo-upload')?.click()}
             >
               <Upload className="size-3.5 opacity-70" />
-              <span className="text-[11px] font-normal">Добавить логотип</span>
+              <span className="text-[11px] font-normal">Add logo</span>
             </Button>
             {state.logos.length > 0 && (
               <Button type="button" variant="ghost" size="xs" className="h-8 text-[11px]" onClick={() => onChange({ logos: [] })}>
-                Сбросить все
+                Clear all
               </Button>
             )}
           </div>
           {state.logos.length > 0 && (
             <div className="space-y-3 border-l-2 border-primary/20 pl-2.5">
               <div className="flex flex-col gap-1.5">
-                <FieldLabel>Цвет всех логотипов</FieldLabel>
+                <FieldLabel>All logos color</FieldLabel>
                 <ToggleGroup
                   type="single"
                   spacing={0}
@@ -841,23 +1123,23 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                   className={cn('w-full justify-stretch', compactToggle)}
                 >
                   <ToggleGroupItem value="original" className="flex-1">
-                    Как в файле
+                    Original
                   </ToggleGroupItem>
                   <ToggleGroupItem value="white" className="flex-1">
-                    Белые
+                    White
                   </ToggleGroupItem>
                   <ToggleGroupItem value="black" className="flex-1">
-                    Чёрные
+                    Black
                   </ToggleGroupItem>
                 </ToggleGroup>
                 <p className="text-[10px] leading-snug text-muted-foreground">
-                  Монохром через фильтр; удобно на тёмном или светлом фоне.
+                  Monochrome via filter; works on dark or light backgrounds.
                 </p>
               </div>
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center gap-2">
                   <Label className="flex-1 text-[11px] font-normal text-muted-foreground">
-                    Базовая ширина: {state.logoSize}px
+                    Base width: {state.logoSize}px
                   </Label>
                   <Button type="button" variant="ghost" size="icon-xs" onClick={() => onChange({ logoSize: 100 })}>
                     <RotateCcw className="size-3" />
@@ -893,7 +1175,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
         <Separator />
 
         <div className="flex flex-col gap-2">
-          <FieldLabel>Caption (OG, только Website)</FieldLabel>
+          <FieldLabel>Caption (OG, Website only)</FieldLabel>
           <Input
             className="h-7 text-xs"
             value={state.caption}
