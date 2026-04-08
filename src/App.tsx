@@ -1,153 +1,94 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Editor } from './components/Editor/Editor';
 import { Preview } from './components/Preview/Preview';
-import './App.css';
-
-export interface CoverState {
-  appMode: 'instagram' | 'website' | 'linkedin' | 'youtube' | 'reels';
-  title: string;
-  category: string;
-  image: string | null;
-  isGradient: boolean;
-  ratio: 'vertical' | 'square' | 'horizontal' | 'story' | 'reel';
-  imageOrientation: 'vertical' | 'square' | 'horizontal';
-  layoutMode: 'overlay' | 'split';
-  template: 'bold' | 'minimal' | 'quote';
-  overlayOpacity: number;
-  titleColor: string;
-  categoryColor: string;
-  bgColor: string;
-  caption: string;
-  captionColor: string;
-  showSafeZones: boolean;
-  textTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
-  useGlassmorphism: boolean;
-  contentAlignment: 'flex-start' | 'center' | 'flex-end';
-  glassBlur: number;
-  glassWidth: 'full' | 'fit';
-  reelsView: 'full' | 'grid';
-  reelsTitle: string;
-  reelsCategory: string;
-  reelsAlignment: 'flex-start' | 'center' | 'flex-end';
-  logo: string | null;
-  logoSize: number;
-  logoOpacity: number;
-}
-
-export const BRAND_COLORS = {
-  primaryBlue: '#146AFF',
-  lightBlue: '#CBDDFF',
-  accentYellow: '#F5A623',
-  darkText: '#183444',
-  white: '#FFFFFF',
-};
-
-const STORAGE_KEY = 'mediagen_pro_state';
-
-const DEFAULT_STATE: CoverState = {
-  appMode: 'instagram',
-  title: 'THE FUTURE OF\nVENTURE CAPITAL',
-  category: 'SaaS Trends',
-  image: null,
-  isGradient: true,
-  ratio: 'vertical',
-  imageOrientation: 'vertical',
-  layoutMode: 'overlay',
-  template: 'bold',
-  overlayOpacity: 0.6,
-  titleColor: '#FFFFFF',
-  categoryColor: '#F5A623',
-  bgColor: '#146AFF',
-  caption: 'stanbase.tech',
-  captionColor: '#FFFFFF',
-  showSafeZones: false,
-  textTransform: 'uppercase',
-  useGlassmorphism: false,
-  contentAlignment: 'flex-end',
-  glassBlur: 25,
-  glassWidth: 'full',
-  reelsView: 'full',
-  reelsTitle: 'NEW REEL\nCOMING SOON',
-  reelsCategory: 'Behind the Scenes',
-  reelsAlignment: 'center',
-  logo: null,
-  logoSize: 100, // px or relative scale
-  logoOpacity: 100,
-};
+import { STORAGE_KEY } from './constants/coverDefaults';
+import type { CoverState, PostFormat } from './types/cover';
+import { loadCoverStateFromStorage, saveCoverStateToStorage } from './utils/sanitizeCoverState';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { cn } from '@/lib/utils';
 
 function App() {
-  const [state, setState] = useState<CoverState>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return { ...DEFAULT_STATE, ...parsed };
-      } catch (e) {
-        console.error('Failed to load saved state:', e);
-      }
-    }
-    return DEFAULT_STATE;
-  });
+  const [state, setState] = useState(() => loadCoverStateFromStorage(localStorage.getItem(STORAGE_KEY)));
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      // If localStorage is full (e.g. because of a large base64 image),
-      // try saving without the image so at least text is preserved
-      if (e instanceof DOMException && e.name === 'QuotaExceededError') {
-        const stateWithoutImage = { ...state, image: null };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateWithoutImage));
-      }
-    }
+    saveCoverStateToStorage(state);
   }, [state]);
 
+  /** Сброс на диск при уходе со страницы — иначе последний useEffect может не успеть (закрытие вкладки). */
+  useEffect(() => {
+    const flush = () => saveCoverStateToStorage(stateRef.current);
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') flush();
+    };
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('pagehide', flush);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
+
   const updateState = (updates: Partial<CoverState>) => {
-    setState(prev => ({ ...prev, ...updates }));
+    setState((prev) => ({ ...prev, ...updates }));
   };
 
   return (
-    <div className="app-container">
-      <header className="app-nav">
-        <div className="nav-brand">MediaGen Pro</div>
-        <div className="nav-tabs">
-          <button
-            className={state.appMode === 'instagram' ? 'active' : ''}
-            onClick={() => updateState({ appMode: 'instagram', ratio: 'vertical' })}
-          >
-            Instagram
-          </button>
-          <button
-            className={state.appMode === 'reels' ? 'active' : ''}
-            onClick={() => updateState({ appMode: 'reels', ratio: 'story' })}
-          >
-            Reels
-          </button>
-          <button
-            className={state.appMode === 'linkedin' ? 'active' : ''}
-            onClick={() => updateState({ appMode: 'linkedin', ratio: 'horizontal' })}
-          >
-            LinkedIn
-          </button>
-          <button
-            className={state.appMode === 'youtube' ? 'active' : ''}
-            onClick={() => updateState({ appMode: 'youtube', ratio: 'horizontal' })}
-          >
-            YouTube
-          </button>
-          <button
-            className={state.appMode === 'website' ? 'active' : ''}
-            onClick={() => updateState({ appMode: 'website', ratio: 'horizontal' })}
-          >
-            Website
-          </button>
+    <div className="flex h-svh w-svw flex-col overflow-hidden">
+      <header className="flex shrink-0 flex-col gap-2 border-b border-border bg-card px-3 py-2 md:h-11 md:flex-row md:items-center md:justify-between md:gap-3 md:py-0 md:px-4">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="shrink-0 text-sm font-medium tracking-tight text-foreground">MediaGen Pro</span>
+          {state.appMode === 'instagram' && (
+            <ToggleGroup
+              type="single"
+              spacing={0}
+              variant="outline"
+              size="sm"
+              value={state.postFormat}
+              onValueChange={(v) => v && updateState({ postFormat: v as PostFormat })}
+              className={cn(
+                'max-md:w-full max-md:justify-stretch',
+                '[&_[data-slot=toggle-group-item]]:h-7 [&_[data-slot=toggle-group-item]]:px-2 [&_[data-slot=toggle-group-item]]:text-[11px]'
+              )}
+            >
+              <ToggleGroupItem value="news" className="max-md:flex-1">
+                Новости
+              </ToggleGroupItem>
+              <ToggleGroupItem value="event" className="max-md:flex-1">
+                Мероприятие
+              </ToggleGroupItem>
+              <ToggleGroupItem value="promo" className="max-md:flex-1">
+                Промо
+              </ToggleGroupItem>
+            </ToggleGroup>
+          )}
         </div>
+        <ToggleGroup
+          type="single"
+          spacing={0}
+          variant="outline"
+          size="sm"
+          value={state.appMode}
+          onValueChange={(v) => {
+            if (v === 'instagram') updateState({ appMode: 'instagram', ratio: 'vertical' });
+            if (v === 'website') updateState({ appMode: 'website', ratio: 'horizontal' });
+          }}
+          className="max-md:w-full max-md:justify-stretch [&_[data-slot=toggle-group-item]]:h-7 [&_[data-slot=toggle-group-item]]:px-2 [&_[data-slot=toggle-group-item]]:text-xs"
+        >
+          <ToggleGroupItem value="instagram" className={cn('max-md:flex-1')}>
+            Instagram
+          </ToggleGroupItem>
+          <ToggleGroupItem value="website" className={cn('max-md:flex-1')}>
+            Website
+          </ToggleGroupItem>
+        </ToggleGroup>
       </header>
-      <div className="app-body">
-        <aside className="sidebar">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
+        <aside className="z-10 flex w-full shrink-0 flex-col overflow-y-auto border-border bg-sidebar p-3 shadow-sm md:w-[300px] md:border-r md:shadow-[2px_0_8px_rgba(0,0,0,0.04)]">
           <Editor state={state} onChange={updateState} />
         </aside>
-        <main className="main-content">
+        <main className="flex min-h-[min(420px,50vh)] flex-1 items-center justify-center overflow-auto bg-muted/60 p-3 md:min-h-0 md:p-6">
           <Preview state={state} />
         </main>
       </div>

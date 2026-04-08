@@ -6,7 +6,7 @@
   --color-white: #FFFFFF;
   --color-background-gray: #F5F7FA;
 
-  --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-primary: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
 
   --spacing-xs: 4px;
   --spacing-sm: 8px;

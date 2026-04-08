@@ -1,27 +1,140 @@
 import React, { useRef } from 'react';
-import type { CoverState } from '../../App';
+import type { CoverState } from '../../types/cover';
+import type { Options } from 'html-to-image/lib/types';
 import * as htmlToImage from 'html-to-image';
-import { Download, FileType, Heart, MessageCircle, Send, MoreHorizontal, Music, ChevronLeft, Camera } from 'lucide-react';
+import { Download, FileType } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { logoTintFilter, widthForLogoInRow } from '@/utils/logoLayout';
+import { coverImageLayerStyle } from '@/utils/coverImageLayerStyle';
+import { coverFontStack } from '@/constants/coverFonts';
+import { resolveCoverGradient } from '@/constants/gradientPresets';
 import './Preview.css';
 
 interface PreviewProps {
     state: CoverState;
 }
 
-// Helper to get transformed text
+/** Вертикальный резерв под абсолютную полосу логотипов (отступ до текста), px. */
+function brandingTopReservePx(state: Pick<CoverState, 'logos' | 'appMode' | 'ratio' | 'logoSize'>): number {
+    if (state.logos.length === 0) return 0;
+    if (state.appMode === 'website') return 56;
+    const stripTop = state.ratio === 'story' ? 56 : 24;
+    const rowH = Math.min(58, Math.round(30 + state.logoSize * 0.24));
+    const gapBelowLogos = 32;
+    return stripTop + rowH + gapBelowLogos;
+}
+
 const getTransformedText = (text: string, transform: 'none' | 'uppercase' | 'lowercase' | 'capitalize') => {
     if (!text) return '';
     if (transform === 'uppercase') return text.toUpperCase();
     if (transform === 'lowercase') return text.toLowerCase();
     if (transform === 'capitalize') {
-        return text.toLowerCase().split('\n').map(line =>
-            line.split(' ').map(word =>
-                word.charAt(0).toUpperCase() + word.slice(1)
-            ).join(' ')
-        ).join('\n');
+        return text
+            .toLowerCase()
+            .split('\n')
+            .map((line) =>
+                line
+                    .split(' ')
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ')
+            )
+            .join('\n');
     }
     return text;
 };
+
+function InstagramContentBlock({ state }: { state: CoverState }) {
+    const isEvent = state.postFormat === 'event';
+    const speakers = state.eventSpeakers.filter(
+        (s) => (s.name && s.name.trim()) || (s.company && s.company.trim()) || s.photo
+    );
+    const meta = state.eventMeta.trim();
+
+    return (
+        <div className="instagram-cover-text">
+            {state.category && (
+                <div className="category" style={{ color: state.categoryColor }}>
+                    {state.category}
+                </div>
+            )}
+            <div
+                className="title"
+                style={{
+                    color: state.titleColor,
+                    textTransform: 'none',
+                    ...(isEvent ? { textAlign: state.eventTitleAlign } : {}),
+                }}
+            >
+                {getTransformedText(state.title, state.textTransform)}
+            </div>
+            {isEvent && meta && (
+                <div className="event-meta" style={{ color: state.titleColor }}>
+                    {meta}
+                </div>
+            )}
+            {isEvent && speakers.length > 0 && (
+                <div className="event-speakers-row">
+                    {speakers.map((sp, i) => {
+                        const initial = (
+                            sp.name.trim().charAt(0) ||
+                            sp.company.trim().charAt(0) ||
+                            '?'
+                        ).toUpperCase();
+                        return (
+                            <div key={`sp-${i}`} className="event-speaker-card">
+                                <div className="event-speaker-avatar">
+                                    {sp.photo ? (
+                                        <img src={sp.photo} alt="" />
+                                    ) : (
+                                        <span className="event-speaker-initial">{initial}</span>
+                                    )}
+                                </div>
+                                <div className="event-speaker-info">
+                                    {sp.name.trim() ? (
+                                        <div className="event-speaker-name" style={{ color: state.titleColor }}>
+                                            {sp.name.trim()}
+                                        </div>
+                                    ) : null}
+                                    {sp.company.trim() ? (
+                                        <div className="event-speaker-company" style={{ color: state.titleColor }}>
+                                            {sp.company.trim()}
+                                        </div>
+                                    ) : null}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}
+
+/** Текстовые узлы и комментарии не имеют classList — иначе filter падает и весь экспорт ломается. */
+const filterExcludeIgOverlay: NonNullable<Options['filter']> = (domNode) => {
+    if (!(domNode instanceof Element)) return true;
+    return !domNode.classList.contains('ig-ui-overlay');
+};
+
+function photoCreditVisible(state: CoverState): boolean {
+    return !state.isGradient && Boolean(state.image) && state.photoCredit.trim().length > 0;
+}
+
+function PhotoCreditMark({ state, inSplit }: { state: CoverState; inSplit?: boolean }) {
+    if (!photoCreditVisible(state)) return null;
+    return (
+        <div
+            className={cn(
+                'photo-credit-mark',
+                `photo-credit-mark--${state.photoCreditCorner}`,
+                inSplit && 'photo-credit-mark--in-split'
+            )}
+        >
+            {state.photoCredit.trim()}
+        </div>
+    );
+}
 
 export const Preview: React.FC<PreviewProps> = ({ state }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -29,77 +142,59 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
     const downloadImage = async (format: 'png' | 'jpeg') => {
         if (!ref.current) return;
 
-        // Target dimensions
         let targetWidth = 1080;
         let targetHeight = 1350;
 
-        if (state.appMode === 'website' || state.appMode === 'linkedin' || state.appMode === 'youtube' || state.appMode === 'reels') {
-            if (state.appMode === 'youtube') {
-                targetWidth = 2560;
-                targetHeight = 1440;
-            } else if (state.appMode === 'reels') {
-                targetWidth = 1080;
-                targetHeight = 1920;
-            } else if (state.appMode === 'website') {
-                // Website mode ALWAYS outputs 1200x628
-                targetWidth = 1200;
-                targetHeight = 628;
-            } else {
-                // LinkedIn
-                targetWidth = 1200;
-                if (state.ratio === 'horizontal') targetHeight = 627;
-                else targetHeight = 1200;
-            }
+        if (state.appMode === 'website') {
+            targetWidth = 1200;
+            targetHeight = 628;
         } else {
-            // Instagram defaults
             if (state.ratio === 'square') {
                 targetHeight = 1080;
             } else if (state.ratio === 'story') {
                 targetHeight = 1920;
             } else {
-                targetHeight = 1350; // Force 4:5 as default/portrait
+                targetHeight = 1350;
             }
         }
 
         const node = ref.current;
-        // If website mode, set node dimensions to target size to avoid scaling issues
-        if (state.appMode === 'website') {
-            node.style.width = `${targetWidth}px`;
-            node.style.height = `${targetHeight}px`;
-        }
-        // For website mode we don't apply additional scaling; pixelRatio set to 1 later
+        const prevWidth = node.style.width;
+        const prevHeight = node.style.height;
         const scale = state.appMode === 'website' ? 1 : targetWidth / node.clientWidth;
 
+        const baseOptions: Options =
+            state.appMode === 'website'
+                ? {
+                      width: targetWidth,
+                      height: targetHeight,
+                      pixelRatio: 1,
+                      skipFonts: true,
+                      filter: filterExcludeIgOverlay,
+                  }
+                : {
+                      width: targetWidth,
+                      height: targetHeight,
+                      skipFonts: true,
+                      style: {
+                          transform: `scale(${scale})`,
+                          transformOrigin: 'top left',
+                          width: `${node.clientWidth}px`,
+                          height: `${node.clientHeight}px`,
+                      },
+                      filter: filterExcludeIgOverlay,
+                  };
+
         try {
+            if (state.appMode === 'website') {
+                node.style.width = `${targetWidth}px`;
+                node.style.height = `${targetHeight}px`;
+            }
+
             const func = format === 'png' ? htmlToImage.toPng : htmlToImage.toJpeg;
-
-            const baseOptions: any = state.appMode === 'website' ? {
-                width: targetWidth,
-                height: targetHeight,
-                pixelRatio: 1,
-                filter: (domNode: any) => {
-                    const classList = domNode.classList;
-                    return !classList || !classList.contains('ig-ui-overlay');
-                }
-            } : {
-                width: targetWidth,
-                height: targetHeight,
-                style: {
-                    transform: `scale(${scale})`,
-                    transformOrigin: 'top left',
-                    width: `${node.clientWidth}px`,
-                    height: `${node.clientHeight}px`,
-                },
-                filter: (domNode: any) => {
-                    const classList = domNode.classList;
-                    return !classList || !classList.contains('ig-ui-overlay');
-                }
-            };
-
-            let dataUrl: string = '';
+            let dataUrl = '';
             let quality = state.appMode === 'website' ? 0.85 : 0.95;
 
-            // For Website mode with JPEG, compress until under 500KB
             if (state.appMode === 'website' && format === 'jpeg') {
                 const maxSizeKB = 500;
                 let attempts = 0;
@@ -107,18 +202,13 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
 
                 while (attempts < maxAttempts) {
                     dataUrl = await htmlToImage.toJpeg(node, { ...baseOptions, quality });
-
-                    // Calculate file size from base64
                     const base64str = dataUrl.split(',')[1];
                     const sizeKB = Math.round((base64str.length * 3) / 4 / 1024);
-
-                    console.log(`Attempt ${attempts + 1}: Quality ${quality.toFixed(2)}, Size: ${sizeKB}KB`);
 
                     if (sizeKB <= maxSizeKB) {
                         break;
                     }
 
-                    // Reduce quality for next attempt
                     quality -= 0.1;
                     attempts++;
 
@@ -128,8 +218,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                     }
                 }
             } else {
-                // Standard generation for other modes
-                const options = format === 'jpeg' ? { ...baseOptions, quality } : baseOptions;
+                const options: Options = format === 'jpeg' ? { ...baseOptions, quality } : baseOptions;
                 dataUrl = await func(node, options);
             }
 
@@ -139,107 +228,150 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
             link.click();
         } catch (err) {
             console.error('Failed to generate image', err);
-            alert('Failed to generate image. Please try again.');
+            const msg = err instanceof Error ? err.message : String(err);
+            alert(`Не удалось создать изображение.${msg ? ` ${msg}` : ''}`);
+        } finally {
+            if (state.appMode === 'website') {
+                node.style.width = prevWidth;
+                node.style.height = prevHeight;
+            }
         }
     };
 
     const bgStyle: React.CSSProperties = state.isGradient
-        ? { background: `linear-gradient(135deg, ${state.bgColor} 0%, #000 150%)` }
-        : { backgroundImage: `url(${state.image})`, backgroundSize: 'cover', backgroundPosition: 'center' };
+        ? { background: resolveCoverGradient(state.gradientPreset, state.bgColor) }
+        : !state.image
+          ? { backgroundColor: state.bgColor }
+          : {};
 
-    // Layout logic: Use manual layoutMode if image is present
-    const isSplit = state.appMode === 'instagram'
-        ? (!state.isGradient && state.image && state.layoutMode === 'split')
-        : false;
+    const isSplit =
+        state.appMode === 'instagram' && !state.isGradient && state.image && state.layoutMode === 'split';
 
-    // Dynamic preview dimensions based on target ratio
     const previewWidth = 360;
-    let previewHeight = 450; // default 4:5
+    let previewHeight = 450;
 
     if (state.appMode === 'website') {
-        // Website is ALWAYS 1200x628 (aspect ratio ~1.91:1)
-        previewHeight = 188; // 360 / 1.91 ≈ 188
-    } else if (state.appMode === 'reels') {
+        previewHeight = 188;
+    } else if (state.ratio === 'square') {
+        previewHeight = 360;
+    } else if (state.ratio === 'story') {
         previewHeight = 640;
-    } else if (state.appMode === 'linkedin') {
-        if (state.ratio === 'horizontal') previewHeight = 188;
-        else previewHeight = 360; // square
-    } else if (state.appMode === 'youtube') {
-        previewHeight = 202; // 16:9 for 360 width
-    } else {
-        if (state.ratio === 'square') previewHeight = 360;
-        else if (state.ratio === 'story') previewHeight = 640;
-        else previewHeight = 450;
     }
+
+    const hasBrandingLogos = state.logos.length > 0;
+    const brandingReserve = brandingTopReservePx(state);
+
+    const coverClassName = [
+        'cover-node',
+        state.appMode === 'instagram' ? `style-template-${state.template}` : '',
+        state.appMode === 'instagram' && state.postFormat === 'event' ? 'post-format-event' : '',
+        state.isGradient ? 'gradient-mode' : '',
+        isSplit ? 'split-layout' : '',
+        state.ratio === 'story' ? 'story-layout' : '',
+        state.appMode === 'website' ? 'horizontal-ratio' : '',
+        hasBrandingLogos ? 'has-branding-logos' : '',
+    ]
+        .filter(Boolean)
+        .join(' ');
+
+    const coverFontVars = {
+        ['--font-primary' as string]: coverFontStack(state.coverFontPreset),
+    } as React.CSSProperties;
+
+    const brandingVars =
+        hasBrandingLogos && brandingReserve > 0
+            ? ({
+                  ['--branding-content-offset' as string]: `${brandingReserve}px`,
+              } as React.CSSProperties)
+            : {};
 
     return (
         <div className="preview-layout">
             <div className="preview-wrapper">
                 <div
-                    className={`cover-node ${state.appMode !== 'youtube' ? `style-template-${state.template}` : ''} ${state.isGradient ? 'gradient-mode' : ''} ${isSplit ? 'split-layout' : ''} ${(state.ratio === 'story' || state.appMode === 'reels') ? 'story-layout' : ''} ${state.appMode === 'youtube' ? 'youtube-layout' : ''} ${(state.ratio === 'horizontal' && (state.appMode === 'website' || state.appMode === 'linkedin')) ? 'horizontal-ratio' : ''}`}
+                    className={coverClassName}
                     ref={ref}
-                    style={isSplit ?
-                        { width: `${previewWidth}px`, height: `${previewHeight}px`, backgroundColor: state.bgColor } :
-                        {
-                            ...bgStyle,
-                            width: `${previewWidth}px`,
-                            height: `${previewHeight}px`
-                        }}
+                    style={
+                        isSplit
+                            ? {
+                                  ...coverFontVars,
+                                  ...brandingVars,
+                                  width: `${previewWidth}px`,
+                                  height: `${previewHeight}px`,
+                                  backgroundColor: state.bgColor,
+                              }
+                            : {
+                                  ...coverFontVars,
+                                  ...brandingVars,
+                                  ...bgStyle,
+                                  width: `${previewWidth}px`,
+                                  height: `${previewHeight}px`,
+                              }
+                    }
                 >
-                    {state.showSafeZones && state.appMode === 'youtube' && (
-                        <div className="yt-safe-overlay">
-                            <div className="yt-safe-zone">
-                                <span className="yt-label">Safe Zone (Text/Logo)</span>
-                            </div>
+                    {!state.isGradient && state.image && !isSplit && (
+                        <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden>
+                            <img src={state.image} alt="" className="block h-full w-full" style={coverImageLayerStyle(state)} />
                         </div>
-                    )}
-                    {state.logo && (
-                        <div className="branding-logo" style={{
-                            opacity: state.logoOpacity / 100,
-                            width: `${state.logoSize}px`
-                        }}>
-                            <img src={state.logo} alt="" style={{ width: '100%', height: 'auto', display: 'block' }} />
-                        </div>
-                    )}
-                    {state.appMode === 'reels' && state.reelsView === 'grid' && (
-                        <>
-                            <div className="reel-grid-mask-top" />
-                            <div className="reel-grid-mask-bottom" />
-                        </>
                     )}
 
-                    {state.showSafeZones && state.appMode === 'reels' && (
-                        <div className="reel-ui-realistic">
-                            <div className="reel-top-bar">
-                                <ChevronLeft color="white" size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
-                                <span className="reel-header-title">Reels</span>
-                                <Camera color="white" size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
-                            </div>
-                            <div className="reel-right-actions">
-                                <div className="action-item"><Heart color="white" size={28} /> <span className="action-text">87K</span></div>
-                                <div className="action-item"><MessageCircle color="white" size={28} /> <span className="action-text">924</span></div>
-                                <div className="action-item"><Send color="white" size={28} /></div>
-                                <div className="action-item"><MoreHorizontal color="white" size={28} /></div>
-                            </div>
-                            <div className="reel-bottom-info">
-                                <div className="user-line">
-                                    <div className="avatar-mock" />
-                                    <span className="username">{state.caption ? state.caption.split(' ')[0].toLowerCase() : 'username'}</span>
-                                    <button className="follow-btn">Follow</button>
+                    {state.logos.length > 0 && (() => {
+                        const isWebsite = state.appMode === 'website';
+                        const isStory = state.ratio === 'story';
+                        const pad = isWebsite ? 14 : 22;
+                        const gap = isWebsite ? 5 : 8;
+                        const n = state.logos.length;
+                        const tintCss = logoTintFilter(state.logoTint);
+                        return (
+                            <div
+                                className={cn(
+                                    'branding-logos-strip',
+                                    isWebsite && 'branding-logos-strip--website',
+                                    isStory && 'branding-logos-strip--story'
+                                )}
+                            >
+                                <div className="branding-logos-row">
+                                    {state.logos.map((src, idx) => {
+                                        const w = widthForLogoInRow({
+                                            previewWidth,
+                                            horizontalPadding: pad,
+                                            gap,
+                                            logoSize: state.logoSize,
+                                            countInRow: n,
+                                        });
+                                        return (
+                                            <div
+                                                key={`${idx}-${src.slice(0, 16)}`}
+                                                className="branding-logo-item"
+                                                style={{
+                                                    width: w,
+                                                    opacity: state.logoOpacity / 100,
+                                                }}
+                                            >
+                                                <img
+                                                    src={src}
+                                                    alt=""
+                                                    style={tintCss ? { filter: tintCss } : undefined}
+                                                />
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                                <div className="caption-line">The perfect cover... <span style={{ opacity: 0.7 }}>more</span></div>
-                                <div className="audio-line">
-                                    <Music size={14} />
-                                    <div className="audio-marquee">Original Audio - {state.caption || 'username'}</div>
-                                </div>
                             </div>
-                        </div>
-                    )}
+                        );
+                    })()}
+
                     {state.showSafeZones && state.appMode === 'instagram' && (
                         <div className="ig-ui-overlay">
                             <div className="ig-top-bar">
                                 <div className="ig-user">
-                                    <div className="ig-avatar" style={{ backgroundImage: 'url(/stanbase-logo.png)', backgroundSize: 'cover' }} />
+                                    <div
+                                        className="ig-avatar"
+                                        style={{
+                                            backgroundImage: 'url(/stanbase-logo.svg)',
+                                            backgroundSize: 'cover',
+                                        }}
+                                    />
                                     <div className="ig-username">stanbasetech</div>
                                 </div>
                             </div>
@@ -255,26 +387,29 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             </div>
                         </div>
                     )}
-                    {state.appMode === 'website' || state.appMode === 'linkedin' ? (
+
+                    {state.appMode === 'website' ? (
                         <>
                             {state.caption && (
                                 <div className="caption" style={{ color: state.captionColor }}>
                                     {state.caption}
                                 </div>
                             )}
+                            <PhotoCreditMark state={state} />
                         </>
                     ) : isSplit ? (
                         <>
-                            <div className="split-image" style={{ backgroundImage: `url(${state.image})` }} />
+                            <div className="split-image">
+                                <img
+                                    src={state.image!}
+                                    alt=""
+                                    className="split-image__img"
+                                    style={coverImageLayerStyle(state)}
+                                />
+                                <PhotoCreditMark state={state} inSplit />
+                            </div>
                             <div className="split-content" style={{ backgroundColor: state.bgColor }}>
-                                {state.category && (
-                                    <div className="category" style={{ color: state.categoryColor }}>
-                                        {state.category}
-                                    </div>
-                                )}
-                                <div className="title" style={{ color: state.titleColor, textTransform: 'none' }}>
-                                    {getTransformedText(state.title, state.textTransform)}
-                                </div>
+                                <InstagramContentBlock state={state} />
                             </div>
                         </>
                     ) : (
@@ -283,44 +418,40 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                 <div
                                     className="overlay"
                                     style={{
-                                        background: `linear-gradient(to bottom, rgba(0,0,0,${state.overlayOpacity * 0.3}), rgba(0,0,0,${state.overlayOpacity}))`
+                                        background: `linear-gradient(to bottom, rgba(0,0,0,${state.overlayOpacity * 0.3}), rgba(0,0,0,${state.overlayOpacity}))`,
                                     }}
                                 />
                             )}
+                            <PhotoCreditMark state={state} />
                             <div
                                 className={`content ${state.useGlassmorphism ? 'glass-effect' : ''} ${state.useGlassmorphism ? `glass-width-${state.glassWidth}` : ''}`}
                                 style={{
-                                    justifyContent: state.appMode === 'reels' ? state.reelsAlignment : state.contentAlignment,
+                                    justifyContent: state.contentAlignment,
                                     backgroundColor: state.useGlassmorphism
                                         ? `rgba(255, 255, 255, ${state.glassBlur / 100})`
                                         : undefined,
                                 }}
                             >
-                                {(state.appMode === 'reels' ? state.reelsCategory : state.category) && (
-                                    <div className="category" style={{ color: state.categoryColor }}>
-                                        {state.appMode === 'reels' ? state.reelsCategory : state.category}
-                                    </div>
-                                )}
-                                <div className="title" style={{ color: state.titleColor, textTransform: 'none' }}>
-                                    {getTransformedText(state.appMode === 'reels' ? state.reelsTitle : state.title, state.textTransform)}
-                                </div>
+                                <InstagramContentBlock state={state} />
                             </div>
                         </>
                     )}
                 </div>
             </div>
 
-            <div className="download-actions">
-                <button className="download-btn" onClick={() => downloadImage('png')}>
-                    <Download size={18} /> Download PNG
-                </button>
-                <button className="download-btn" onClick={() => downloadImage('jpeg')}>
-                    <FileType size={18} /> Download JPG
-                </button>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <Button type="button" variant="default" size="sm" className="h-8 gap-1.5 text-xs" onClick={() => downloadImage('png')}>
+                    <Download className="size-3.5" />
+                    Download PNG
+                </Button>
+                <Button type="button" variant="outline" size="sm" className="h-8 gap-1.5 text-xs" onClick={() => downloadImage('jpeg')}>
+                    <FileType className="size-3.5" />
+                    Download JPG
+                </Button>
             </div>
             {state.appMode === 'website' && (
-                <p className="hint" style={{ marginTop: '12px', textAlign: 'center' }}>
-                    * Tip: Use <strong>JPG</strong> for best compression and small file size (under 500kb).
+                <p className="mt-2 max-w-md text-center text-[11px] leading-snug text-muted-foreground">
+                    Tip: use <span className="font-medium text-foreground">JPG</span> for smaller file size (under 500 KB).
                 </p>
             )}
         </div>
