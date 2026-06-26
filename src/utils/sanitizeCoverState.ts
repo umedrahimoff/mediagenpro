@@ -33,6 +33,8 @@ const ORIENTATIONS = new Set<CoverState['imageOrientation']>([
 
 const LAYOUT_MODES = new Set<CoverState['layoutMode']>(['overlay', 'split']);
 
+const IMAGE_FITS = new Set<CoverState['imageFit']>(['cover', 'blur']);
+
 const TEMPLATES = new Set<CoverState['template']>(['bold', 'minimal', 'quote']);
 
 const TEXT_TRANSFORMS = new Set<CoverState['textTransform']>([
@@ -208,6 +210,11 @@ export function sanitizeStoredCoverState(raw: unknown): Partial<CoverState> {
   const lm = src.layoutMode;
   if (typeof lm === 'string' && LAYOUT_MODES.has(lm as CoverState['layoutMode'])) {
     partial.layoutMode = lm as CoverState['layoutMode'];
+  }
+
+  const ifit = src.imageFit;
+  if (typeof ifit === 'string' && IMAGE_FITS.has(ifit as CoverState['imageFit'])) {
+    partial.imageFit = ifit as CoverState['imageFit'];
   }
 
   const tpl = src.template;

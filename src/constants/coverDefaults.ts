@@ -20,6 +20,7 @@ export const DEFAULT_STATE: CoverState = {
   imageFocusX: 50,
   imageFocusY: 50,
   imageZoom: 100,
+  imageFit: 'cover',
   isGradient: true,
   gradientPreset: 'brand',
   gradientFlow: 'diag-br',

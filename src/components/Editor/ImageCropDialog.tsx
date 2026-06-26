@@ -4,12 +4,14 @@ import type { CoverState } from '@/types/cover';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { coverImageLayerStyle, type CoverImageFocus } from '@/utils/coverImageLayerStyle';
 
 export type PendingBackgroundImage = {
   url: string;
   imageOrientation: CoverState['imageOrientation'];
   layoutMode: CoverState['layoutMode'];
+  imageFit: CoverState['imageFit'];
 };
 
 function canvasAspectRatio(state: Pick<CoverState, 'appMode' | 'ratio'>): number {
@@ -33,10 +35,12 @@ export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, o
     imageFocusY: 50,
     imageZoom: 100,
   });
+  const [fit, setFit] = useState<CoverState['imageFit']>('cover');
 
   useEffect(() => {
     if (open && pending) {
       setFocus({ imageFocusX: 50, imageFocusY: 50, imageZoom: 100 });
+      setFit(pending.imageFit);
     }
   }, [open, pending?.url]);
 
@@ -57,20 +61,46 @@ export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, o
               const previewH = previewMaxW / aspect;
               return (
                 <div
-                  className="mx-auto mt-3 overflow-hidden rounded-lg border border-border bg-muted"
+                  className="relative mx-auto mt-3 overflow-hidden rounded-lg border border-border bg-muted"
                   style={{ width: previewMaxW, height: previewH }}
                 >
+                  {fit === 'blur' && (
+                    <img src={pending.url} alt="" className="cover-image-backdrop" />
+                  )}
                   <img
                     src={pending.url}
                     alt=""
-                    className="block h-full w-full"
-                    style={coverImageLayerStyle(focus)}
+                    className={fit === 'blur' ? 'relative block h-full w-full' : 'block h-full w-full'}
+                    style={coverImageLayerStyle(focus, fit)}
                   />
                 </div>
               );
             })()}
 
             <div className="mt-4 flex flex-col gap-3">
+              <div className="flex flex-col gap-1.5">
+                <Label className="text-[11px] text-muted-foreground">Image fill</Label>
+                <ToggleGroup
+                  type="single"
+                  spacing={0}
+                  variant="outline"
+                  size="sm"
+                  value={fit}
+                  onValueChange={(v) => v && setFit(v as CoverState['imageFit'])}
+                  className="w-full"
+                >
+                  <ToggleGroupItem value="cover" className="flex-1 text-[11px]">
+                    Crop
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="blur" className="flex-1 text-[11px]">
+                    Fit + blur
+                  </ToggleGroupItem>
+                </ToggleGroup>
+                <p className="text-[10px] leading-snug text-muted-foreground">
+                  «Fit + blur» shows the whole photo and fills the sides with a blurred copy — best for
+                  photos that don&apos;t match the cover shape.
+                </p>
+              </div>
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between gap-2">
                   <Label className="text-[11px] text-muted-foreground">Horizontal</Label>
@@ -123,7 +153,7 @@ export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, o
                 size="sm"
                 className="h-8 text-xs"
                 onClick={() => {
-                  onApply({ ...pending, ...focus });
+                  onApply({ ...pending, ...focus, imageFit: fit });
                   onOpenChange(false);
                 }}
               >
