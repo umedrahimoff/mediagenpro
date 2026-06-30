@@ -138,10 +138,22 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
         let orientation: 'vertical' | 'square' | 'horizontal' = 'square';
         if (aspect <= 0.85) orientation = 'vertical';
         else if (aspect >= 1.3) orientation = 'horizontal';
+        // Ориентация рамки текущего формата.
+        const canvasOrientation: 'vertical' | 'square' | 'horizontal' =
+          state.appMode === 'website'
+            ? 'horizontal'
+            : state.ratio === 'square'
+              ? 'square'
+              : 'vertical';
+        // Если фото не совпадает по форме с рамкой — предлагаем «целиком + размытый фон»,
+        // чтобы горизонтальное фото в вертикальной обложке не обрезалось.
+        const suggestedFit: CoverState['imageFit'] =
+          orientation !== canvasOrientation ? 'blur' : 'cover';
         setPendingBackground({
           url,
           imageOrientation: orientation,
           layoutMode: 'overlay',
+          imageFit: suggestedFit,
         });
       };
       img.src = url;
@@ -196,6 +208,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             isGradient: false,
             imageOrientation: payload.imageOrientation,
             layoutMode: payload.layoutMode,
+            imageFit: payload.imageFit,
             imageFocusX: payload.imageFocusX,
             imageFocusY: payload.imageFocusY,
             imageZoom: payload.imageZoom,
@@ -565,6 +578,32 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 </Button>
               )}
             </div>
+
+            {!state.isGradient && state.image && state.layoutMode !== 'split' && (
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel>Image fill</FieldLabel>
+                <ToggleGroup
+                  type="single"
+                  spacing={0}
+                  variant="outline"
+                  size="sm"
+                  value={state.imageFit}
+                  onValueChange={(v) => v && onChange({ imageFit: v as CoverState['imageFit'] })}
+                  className={cn('w-full', compactToggle)}
+                >
+                  <ToggleGroupItem value="cover" className="flex-1">
+                    Crop
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="blur" className="flex-1">
+                    Fit + blur
+                  </ToggleGroupItem>
+                </ToggleGroup>
+                <p className="text-[10px] leading-snug text-muted-foreground">
+                  «Fit + blur» shows the whole photo and fills the sides with a blurred copy — great for
+                  horizontal photos in a vertical cover.
+                </p>
+              </div>
+            )}
 
             {!state.isGradient && state.image && state.appMode === 'instagram' && (
               <div className="flex flex-col gap-2">

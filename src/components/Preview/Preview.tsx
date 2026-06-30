@@ -310,7 +310,15 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                     )}
                     {!state.isGradient && state.image && !isSplit && (
                         <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden>
-                            <img src={state.image} alt="" className="block h-full w-full" style={coverImageLayerStyle(state)} />
+                            {state.imageFit === 'blur' && (
+                                <img src={state.image} alt="" className="cover-image-backdrop" />
+                            )}
+                            <img
+                                src={state.image}
+                                alt=""
+                                className={cn('block h-full w-full', state.imageFit === 'blur' && 'relative')}
+                                style={coverImageLayerStyle(state, state.imageFit)}
+                            />
                         </div>
                     )}
 

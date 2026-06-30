@@ -44,6 +44,13 @@ export type EventTitleAlign = 'left' | 'center' | 'right';
 /** Угол мелкой подписи-источника фото (водяной знак). */
 export type PhotoCreditCorner = 'br' | 'bl' | 'tr' | 'tl';
 
+/**
+ * Как фото вписывается в рамку обложки:
+ * - 'cover'  — кадрируем под рамку (object-fit: cover), фото обрезается;
+ * - 'blur'   — показываем фото целиком (contain), пустоты заполняем размытой копией фото.
+ */
+export type CoverImageFitId = 'cover' | 'blur';
+
 /** Текстура поверх фона. Новый вариант — дописать union, coverOverlayTextures.ts и Preview.css. */
 export type CoverOverlayTextureId = 'none' | 'paper_grain' | 'fine_halftone';
 
@@ -69,6 +76,8 @@ export interface CoverState {
   imageFocusY: number;
   /** Масштаб фона относительно точки фокуса, % (100 = без увеличения). */
   imageZoom: number;
+  /** Как фото вписано в рамку: кадрирование или «целиком + размытый фон». */
+  imageFit: CoverImageFitId;
   isGradient: boolean;
   /** Пресет градиента фона; «бренд» использует bgColor как стартовый цвет. */
   gradientPreset: GradientPresetId;
