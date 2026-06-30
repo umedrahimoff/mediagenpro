@@ -58,11 +58,17 @@ export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, o
             {(() => {
               const aspect = canvasAspectRatio(canvasState);
               const previewMaxW = 320;
-              const previewH = previewMaxW / aspect;
+              const previewMaxH = 320;
+              let previewW = previewMaxW;
+              let previewH = previewW / aspect;
+              if (previewH > previewMaxH) {
+                previewH = previewMaxH;
+                previewW = previewH * aspect;
+              }
               return (
                 <div
                   className="relative mx-auto mt-3 overflow-hidden rounded-lg border border-border bg-muted"
-                  style={{ width: previewMaxW, height: previewH }}
+                  style={{ width: previewW, height: previewH }}
                 >
                   {fit === 'blur' && (
                     <img src={pending.url} alt="" className="cover-image-backdrop" />
