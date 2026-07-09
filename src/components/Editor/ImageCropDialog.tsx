@@ -9,7 +9,6 @@ import { coverImageLayerStyle, type CoverImageFocus } from '@/utils/coverImageLa
 
 export type PendingBackgroundImage = {
   url: string;
-  imageOrientation: CoverState['imageOrientation'];
   layoutMode: CoverState['layoutMode'];
   imageFit: CoverState['imageFit'];
 };

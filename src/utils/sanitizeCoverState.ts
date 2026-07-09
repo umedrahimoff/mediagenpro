@@ -1,13 +1,10 @@
 import type {
   CoverState,
   CoverFontPreset,
-  EventSpeaker,
-  EventTitleAlign,
   GradientFlowId,
   GradientPresetId,
   GradientStop,
   PhotoCreditCorner,
-  PostFormat,
 } from '../types/cover';
 import { isCoverFontPreset } from '../constants/coverFonts';
 import { isCoverOverlayTextureId } from '../constants/coverOverlayTextures';
@@ -23,12 +20,6 @@ const RATIOS = new Set<CoverState['ratio']>([
   'square',
   'horizontal',
   'story',
-]);
-
-const ORIENTATIONS = new Set<CoverState['imageOrientation']>([
-  'vertical',
-  'square',
-  'horizontal',
 ]);
 
 const LAYOUT_MODES = new Set<CoverState['layoutMode']>(['overlay', 'split']);
@@ -54,13 +45,7 @@ const GLASS_WIDTHS = new Set<CoverState['glassWidth']>(['full', 'fit']);
 
 const LOGO_TINTS = new Set<LogoTint>(['original', 'white', 'black']);
 
-const POST_FORMATS = new Set<PostFormat>(['news', 'event', 'promo']);
-
-const EVENT_TITLE_ALIGNS = new Set<EventTitleAlign>(['left', 'center', 'right']);
-
 const PHOTO_CREDIT_CORNERS = new Set<PhotoCreditCorner>(['br', 'bl', 'tr', 'tl']);
-
-const MAX_EVENT_SPEAKERS = 6;
 
 const MAX_GRADIENT_STOPS = 10;
 
@@ -77,22 +62,6 @@ function sanitizeGradientStopsArray(raw: unknown): GradientStop[] | null | undef
   }
   out.sort((a, b) => a.percent - b.percent);
   if (out.length < 2) return null;
-  return out;
-}
-
-function sanitizeEventSpeakers(raw: unknown): EventSpeaker[] | undefined {
-  if (!Array.isArray(raw)) return undefined;
-  const out: EventSpeaker[] = [];
-  for (const item of raw.slice(0, MAX_EVENT_SPEAKERS)) {
-    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
-    const o = item as Record<string, unknown>;
-    const name = typeof o.name === 'string' ? o.name.slice(0, 160) : '';
-    const company = typeof o.company === 'string' ? o.company.slice(0, 160) : '';
-    let photo: string | null = null;
-    if (o.photo === null) photo = null;
-    else if (typeof o.photo === 'string' && o.photo.length > 0) photo = o.photo;
-    out.push({ name, company, photo });
-  }
   return out;
 }
 
@@ -143,11 +112,6 @@ export function sanitizeStoredCoverState(raw: unknown): Partial<CoverState> {
     partial.appMode = mode as CoverState['appMode'];
   }
 
-  const pf = src.postFormat;
-  if (typeof pf === 'string' && POST_FORMATS.has(pf as PostFormat)) {
-    partial.postFormat = pf as PostFormat;
-  }
-
   const cfp = src.coverFontPreset;
   if (typeof cfp === 'string' && isCoverFontPreset(cfp)) {
     partial.coverFontPreset = cfp as CoverFontPreset;
@@ -186,26 +150,11 @@ export function sanitizeStoredCoverState(raw: unknown): Partial<CoverState> {
     partial.overlayTextureOpacity = Math.min(100, Math.max(0, Math.round(oto)));
   }
 
-  const eta = src.eventTitleAlign;
-  if (typeof eta === 'string' && EVENT_TITLE_ALIGNS.has(eta as EventTitleAlign)) {
-    partial.eventTitleAlign = eta as EventTitleAlign;
-  }
-
-  const em = src.eventMeta;
-  if (typeof em === 'string') partial.eventMeta = em.slice(0, 400);
-
-  const speakers = sanitizeEventSpeakers(src.eventSpeakers);
-  if (speakers !== undefined) partial.eventSpeakers = speakers;
-
   const ratio = src.ratio;
   if (typeof ratio === 'string' && RATIOS.has(ratio as CoverState['ratio'])) {
     partial.ratio = ratio as CoverState['ratio'];
   }
 
-  const io = src.imageOrientation;
-  if (typeof io === 'string' && ORIENTATIONS.has(io as CoverState['imageOrientation'])) {
-    partial.imageOrientation = io as CoverState['imageOrientation'];
-  }
 
   const lm = src.layoutMode;
   if (typeof lm === 'string' && LAYOUT_MODES.has(lm as CoverState['layoutMode'])) {

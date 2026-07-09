@@ -68,7 +68,6 @@ import { logoTintFilter, MAX_LOGOS } from '@/utils/logoLayout';
 import { ImageCropDialog, type PendingBackgroundImage } from './ImageCropDialog';
 
 const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
-const MAX_EVENT_SPEAKERS = 6;
 const MAX_CUSTOM_GRADIENT_STOPS = 8;
 
 function hexForNativeColorInput(hex: string): string {
@@ -113,7 +112,6 @@ function EditorSection({ title, children }: { title: string; children: React.Rea
 
 export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
   const [pendingBackground, setPendingBackground] = useState<PendingBackgroundImage | null>(null);
-  const [speakerPhotoIdx, setSpeakerPhotoIdx] = useState<number | null>(null);
 
   const readImageFile = (file: File, onReady: (dataUrl: string) => void) => {
     if (file.size > MAX_IMAGE_BYTES) {
@@ -151,7 +149,6 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
           orientation !== canvasOrientation ? 'blur' : 'cover';
         setPendingBackground({
           url,
-          imageOrientation: orientation,
           layoutMode: 'overlay',
           imageFit: suggestedFit,
         });
@@ -159,18 +156,6 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
       img.src = url;
     });
     e.target.value = '';
-  };
-
-  const handleSpeakerPhotoUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    const idx = speakerPhotoIdx;
-    e.target.value = '';
-    if (!file || idx === null) return;
-    readImageFile(file, (url) => {
-      const next = state.eventSpeakers.map((s, i) => (i === idx ? { ...s, photo: url } : s));
-      onChange({ eventSpeakers: next });
-    });
-    setSpeakerPhotoIdx(null);
   };
 
   const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -207,7 +192,6 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
           onChange({
             image: payload.url,
             isGradient: false,
-            imageOrientation: payload.imageOrientation,
             layoutMode: payload.layoutMode,
             imageFit: payload.imageFit,
             imageFocusX: payload.imageFocusX,
@@ -219,25 +203,11 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
       />
       <input id="file-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
       <input id="logo-upload" type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-      <input
-        id="speaker-photo-upload"
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleSpeakerPhotoUpload}
-      />
 
       <div>
         <h2 className="text-xs font-medium text-muted-foreground">
           {state.appMode === 'website' ? 'Website' : 'Instagram'}
         </h2>
-        {state.appMode === 'instagram' && (
-          <p className="mt-0.5 text-[10px] leading-snug text-muted-foreground">
-            {state.postFormat === 'news' && 'News and info posts'}
-            {state.postFormat === 'event' && 'Events: speakers, date & place'}
-            {state.postFormat === 'promo' && 'Promo — same fields as news for now'}
-          </p>
-        )}
       </div>
 
       <EditorSection title="Cover font">
@@ -739,153 +709,16 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
         </div>
       </EditorSection>
 
-      {state.appMode === 'instagram' && state.postFormat === 'event' && (
-        <EditorSection title="Event">
-          <div className="flex flex-col gap-2">
-            <FieldLabel>Title on cover</FieldLabel>
-            <div className="grid grid-cols-3 gap-1">
-              {(
-                [
-                  { value: 'left' as const, label: 'Left' },
-                  { value: 'center' as const, label: 'Center' },
-                  { value: 'right' as const, label: 'Right' },
-                ] as const
-              ).map(({ value, label }) => (
-                <Button
-                  key={value}
-                  type="button"
-                  variant={state.eventTitleAlign === value ? 'default' : 'outline'}
-                  size="sm"
-                  className="h-8 text-xs"
-                  onClick={() => onChange({ eventTitleAlign: value })}
-                >
-                  {label}
-                </Button>
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <FieldLabel>Date & place</FieldLabel>
-            <Textarea
-              rows={2}
-              className="min-h-[2.75rem] py-1.5 text-xs"
-              value={state.eventMeta}
-              onChange={(e) => onChange({ eventMeta: e.target.value })}
-              placeholder="e.g. Apr 12 · 6:00 PM · Dubai"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between gap-2">
-              <FieldLabel>Speakers</FieldLabel>
-              <span className="text-[10px] tabular-nums text-muted-foreground">
-                {state.eventSpeakers.length}/{MAX_EVENT_SPEAKERS}
-              </span>
-            </div>
-            <p className="text-[10px] leading-snug text-muted-foreground">
-              Photo on the left on the cover, name and company on the right; without photo — initial.
-            </p>
-            {state.eventSpeakers.map((sp, index) => (
-              <div
-                key={`speaker-${index}`}
-                className="rounded-md border border-border bg-muted/30 p-2"
-              >
-                <div className="flex items-start gap-2">
-                  <button
-                    type="button"
-                    className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted"
-                    onClick={() => {
-                      setSpeakerPhotoIdx(index);
-                      document.getElementById('speaker-photo-upload')?.click();
-                    }}
-                    title="Speaker photo"
-                  >
-                    {sp.photo ? (
-                      <img src={sp.photo} alt="" className="size-full object-cover" />
-                    ) : (
-                      <Upload className="size-3.5 opacity-50" />
-                    )}
-                  </button>
-                  <div className="min-w-0 flex-1 flex flex-col gap-1">
-                    <Input
-                      className="h-7 text-xs"
-                      value={sp.name}
-                      onChange={(e) => {
-                        const next = state.eventSpeakers.map((s, i) =>
-                          i === index ? { ...s, name: e.target.value } : s
-                        );
-                        onChange({ eventSpeakers: next });
-                      }}
-                      placeholder="Full name"
-                    />
-                    <Input
-                      className="h-7 text-xs"
-                      value={sp.company}
-                      onChange={(e) => {
-                        const next = state.eventSpeakers.map((s, i) =>
-                          i === index ? { ...s, company: e.target.value } : s
-                        );
-                        onChange({ eventSpeakers: next });
-                      }}
-                      placeholder="Company"
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-xs"
-                    className="shrink-0"
-                    title="Remove"
-                    onClick={() =>
-                      onChange({
-                        eventSpeakers: state.eventSpeakers.filter((_, i) => i !== index),
-                      })
-                    }
-                  >
-                    <X className="size-3" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-8 text-xs"
-              disabled={state.eventSpeakers.length >= MAX_EVENT_SPEAKERS}
-              onClick={() =>
-                onChange({
-                  eventSpeakers: [...state.eventSpeakers, { name: '', company: '', photo: null }],
-                })
-              }
-            >
-              Add speaker
-            </Button>
-          </div>
-        </EditorSection>
-      )}
-
       {state.appMode === 'instagram' && (
         <EditorSection title="Typography">
           <div className="flex flex-col gap-2">
-            <FieldLabel>
-              {state.template === 'quote'
-                ? 'Quote text'
-                : state.postFormat === 'event'
-                  ? 'Headline / topic'
-                  : 'Title'}
-            </FieldLabel>
+            <FieldLabel>{state.template === 'quote' ? 'Quote text' : 'Title'}</FieldLabel>
             <Textarea
               rows={3}
               className="min-h-[4.25rem] py-1.5 text-xs"
               value={state.title}
               onChange={(e) => onChange({ title: e.target.value })}
-              placeholder={
-                state.template === 'quote'
-                  ? 'Enter quote text…'
-                  : state.postFormat === 'event'
-                    ? 'Session topic or event name'
-                    : 'Enter headline…'
-              }
+              placeholder={state.template === 'quote' ? 'Enter quote text…' : 'Enter headline…'}
             />
             <ToggleGroup
               type="single"
@@ -953,45 +786,22 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
           <ColorPicker label="Title color" value={state.titleColor} onChangeColor={(c) => onChange({ titleColor: c })} />
 
           <div className="flex flex-col gap-2">
-            <FieldLabel>
-              {state.template === 'quote'
-                ? 'Author'
-                : state.postFormat === 'event'
-                  ? 'Series / organizer'
-                  : 'Category'}
-            </FieldLabel>
+            <FieldLabel>{state.template === 'quote' ? 'Author' : 'Category'}</FieldLabel>
             <Input
               className="h-7 text-xs"
               value={state.category}
               onChange={(e) => onChange({ category: e.target.value })}
-              placeholder={
-                state.template === 'quote'
-                  ? 'e.g. Steve Jobs'
-                  : state.postFormat === 'event'
-                    ? 'e.g. STANBASE MEETUP'
-                    : 'e.g. VISUAL DESIGN'
-              }
+              placeholder={state.template === 'quote' ? 'e.g. Steve Jobs' : 'e.g. VISUAL DESIGN'}
             />
             <div className="flex flex-wrap gap-1.5">
-              {(state.postFormat === 'event'
-                ? (
-                    [
-                      { value: 'MEETUP', label: 'Meetup' },
-                      { value: 'SUMMIT', label: 'Summit' },
-                      { value: 'WEBINAR', label: 'Webinar' },
-                      { value: 'PANEL', label: 'Panel' },
-                      { value: 'FORUM', label: 'Forum' },
-                    ] as const
-                  )
-                : (
-                    [
-                      { value: 'NEWS', label: 'News' },
-                      { value: 'INVESTMENTS', label: 'Investments' },
-                      { value: 'STARTUPS', label: 'Startups' },
-                      { value: 'ANALYTICS', label: 'Analytics' },
-                      { value: 'FOUNDERS', label: 'Founders' },
-                    ] as const
-                  )
+              {(
+                [
+                  { value: 'NEWS', label: 'News' },
+                  { value: 'INVESTMENTS', label: 'Investments' },
+                  { value: 'STARTUPS', label: 'Startups' },
+                  { value: 'ANALYTICS', label: 'Analytics' },
+                  { value: 'FOUNDERS', label: 'Founders' },
+                ] as const
               ).map((preset) => (
                 <Button
                   key={preset.value}
