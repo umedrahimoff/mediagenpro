@@ -47,6 +47,8 @@ const LOGO_TINTS = new Set<LogoTint>(['original', 'white', 'black']);
 
 const PHOTO_CREDIT_CORNERS = new Set<PhotoCreditCorner>(['br', 'bl', 'tr', 'tl']);
 
+const KICKER_STYLES = new Set<CoverState['kickerStyle']>(['text', 'pill']);
+
 const MAX_GRADIENT_STOPS = 10;
 
 function sanitizeGradientStopsArray(raw: unknown): GradientStop[] | null | undefined {
@@ -196,6 +198,17 @@ export function sanitizeStoredCoverState(raw: unknown): Partial<CoverState> {
   if (taf !== undefined) partial.titleAutoFit = taf;
   const cat = pickString(src, 'category');
   if (cat !== undefined) partial.category = cat;
+
+  const ks = src.kickerStyle;
+  if (typeof ks === 'string' && KICKER_STYLES.has(ks as CoverState['kickerStyle'])) {
+    partial.kickerStyle = ks as CoverState['kickerStyle'];
+  }
+
+  const dl = pickString(src, 'dataLine');
+  if (dl !== undefined) partial.dataLine = dl.slice(0, 120);
+
+  const pd = pickBool(src, 'photoDuotone');
+  if (pd !== undefined) partial.photoDuotone = pd;
 
   const img = pickNullableImage(src, 'image');
   if (img !== undefined) partial.image = img;

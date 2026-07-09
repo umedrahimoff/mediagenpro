@@ -577,6 +577,25 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             )}
 
             {!state.isGradient && state.image && state.appMode === 'instagram' && (
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="photo-duotone"
+                    checked={state.photoDuotone}
+                    onCheckedChange={(c) => onChange({ photoDuotone: c === true })}
+                  />
+                  <Label htmlFor="photo-duotone" className="text-xs font-normal leading-snug">
+                    Duotone (brand tint)
+                  </Label>
+                </div>
+                <p className="text-[10px] leading-snug text-muted-foreground">
+                  Tints any photo into your brand color for a consistent, editorial feed. Uses the
+                  background color as the tint.
+                </p>
+              </div>
+            )}
+
+            {!state.isGradient && state.image && state.appMode === 'instagram' && (
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <Label className="flex-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
@@ -817,6 +836,22 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 </Button>
               ))}
             </div>
+            <ToggleGroup
+              type="single"
+              spacing={0}
+              variant="outline"
+              size="sm"
+              value={state.kickerStyle}
+              onValueChange={(v) => v && onChange({ kickerStyle: v as CoverState['kickerStyle'] })}
+              className={cn('w-full justify-stretch', compactToggle)}
+            >
+              <ToggleGroupItem value="text" className="flex-1">
+                Text
+              </ToggleGroupItem>
+              <ToggleGroupItem value="pill" className="flex-1">
+                Pill
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
 
           <ColorPicker
@@ -824,6 +859,19 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
             value={state.categoryColor}
             onChangeColor={(c) => onChange({ categoryColor: c })}
           />
+
+          <div className="flex flex-col gap-2">
+            <FieldLabel>Data line (optional)</FieldLabel>
+            <Input
+              className="h-7 text-xs"
+              value={state.dataLine}
+              onChange={(e) => onChange({ dataLine: e.target.value })}
+              placeholder="e.g. $70M · Series B"
+            />
+            <p className="text-[10px] leading-snug text-muted-foreground">
+              Shown above the headline in the accent color — strong for funding and stat news.
+            </p>
+          </div>
         </EditorSection>
       )}
 

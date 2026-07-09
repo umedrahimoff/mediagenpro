@@ -117,6 +117,32 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Кикер-пилюля: заливная плашка вместо текста. Цвет фона/текста задаётся inline. */
+.category.category--pill {
+    align-self: flex-start;
+    padding: 4px 9px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    font-size: 12px;
+    line-height: 1.1;
+    text-shadow: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Строка данных над заголовком (например «$70M · Series B»). */
+.data-line {
+    font-family: var(--font-primary);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.gradient-mode .data-line {
+    text-shadow: none;
+}
+
 .title {
     font-family: var(--font-primary);
     font-size: calc(22px * var(--title-scale, 1) * var(--title-fit, 1));
