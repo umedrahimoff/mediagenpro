@@ -69,6 +69,10 @@ export interface CoverState {
   /** Пресет шрифта для текста на обложке. */
   coverFontPreset: CoverFontPreset;
   title: string;
+  /** Масштаб заголовка в % (100 = базовый размер режима/шаблона). Умножает font-size во всех макетах. */
+  titleScale: number;
+  /** Авто-подгонка: ужимать заголовок, если он не влезает в текстовый блок. titleScale работает как верхняя граница. */
+  titleAutoFit: boolean;
   category: string;
   image: string | null;
   /** Точка кадрирования при object-fit: cover, % по осям (0–100). */

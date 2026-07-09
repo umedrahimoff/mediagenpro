@@ -15,6 +15,8 @@ export const DEFAULT_STATE: CoverState = {
   postFormat: 'news',
   coverFontPreset: 'instagram',
   title: 'THE FUTURE OF\nVENTURE CAPITAL',
+  titleScale: 100,
+  titleAutoFit: true,
   category: 'SaaS Trends',
   image: null,
   imageFocusX: 50,

@@ -239,6 +239,12 @@ export function sanitizeStoredCoverState(raw: unknown): Partial<CoverState> {
 
   const s = pickString(src, 'title');
   if (s !== undefined) partial.title = s;
+
+  const tsc = pickFiniteNumber(src, 'titleScale');
+  if (tsc !== undefined) partial.titleScale = Math.min(150, Math.max(50, Math.round(tsc)));
+
+  const taf = pickBool(src, 'titleAutoFit');
+  if (taf !== undefined) partial.titleAutoFit = taf;
   const cat = pickString(src, 'category');
   if (cat !== undefined) partial.category = cat;
 

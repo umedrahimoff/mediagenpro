@@ -905,6 +905,48 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
                 As typed
               </ToggleGroupItem>
             </ToggleGroup>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="title-autofit"
+                  checked={state.titleAutoFit}
+                  onCheckedChange={(c) => onChange({ titleAutoFit: c === true })}
+                />
+                <Label htmlFor="title-autofit" className="text-xs font-normal leading-snug">
+                  Auto-fit long titles
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Label className="flex-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  {state.titleAutoFit ? 'Max title size' : 'Title size'}
+                </Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  title="Reset to 100%"
+                  onClick={() => onChange({ titleScale: 100 })}
+                >
+                  <RotateCcw className="size-3" />
+                </Button>
+                <span className="text-[11px] tabular-nums text-muted-foreground">
+                  {state.titleScale}%
+                </span>
+              </div>
+              <Slider
+                min={50}
+                max={150}
+                step={5}
+                value={[state.titleScale]}
+                onValueChange={([v]) => onChange({ titleScale: v ?? 100 })}
+              />
+              {state.titleAutoFit && (
+                <p className="text-[11px] leading-snug text-muted-foreground">
+                  Long headlines shrink to fit; the slider caps the largest size.
+                </p>
+              )}
+            </div>
           </div>
 
           <ColorPicker label="Title color" value={state.titleColor} onChangeColor={(c) => onChange({ titleColor: c })} />
