@@ -58,7 +58,13 @@ export interface CoverState {
   /** Авто-подгонка: ужимать заголовок, если он не влезает в текстовый блок. titleScale работает как верхняя граница. */
   titleAutoFit: boolean;
   category: string;
+  /** Стиль кикера (категории): обычный текст или заливная плашка-пилюля. */
+  kickerStyle: 'text' | 'pill';
+  /** Необязательная строка данных над заголовком (например, «$70M · Series B»). Пустая — не показывается. */
+  dataLine: string;
   image: string | null;
+  /** Дуотон: тонировать фото-фон в фирменный цвет (bgColor). Только режим фото-фона. */
+  photoDuotone: boolean;
   /** Точка кадрирования при object-fit: cover, % по осям (0–100). */
   imageFocusX: number;
   imageFocusY: number;

@@ -6,7 +6,7 @@ import { Download, FileType } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { logoTintFilter, widthForLogoInRow } from '@/utils/logoLayout';
-import { coverImageLayerStyle } from '@/utils/coverImageLayerStyle';
+import { coverImageLayerStyle, duotoneFilter } from '@/utils/coverImageLayerStyle';
 import { coverFontStack } from '@/constants/coverFonts';
 import { COVER_OVERLAY_TEXTURE_META } from '@/constants/coverOverlayTextures';
 import { resolveCoverBackgroundCss } from '@/utils/coverBackground';
@@ -35,12 +35,38 @@ const getTransformedText = (text: string, transform: 'none' | 'uppercase' | 'low
     return text;
 };
 
+/** Читаемый цвет текста (тёмный/белый) на заданном фоне — для кикер-пилюли. */
+function readableOn(hex: string): string {
+    const m = hex.replace('#', '');
+    const full = m.length === 3 ? m.split('').map((c) => c + c).join('') : m;
+    const r = parseInt(full.slice(0, 2), 16);
+    const g = parseInt(full.slice(2, 4), 16);
+    const b = parseInt(full.slice(4, 6), 16);
+    if ([r, g, b].some(Number.isNaN)) return '#FFFFFF';
+    const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return lum > 0.6 ? '#141B2E' : '#FFFFFF';
+}
+
 function InstagramContentBlock({ state }: { state: CoverState }) {
+    const dataLine = state.dataLine.trim();
     return (
         <div className="instagram-cover-text">
-            {state.category && (
-                <div className="category" style={{ color: state.categoryColor }}>
-                    {state.category}
+            {state.category &&
+                (state.kickerStyle === 'pill' ? (
+                    <div
+                        className="category category--pill"
+                        style={{ backgroundColor: state.categoryColor, color: readableOn(state.categoryColor) }}
+                    >
+                        {state.category}
+                    </div>
+                ) : (
+                    <div className="category" style={{ color: state.categoryColor }}>
+                        {state.category}
+                    </div>
+                ))}
+            {dataLine && (
+                <div className="data-line" style={{ color: state.categoryColor }}>
+                    {dataLine}
                 </div>
             )}
             <div
@@ -243,6 +269,9 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
     const isSplit =
         state.appMode === 'instagram' && !state.isGradient && state.image && state.layoutMode === 'split';
 
+    // Дуотон активен только для фото-фона; тонируем в фирменный bgColor.
+    const duotoneColor = !state.isGradient && state.image && state.photoDuotone ? state.bgColor : undefined;
+
     const bgStyle: React.CSSProperties = state.isGradient
         ? {
               background: resolveCoverBackgroundCss(
@@ -322,13 +351,22 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                     {!state.isGradient && state.image && !isSplit && (
                         <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden>
                             {state.imageFit === 'blur' && (
-                                <img src={state.image} alt="" className="cover-image-backdrop" />
+                                <img
+                                    src={state.image}
+                                    alt=""
+                                    className="cover-image-backdrop"
+                                    style={
+                                        duotoneColor
+                                            ? { filter: `blur(20px) saturate(1.1) brightness(0.9) ${duotoneFilter(duotoneColor)}` }
+                                            : undefined
+                                    }
+                                />
                             )}
                             <img
                                 src={state.image}
                                 alt=""
                                 className={cn('block h-full w-full', state.imageFit === 'blur' && 'relative')}
-                                style={coverImageLayerStyle(state, state.imageFit)}
+                                style={coverImageLayerStyle(state, state.imageFit, duotoneColor)}
                             />
                         </div>
                     )}
@@ -422,7 +460,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                     src={state.image!}
                                     alt=""
                                     className="split-image__img"
-                                    style={coverImageLayerStyle(state)}
+                                    style={coverImageLayerStyle(state, 'cover', duotoneColor)}
                                 />
                                 <PhotoCreditMark state={state} inSplit />
                             </div>
