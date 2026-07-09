@@ -26,7 +26,9 @@ export function useCoverUndoRedo(initialPresent: CoverState) {
   const [hasPendingBurst, setHasPendingBurst] = useState(false);
 
   const presentRef = useRef(present);
-  presentRef.current = present;
+  useEffect(() => {
+    presentRef.current = present;
+  });
 
   const burstStartRef = useRef<CoverState | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -115,8 +117,10 @@ export function useCoverUndoRedo(initialPresent: CoverState) {
 
   const canUndoRef = useRef(canUndo);
   const canRedoRef = useRef(canRedo);
-  canUndoRef.current = canUndo;
-  canRedoRef.current = canRedo;
+  useEffect(() => {
+    canUndoRef.current = canUndo;
+    canRedoRef.current = canRedo;
+  });
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {

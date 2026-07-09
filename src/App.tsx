@@ -14,7 +14,9 @@ function App() {
   const [initialSnapshot] = useState(() => loadCoverStateFromStorage(localStorage.getItem(STORAGE_KEY)));
   const { state, updateState, undo, redo, canUndo, canRedo } = useCoverUndoRedo(initialSnapshot);
   const stateRef = useRef(state);
-  stateRef.current = state;
+  useEffect(() => {
+    stateRef.current = state;
+  });
 
   useEffect(() => {
     saveCoverStateToStorage(state);

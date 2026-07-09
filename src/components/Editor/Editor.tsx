@@ -196,6 +196,7 @@ export const Editor: React.FC<EditorProps> = ({ state, onChange }) => {
   return (
     <div className="flex flex-col gap-2 pb-3">
       <ImageCropDialog
+        key={pendingBackground?.url ?? 'none'}
         open={pendingBackground !== null}
         pending={pendingBackground}
         canvasState={state}
