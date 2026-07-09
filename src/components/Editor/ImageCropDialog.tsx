@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Dialog } from 'radix-ui';
 import type { CoverState } from '@/types/cover';
 import { Button } from '@/components/ui/button';
@@ -30,19 +30,14 @@ type Props = {
 };
 
 export const ImageCropDialog: React.FC<Props> = ({ open, pending, canvasState, onOpenChange, onApply }) => {
+  // Состояние инициализируется из pending; сброс на новую картинку — через key-ремоунт
+  // компонента в Editor (key={pending?.url}), а не setState в эффекте.
   const [focus, setFocus] = useState<CoverImageFocus>({
     imageFocusX: 50,
     imageFocusY: 50,
     imageZoom: 100,
   });
-  const [fit, setFit] = useState<CoverState['imageFit']>('cover');
-
-  useEffect(() => {
-    if (open && pending) {
-      setFocus({ imageFocusX: 50, imageFocusY: 50, imageZoom: 100 });
-      setFit(pending.imageFit);
-    }
-  }, [open, pending?.url]);
+  const [fit, setFit] = useState<CoverState['imageFit']>(pending?.imageFit ?? 'cover');
 
   return (
     <Dialog.Root open={Boolean(open && pending)} onOpenChange={onOpenChange}>

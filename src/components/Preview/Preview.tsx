@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import type { CoverState } from '../../types/cover';
 import type { Options } from 'html-to-image/lib/types';
 import * as htmlToImage from 'html-to-image';
@@ -129,6 +129,63 @@ function PhotoCreditMark({ state, inSplit }: { state: CoverState; inSplit?: bool
 
 export const Preview: React.FC<PreviewProps> = ({ state }) => {
     const ref = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    /**
+     * Авто-подгонка размера заголовка: если текст не влезает в текстовый блок, ужимаем через
+     * CSS-переменную --title-fit (умножается на ручной --title-scale). titleScale задаёт верхнюю
+     * границу — авто-режим только уменьшает, никогда не увеличивает.
+     *
+     * Меряем высоту внутреннего текстового блока (.instagram-cover-text) против доступной высоты
+     * контейнера, а не scrollHeight контейнера: при justify-content: flex-end переполнение уходит
+     * ВВЕРХ за край, и scrollHeight его не учитывает (всегда равен clientHeight).
+     */
+    useLayoutEffect(() => {
+        const cover = ref.current;
+
+        const applyFit = () => {
+            if (!cover) return;
+            const box = contentRef.current;
+            const inner = box?.querySelector<HTMLElement>('.instagram-cover-text');
+            if (!state.titleAutoFit || !box || !inner || state.appMode === 'website') {
+                cover.style.setProperty('--title-fit', '1');
+                return;
+            }
+            const MIN = 0.5;
+            const s = getComputedStyle(box);
+            const avail =
+                box.clientHeight - parseFloat(s.paddingTop || '0') - parseFloat(s.paddingBottom || '0');
+            const fits = () => inner.scrollHeight <= avail + 0.5;
+
+            cover.style.setProperty('--title-fit', '1');
+            void inner.scrollHeight; // форсим рефлоу
+            if (fits()) return;
+
+            let lo = MIN;
+            let hi = 1;
+            for (let i = 0; i < 14; i++) {
+                const mid = (lo + hi) / 2;
+                cover.style.setProperty('--title-fit', String(mid));
+                void inner.scrollHeight;
+                if (fits()) lo = mid;
+                else hi = mid;
+            }
+            cover.style.setProperty('--title-fit', String(lo));
+        };
+
+        applyFit();
+
+        // Шрифты (Inter/Geist) могут догрузиться после первого замера — пересчитываем.
+        let cancelled = false;
+        if (typeof document !== 'undefined' && document.fonts && document.fonts.status !== 'loaded') {
+            document.fonts.ready.then(() => {
+                if (!cancelled) applyFit();
+            });
+        }
+        return () => {
+            cancelled = true;
+        };
+    }, [state]);
 
     const downloadImage = async (format: 'png' | 'jpeg') => {
         if (!ref.current) return;
@@ -277,6 +334,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
 
     const coverFontVars = {
         ['--font-primary' as string]: coverFontStack(state.coverFontPreset),
+        ['--title-scale' as string]: String((state.titleScale ?? 100) / 100),
     } as React.CSSProperties;
 
     return (
@@ -416,6 +474,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                                 <PhotoCreditMark state={state} inSplit />
                             </div>
                             <div
+                                ref={contentRef}
                                 className="split-content"
                                 style={{
                                     backgroundColor: state.bgColor,
@@ -437,6 +496,7 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
                             )}
                             <PhotoCreditMark state={state} />
                             <div
+                                ref={contentRef}
                                 className={`content ${state.useGlassmorphism ? 'glass-effect' : ''} ${state.useGlassmorphism ? `glass-width-${state.glassWidth}` : ''}`}
                                 style={{
                                     justifyContent: state.contentAlignment,
