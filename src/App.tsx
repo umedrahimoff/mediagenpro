@@ -6,8 +6,6 @@ import { STORAGE_KEY } from './constants/coverDefaults';
 import { useCoverUndoRedo } from '@/hooks/useCoverUndoRedo';
 import { loadCoverStateFromStorage, saveCoverStateToStorage } from './utils/sanitizeCoverState';
 import { Button } from '@/components/ui/button';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { cn } from '@/lib/utils';
 
 function App() {
   const [initialSnapshot] = useState(() => loadCoverStateFromStorage(localStorage.getItem(STORAGE_KEY)));
@@ -64,27 +62,6 @@ function App() {
               <Redo2 className="size-3.5" />
             </Button>
           </div>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-1.5 md:gap-2">
-          <ToggleGroup
-            type="single"
-            spacing={0}
-            variant="outline"
-            size="sm"
-            value={state.appMode}
-            onValueChange={(v) => {
-              if (v === 'instagram') updateState({ appMode: 'instagram', ratio: 'vertical' });
-              if (v === 'website') updateState({ appMode: 'website', ratio: 'horizontal' });
-            }}
-            className="max-md:w-full max-md:justify-stretch [&_[data-slot=toggle-group-item]]:h-7 [&_[data-slot=toggle-group-item]]:px-2 [&_[data-slot=toggle-group-item]]:text-xs"
-          >
-            <ToggleGroupItem value="instagram" className={cn('max-md:flex-1')}>
-              Instagram
-            </ToggleGroupItem>
-            <ToggleGroupItem value="website" className={cn('max-md:flex-1')}>
-              Website
-            </ToggleGroupItem>
-          </ToggleGroup>
         </div>
       </header>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
