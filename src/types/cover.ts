@@ -1,39 +1,13 @@
 /** Шрифт текста на превью/экспорте обложки. По умолчанию — системный стек в духе Instagram. */
 export type CoverFontPreset = 'instagram' | 'geist' | 'inter' | 'editorial';
 
-/** Пресет фонового градиента (режим «градиент»). */
+/** Пресет фонового градиента (режим «градиент»). «brand» использует bgColor как стартовый цвет. */
 export type GradientPresetId =
   | 'brand'
   | 'mac_big_sur'
   | 'mac_monterey'
   | 'mac_ventura'
   | 'mac_sonoma';
-
-/** Направление линейного градиента (угол CSS): куда «тянется» переход между стопами. */
-export type GradientFlowId =
-  | 'to-top'
-  | 'to-bottom'
-  | 'to-left'
-  | 'to-right'
-  | 'diag-tr'
-  | 'diag-br'
-  | 'diag-bl'
-  | 'diag-tl';
-
-/** Форма градиента: линейный или радиал / «пятно» из угла. */
-export type GradientGeometryId =
-  | 'linear'
-  | 'radial_center'
-  | 'radial_spot_tl'
-  | 'radial_spot_tr'
-  | 'radial_spot_bl'
-  | 'radial_spot_br';
-
-/** Один цветовой стоп градиента (% вдоль линии или радиуса). */
-export interface GradientStop {
-  color: string;
-  percent: number;
-}
 
 /** Угол мелкой подписи-источника фото (водяной знак). */
 export type PhotoCreditCorner = 'br' | 'bl' | 'tr' | 'tl';
@@ -45,26 +19,16 @@ export type PhotoCreditCorner = 'br' | 'bl' | 'tr' | 'tl';
  */
 export type CoverImageFitId = 'cover' | 'blur';
 
-/** Текстура поверх фона. Новый вариант — дописать union, coverOverlayTextures.ts и Preview.css. */
-export type CoverOverlayTextureId = 'none' | 'paper_grain' | 'fine_halftone';
-
 export interface CoverState {
-  appMode: 'instagram' | 'website';
   /** Пресет шрифта для текста на обложке. */
   coverFontPreset: CoverFontPreset;
   title: string;
-  /** Масштаб заголовка в % (100 = базовый размер режима/шаблона). Умножает font-size во всех макетах. */
+  /** Масштаб заголовка в % (100 = базовый размер). Умножает font-size. */
   titleScale: number;
-  /** Авто-подгонка: ужимать заголовок, если он не влезает в текстовый блок. titleScale работает как верхняя граница. */
+  /** Авто-подгонка: ужимать заголовок, если он не влезает в текстовый блок. titleScale — верхняя граница. */
   titleAutoFit: boolean;
   category: string;
-  /** Стиль кикера (категории): обычный текст или заливная плашка-пилюля. */
-  kickerStyle: 'text' | 'pill';
-  /** Необязательная строка данных над заголовком (например, «$70M · Series B»). Пустая — не показывается. */
-  dataLine: string;
   image: string | null;
-  /** Дуотон: тонировать фото-фон в фирменный цвет (bgColor). Только режим фото-фона. */
-  photoDuotone: boolean;
   /** Точка кадрирования при object-fit: cover, % по осям (0–100). */
   imageFocusX: number;
   imageFocusY: number;
@@ -72,41 +36,24 @@ export interface CoverState {
   imageZoom: number;
   /** Как фото вписано в рамку: кадрирование или «целиком + размытый фон». */
   imageFit: CoverImageFitId;
+  /** Дуотон: тонировать фото-фон в фирменный цвет (bgColor). Только режим фото-фона. */
+  photoDuotone: boolean;
   isGradient: boolean;
   /** Пресет градиента фона; «бренд» использует bgColor как стартовый цвет. */
   gradientPreset: GradientPresetId;
-  /** Направление градиента (угол линии перехода) для всех пресетов. */
-  gradientFlow: GradientFlowId;
-  /** Линейный / радиал / пятно из угла. */
-  gradientGeometry: GradientGeometryId;
-  /**
-   * Ручные стопы: null — цвета из пресета; массив из ≥2 — только он (игнор палитры пресета).
-   * Добавлять стопы — расширять массив в редакторе (лимит в sanitize).
-   */
-  gradientCustomStops: GradientStop[] | null;
-  /** Текстура поверх фона (градиент / сплошной / фото). */
-  overlayTexture: CoverOverlayTextureId;
-  /** Непрозрачность текстуры, 0–100. */
-  overlayTextureOpacity: number;
-  ratio: 'vertical' | 'square' | 'horizontal' | 'story';
-  layoutMode: 'overlay' | 'split';
-  template: 'bold' | 'minimal' | 'quote';
+  ratio: 'vertical' | 'square' | 'story';
+  /** Затемнение фото снизу для читаемости текста, 0–1. */
   overlayOpacity: number;
   titleColor: string;
   categoryColor: string;
   bgColor: string;
-  caption: string;
-  captionColor: string;
   /** Подпись источника фото (мелкий текст на превью/экспорте), только при фоне-картинке. */
   photoCredit: string;
   /** Угол размещения подписи источника. */
   photoCreditCorner: PhotoCreditCorner;
   showSafeZones: boolean;
   textTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
-  useGlassmorphism: boolean;
   contentAlignment: 'flex-start' | 'center' | 'flex-end';
-  glassBlur: number;
-  glassWidth: 'full' | 'fit';
   /** До 10 логотипов вверху обложки (data URL). */
   logos: string[];
   logoSize: number;

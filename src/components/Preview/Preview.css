@@ -17,7 +17,6 @@
 @media (max-width: 400px) {
     .preview-wrapper {
         transform: scale(0.85);
-        /* Basic scale for very small phones */
     }
 }
 
@@ -29,9 +28,7 @@
 
 .cover-node {
     width: 360px;
-    /* Display width */
     height: 450px;
-    /* 4:5 ratio */
     position: relative;
     overflow: hidden;
     display: flex;
@@ -40,28 +37,6 @@
     padding: 28px 22px 32px;
 }
 
-/* Текстуры поверх фона: новый вариант — класс cover-overlay-texture--<id> */
-.cover-overlay-texture {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background-repeat: repeat;
-    mix-blend-mode: soft-light;
-}
-
-.cover-overlay-texture--paper-grain {
-    background-size: 128px 128px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
-}
-
-.cover-overlay-texture--fine-halftone {
-    background-size: 5px 5px;
-    mix-blend-mode: overlay;
-    background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 0.6px, transparent 0.7px);
-}
-
-/* Backgrounds */
 /* Режим «целиком + размытый фон»: размытая копия фото заполняет поля вокруг contain-картинки. */
 .cover-image-backdrop {
     position: absolute;
@@ -69,22 +44,21 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* масштаб + размытие, чтобы края не давали светлой каймы */
     transform: scale(1.18);
     filter: blur(20px) saturate(1.15) brightness(0.92);
 }
 
+/* Затемнение фото снизу для читаемости текста. */
 .overlay {
     position: absolute;
     inset: 0;
     z-index: 2;
 }
 
+/* Одна in-flow зона под текст; justify-content задаётся inline (Vertical alignment). */
 .content {
     position: relative;
     z-index: 3;
-    /* flex-колонка карточки: одна in-flow зона под текст; иначе height:100% + длинный блок мероприятия
-       даёт min-height по контенту и justify-content из редактора перестаёт работать (особенно с логотипами). */
     flex: 1 1 0;
     min-height: 0;
     width: 100%;
@@ -92,16 +66,14 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    /* Bottom align */
     gap: 16px;
     min-width: 0;
 }
 
-/* Один столбец текста на всю ширину карточки — избегаем схлопывания flex-элементов (градиент + align-items:center). */
 .instagram-cover-text {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     width: 100%;
     max-width: 100%;
     min-width: 0;
@@ -109,7 +81,7 @@
 
 .category {
     font-family: var(--font-primary);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--color-accent-yellow);
@@ -117,36 +89,10 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Кикер-пилюля: заливная плашка вместо текста. Цвет фона/текста задаётся inline. */
-.category.category--pill {
-    align-self: flex-start;
-    padding: 4px 9px;
-    border-radius: 6px;
-    letter-spacing: 1px;
-    font-size: 12px;
-    line-height: 1.1;
-    text-shadow: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-}
-
-/* Строка данных над заголовком (например «$70M · Series B»). */
-.data-line {
-    font-family: var(--font-primary);
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.gradient-mode .data-line {
-    text-shadow: none;
-}
-
 .title {
     font-family: var(--font-primary);
-    font-size: calc(22px * var(--title-scale, 1) * var(--title-fit, 1));
-    font-weight: 800;
+    font-size: calc(32px * var(--title-scale, 1) * var(--title-fit, 1));
+    font-weight: 900;
     line-height: 1.1;
     letter-spacing: -0.03em;
     color: var(--color-white);
@@ -155,263 +101,7 @@
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-.download-actions {
-    display: flex;
-    gap: var(--spacing-md);
-}
-
-.download-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    background: var(--color-white);
-    border: 1px solid #E1E8ED;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    color: var(--color-text-dark);
-    transition: all 0.2s;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-/* --- Style Templates --- */
-
-/* Template: Minimal */
-.style-template-minimal .content,
-.style-template-minimal .split-content {
-    justify-content: flex-start;
-    padding-top: 40px;
-    gap: 8px;
-}
-
-.style-template-minimal .title {
-    font-size: calc(24px * var(--title-scale, 1) * var(--title-fit, 1));
-    font-weight: 600;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
-}
-
-.style-template-minimal .category {
-    font-size: 12px;
-    letter-spacing: 2px;
-}
-
-/* Template: Quote — без !important, чтобы Vertical alignment из редактора (inline) применялся и к мероприятиям */
-.style-template-quote .content,
-.style-template-quote .split-content {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.style-template-quote .title {
-    font-size: calc(26px * var(--title-scale, 1) * var(--title-fit, 1));
-    font-style: italic;
-    font-weight: 700;
-    line-height: 1.3;
-}
-
-.style-template-quote .title::before {
-    content: '"';
-    font-size: calc(40px * var(--title-scale, 1) * var(--title-fit, 1));
-    display: block;
-    margin-bottom: -10px;
-    opacity: 0.6;
-}
-
-.style-template-quote .category {
-    margin-top: 20px;
-    font-size: 13px;
-    color: var(--color-white);
-}
-
-.style-template-quote .category::before {
-    content: '— ';
-}
-
-/* Base Template: Bold (Default behavior) */
-.style-template-bold .title {
-    font-size: calc(32px * var(--title-scale, 1) * var(--title-fit, 1));
-    font-weight: 900;
-}
-
-.style-template-bold .category {
-    font-size: 16px;
-}
-
-/* Specific tweaks for Story + Quote */
-.story-layout.style-template-quote .title {
-    font-size: calc(42px * var(--title-scale, 1) * var(--title-fit, 1));
-}
-
-.story-layout.style-template-quote .title::before {
-    font-size: calc(60px * var(--title-scale, 1) * var(--title-fit, 1));
-}
-
-@media (max-width: 768px) {
-    .download-actions {
-        width: 100%;
-        padding: 0 20px;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .download-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 14px;
-    }
-}
-
-.download-btn:hover {
-    border-color: var(--color-primary-blue);
-    color: var(--color-primary-blue);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Split Layout Styles */
-.cover-node.split-layout {
-    padding: 0;
-    background-color: var(--color-primary-blue);
-    display: flex;
-    flex-direction: column;
-}
-
-.cover-node.split-layout.horizontal-ratio {
-    flex-direction: column;
-}
-
-/* Fills space under in-flow branding; holds image + text (split). */
-.split-layout-body {
-    flex: 1 1 0;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    overflow: hidden;
-}
-
-.split-image {
-    width: 100%;
-    flex: 11 1 0%;
-    min-height: 0;
-    position: relative;
-    overflow: hidden;
-}
-
-.split-image__img {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.cover-node.horizontal-ratio .split-layout-body {
-    flex-direction: row;
-}
-
-.cover-node.horizontal-ratio .split-image {
-    flex: 0 0 40%;
-    width: 40%;
-    height: 100%;
-}
-
-.split-content {
-    width: 100%;
-    flex: 9 1 0%;
-    min-height: 0;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 8px;
-    position: relative;
-    z-index: 3;
-    overflow: hidden;
-}
-
-.cover-node.horizontal-ratio .split-content {
-    flex: 1 1 0%;
-    width: 60%;
-    height: 100%;
-    padding: 20px;
-}
-
-/* Story Layout (9:16) */
-.cover-node.story-layout {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    text-align: center;
-    padding: 60px 40px;
-}
-
-.cover-node.story-layout .content {
-    flex: 1 1 0;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    gap: 24px;
-}
-
-.cover-node.story-layout .title {
-    font-size: calc(32px * var(--title-scale, 1) * var(--title-fit, 1));
-    line-height: 1.2;
-}
-
-.cover-node.story-layout .category {
-    font-size: 16px;
-    margin-bottom: 8px;
-}
-
-/* Specific adjustments for Stories with Split Layout */
-.cover-node.story-layout.split-layout .split-image {
-    flex: 4 1 0%;
-}
-
-.cover-node.story-layout.split-layout .split-content {
-    flex: 6 1 0%;
-    padding: 40px;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.cover-node.story-layout.split-layout .title {
-    font-size: calc(32px * var(--title-scale, 1) * var(--title-fit, 1));
-}
-
-.cover-node.split-layout .title {
-    font-size: calc(24px * var(--title-scale, 1) * var(--title-fit, 1));
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    text-shadow: none;
-}
-
-.cover-node.split-layout .category {
-    font-size: 13px;
-    margin-bottom: 2px;
-    text-shadow: none;
-}
-
-.caption {
-    font-family: var(--font-primary);
-    position: absolute;
-    bottom: 24px;
-    right: 24px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    opacity: 0.8;
-}
-
-/* Мелкая подпись источника фото (Instagram + Website при фоне-картинке) */
+/* Мелкая подпись источника фото (при фоне-картинке). */
 .photo-credit-mark {
     position: absolute;
     z-index: 8;
@@ -426,11 +116,6 @@
         0 0 1px rgba(0, 0, 0, 0.9),
         0 1px 4px rgba(0, 0, 0, 0.75);
     word-break: break-word;
-}
-
-.cover-node.horizontal-ratio .photo-credit-mark {
-    font-size: 8px;
-    max-width: 40%;
 }
 
 .photo-credit-mark--br {
@@ -457,47 +142,14 @@
     text-align: left;
 }
 
-.cover-node.has-branding-logos:not(.horizontal-ratio) .photo-credit-mark--tr,
-.cover-node.has-branding-logos:not(.horizontal-ratio) .photo-credit-mark--tl {
+.cover-node.has-branding-logos .photo-credit-mark--tr,
+.cover-node.has-branding-logos .photo-credit-mark--tl {
     top: 52px;
 }
 
 .cover-node.story-layout.has-branding-logos .photo-credit-mark--tr,
 .cover-node.story-layout.has-branding-logos .photo-credit-mark--tl {
     top: 84px;
-}
-
-.cover-node.horizontal-ratio.has-branding-logos .photo-credit-mark--tr,
-.cover-node.horizontal-ratio.has-branding-logos .photo-credit-mark--tl {
-    top: 40px;
-}
-
-.photo-credit-mark--in-split {
-    bottom: 8px;
-    right: 8px;
-    left: auto;
-    top: auto;
-    font-size: 8px;
-    max-width: 92%;
-}
-
-.photo-credit-mark--in-split.photo-credit-mark--bl {
-    left: 8px;
-    right: auto;
-}
-
-.photo-credit-mark--in-split.photo-credit-mark--tr {
-    top: 8px;
-    bottom: auto;
-    right: 8px;
-    left: auto;
-}
-
-.photo-credit-mark--in-split.photo-credit-mark--tl {
-    top: 8px;
-    bottom: auto;
-    left: 8px;
-    right: auto;
 }
 
 /* IG Safe Zones UI Overlay */
@@ -510,7 +162,6 @@
     flex-direction: column;
     justify-content: space-between;
     background: rgba(0, 0, 0, 0.05);
-    /* Very light tint to show active state */
 }
 
 .ig-top-bar {
@@ -566,9 +217,9 @@
     max-width: 80%;
 }
 
-/* Градиент: без доп. горизонтальных полей — те же 22px, что и у фото, только от .cover-node */
+/* Градиент: текст на всю ширину, тени убираем (чистый плоский фон). */
 .cover-node.gradient-mode .content {
-    align-items: stretch !important;
+    align-items: stretch;
     width: 100%;
     flex: 1 1 0;
     min-height: 0;
@@ -578,7 +229,6 @@
 }
 
 .cover-node.gradient-mode .title {
-    font-size: calc(32px * var(--title-scale, 1) * var(--title-fit, 1));
     text-shadow: none;
     line-height: 1.2;
 }
@@ -586,93 +236,47 @@
 .cover-node.gradient-mode .category {
     text-shadow: none;
     margin-bottom: 0;
-    font-size: 16px;
 }
 
-/* Story Gradient/Safe Zone Awareness — только вертикаль; горизонталь задаёт .cover-node.story-layout */
+/* Story Layout (9:16) */
+.cover-node.story-layout {
+    padding: 60px 40px;
+}
+
+.cover-node.story-layout .content {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0;
+    gap: 24px;
+}
+
+.cover-node.story-layout .title {
+    line-height: 1.2;
+}
+
+.cover-node.story-layout .category {
+    margin-bottom: 8px;
+}
+
+/* Story + градиент: учитываем safe-zone Instagram (верх/низ). */
 .cover-node.gradient-mode.story-layout .content {
     padding-top: 100px;
     padding-bottom: 180px;
     padding-left: 0;
     padding-right: 0;
-    display: flex;
-    flex-direction: column;
 }
 
-/* Logos are in-flow above .content; keep bottom safe zone only */
 .cover-node.has-branding-logos.gradient-mode.story-layout .content {
     padding-top: 48px;
     padding-bottom: 180px;
-    padding-left: 0;
-    padding-right: 0;
 }
 
 .cover-node.gradient-mode.story-layout .title {
     font-size: calc(40px * var(--title-scale, 1) * var(--title-fit, 1));
 }
 
-/* Base Category/Title Overrides for Gradient */
-.gradient-mode .category,
-.gradient-mode .title {
-    text-shadow: none;
-}
-
-/* Glassmorphism Effect */
-.glass-effect {
-    /* Background is handled inline for opacity control */
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    border-radius: 16px !important;
-    margin: 20px !important;
-    padding: 24px !important;
-    height: auto !important;
-    min-height: 120px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
-}
-
-.glass-width-fit {
-    width: fit-content !important;
-    max-width: 90% !important;
-    align-self: center;
-}
-
-/* Specific overrides for alignment in Glass mode */
-.content.glass-effect {
-    height: calc(100% - 40px) !important;
-    /* Adjust for vertical margin balance */
-}
-
-/* Gradient mode glass tweaks */
-.gradient-mode .glass-effect {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.glass-effect .title,
-.glass-effect .category {
-    text-shadow: none !important;
-}
-
-.style-template-minimal .content.glass-effect {
-    padding-top: 24px !important;
-    /* Reset minimal padding */
-}
-
-/* Center glass card in story layout */
-.story-layout .content.glass-effect {
-    margin: 30px !important;
-    padding: 32px !important;
-    height: auto !important;
-    max-height: 70%;
-}
-/* Fix: Ensure Glass Card takes full width in Reels/Story mode (overriding center alignment) */
-.cover-node.story-layout .content.glass-effect:not(.glass-width-fit) {
-    width: 100% !important;
-    align-self: stretch !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-}
-
-/* Branding logos: in-flow so vertical alignment applies below this row */
+/* Логотипы: in-flow строка сверху, вертикальное выравнивание применяется ниже. */
 .branding-logos-strip {
     position: relative;
     z-index: 20;
@@ -713,16 +317,6 @@
     object-fit: contain;
 }
 
-.branding-logos-strip--website {
-    margin-bottom: 10px;
-    gap: 4px;
-}
-
-.branding-logos-strip--website .branding-logos-row {
-    gap: 5px;
-}
-
-/* Story: extra top spacing inside safe padding */
 .story-layout .branding-logos-strip {
     margin-top: 4px;
     margin-bottom: 20px;

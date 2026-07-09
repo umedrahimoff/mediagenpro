@@ -11,14 +11,11 @@ export const BRAND_COLORS = {
 export const STORAGE_KEY = 'mediagen_pro_state';
 
 export const DEFAULT_STATE: CoverState = {
-  appMode: 'instagram',
   coverFontPreset: 'instagram',
   title: 'THE FUTURE OF\nVENTURE CAPITAL',
   titleScale: 100,
   titleAutoFit: true,
   category: 'SaaS Trends',
-  kickerStyle: 'text',
-  dataLine: '',
   image: null,
   photoDuotone: false,
   imageFocusX: 50,
@@ -27,50 +24,27 @@ export const DEFAULT_STATE: CoverState = {
   imageFit: 'cover',
   isGradient: true,
   gradientPreset: 'brand',
-  gradientFlow: 'diag-br',
-  gradientGeometry: 'linear',
-  gradientCustomStops: null,
-  overlayTexture: 'none',
-  overlayTextureOpacity: 22,
   ratio: 'vertical',
-  layoutMode: 'overlay',
-  template: 'bold',
   overlayOpacity: 0.6,
   titleColor: '#FFFFFF',
   categoryColor: '#F5A623',
   bgColor: '#146AFF',
-  caption: 'stanbase.tech',
-  captionColor: '#FFFFFF',
   photoCredit: '',
   photoCreditCorner: 'br',
   showSafeZones: false,
   textTransform: 'uppercase',
-  useGlassmorphism: false,
   contentAlignment: 'flex-end',
-  glassBlur: 25,
-  glassWidth: 'full',
   logos: [],
   logoSize: 100,
   logoOpacity: 100,
   logoTint: 'original',
 };
 
-/** Сброс всего, что относится к градиенту и связанному фону (текстура, фирменный цвет). */
+/** Сброс фона к дефолту (фирменный пресет + цвет). */
 export const GRADIENT_BACKGROUND_DEFAULTS: Pick<
   CoverState,
-  | 'gradientPreset'
-  | 'gradientFlow'
-  | 'gradientGeometry'
-  | 'gradientCustomStops'
-  | 'bgColor'
-  | 'overlayTexture'
-  | 'overlayTextureOpacity'
+  'gradientPreset' | 'bgColor'
 > = {
   gradientPreset: DEFAULT_STATE.gradientPreset,
-  gradientFlow: DEFAULT_STATE.gradientFlow,
-  gradientGeometry: DEFAULT_STATE.gradientGeometry,
-  gradientCustomStops: DEFAULT_STATE.gradientCustomStops,
   bgColor: DEFAULT_STATE.bgColor,
-  overlayTexture: DEFAULT_STATE.overlayTexture,
-  overlayTextureOpacity: DEFAULT_STATE.overlayTextureOpacity,
 };

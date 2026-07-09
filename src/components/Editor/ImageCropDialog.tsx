@@ -9,12 +9,10 @@ import { coverImageLayerStyle, type CoverImageFocus } from '@/utils/coverImageLa
 
 export type PendingBackgroundImage = {
   url: string;
-  layoutMode: CoverState['layoutMode'];
   imageFit: CoverState['imageFit'];
 };
 
-function canvasAspectRatio(state: Pick<CoverState, 'appMode' | 'ratio'>): number {
-  if (state.appMode === 'website') return 1200 / 628;
+function canvasAspectRatio(state: Pick<CoverState, 'ratio'>): number {
   if (state.ratio === 'square') return 1;
   if (state.ratio === 'story') return 9 / 16;
   return 4 / 5;
@@ -23,7 +21,7 @@ function canvasAspectRatio(state: Pick<CoverState, 'appMode' | 'ratio'>): number
 type Props = {
   open: boolean;
   pending: PendingBackgroundImage | null;
-  canvasState: Pick<CoverState, 'appMode' | 'ratio'>;
+  canvasState: Pick<CoverState, 'ratio'>;
   onOpenChange: (open: boolean) => void;
   onApply: (payload: PendingBackgroundImage & CoverImageFocus) => void;
 };
