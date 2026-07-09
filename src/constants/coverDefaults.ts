@@ -12,7 +12,6 @@ export const STORAGE_KEY = 'mediagen_pro_state';
 
 export const DEFAULT_STATE: CoverState = {
   appMode: 'instagram',
-  postFormat: 'news',
   coverFontPreset: 'instagram',
   title: 'THE FUTURE OF\nVENTURE CAPITAL',
   titleScale: 100,
@@ -31,7 +30,6 @@ export const DEFAULT_STATE: CoverState = {
   overlayTexture: 'none',
   overlayTextureOpacity: 22,
   ratio: 'vertical',
-  imageOrientation: 'vertical',
   layoutMode: 'overlay',
   template: 'bold',
   overlayOpacity: 0.6,
@@ -52,9 +50,6 @@ export const DEFAULT_STATE: CoverState = {
   logoSize: 100,
   logoOpacity: 100,
   logoTint: 'original',
-  eventTitleAlign: 'left',
-  eventMeta: '',
-  eventSpeakers: [],
 };
 
 /** Сброс всего, что относится к градиенту и связанному фону (текстура, фирменный цвет). */

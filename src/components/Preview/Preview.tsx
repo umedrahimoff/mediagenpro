@@ -36,12 +36,6 @@ const getTransformedText = (text: string, transform: 'none' | 'uppercase' | 'low
 };
 
 function InstagramContentBlock({ state }: { state: CoverState }) {
-    const isEvent = state.postFormat === 'event';
-    const speakers = state.eventSpeakers.filter(
-        (s) => (s.name && s.name.trim()) || (s.company && s.company.trim()) || s.photo
-    );
-    const meta = state.eventMeta.trim();
-
     return (
         <div className="instagram-cover-text">
             {state.category && (
@@ -54,50 +48,10 @@ function InstagramContentBlock({ state }: { state: CoverState }) {
                 style={{
                     color: state.titleColor,
                     textTransform: 'none',
-                    ...(isEvent ? { textAlign: state.eventTitleAlign } : {}),
                 }}
             >
                 {getTransformedText(state.title, state.textTransform)}
             </div>
-            {isEvent && meta && (
-                <div className="event-meta" style={{ color: state.titleColor }}>
-                    {meta}
-                </div>
-            )}
-            {isEvent && speakers.length > 0 && (
-                <div className="event-speakers-row">
-                    {speakers.map((sp, i) => {
-                        const initial = (
-                            sp.name.trim().charAt(0) ||
-                            sp.company.trim().charAt(0) ||
-                            '?'
-                        ).toUpperCase();
-                        return (
-                            <div key={`sp-${i}`} className="event-speaker-card">
-                                <div className="event-speaker-avatar">
-                                    {sp.photo ? (
-                                        <img src={sp.photo} alt="" />
-                                    ) : (
-                                        <span className="event-speaker-initial">{initial}</span>
-                                    )}
-                                </div>
-                                <div className="event-speaker-info">
-                                    {sp.name.trim() ? (
-                                        <div className="event-speaker-name" style={{ color: state.titleColor }}>
-                                            {sp.name.trim()}
-                                        </div>
-                                    ) : null}
-                                    {sp.company.trim() ? (
-                                        <div className="event-speaker-company" style={{ color: state.titleColor }}>
-                                            {sp.company.trim()}
-                                        </div>
-                                    ) : null}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
         </div>
     );
 }
@@ -322,7 +276,6 @@ export const Preview: React.FC<PreviewProps> = ({ state }) => {
     const coverClassName = [
         'cover-node',
         state.appMode === 'instagram' ? `style-template-${state.template}` : '',
-        state.appMode === 'instagram' && state.postFormat === 'event' ? 'post-format-event' : '',
         state.isGradient ? 'gradient-mode' : '',
         isSplit ? 'split-layout' : '',
         state.ratio === 'story' ? 'story-layout' : '',

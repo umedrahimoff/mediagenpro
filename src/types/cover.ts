@@ -1,6 +1,3 @@
-/** Формат контента: новости (текущий набор полей), мероприятие (дата/место, спикеры), промо (как новости, зарезервировано под будущие фичи). */
-export type PostFormat = 'news' | 'event' | 'promo';
-
 /** Шрифт текста на превью/экспорте обложки. По умолчанию — системный стек в духе Instagram. */
 export type CoverFontPreset = 'instagram' | 'geist' | 'inter' | 'editorial';
 
@@ -38,9 +35,6 @@ export interface GradientStop {
   percent: number;
 }
 
-/** Горизонтальное выравнивание заголовка в анонсе (формат «Мероприятие»). */
-export type EventTitleAlign = 'left' | 'center' | 'right';
-
 /** Угол мелкой подписи-источника фото (водяной знак). */
 export type PhotoCreditCorner = 'br' | 'bl' | 'tr' | 'tl';
 
@@ -54,18 +48,8 @@ export type CoverImageFitId = 'cover' | 'blur';
 /** Текстура поверх фона. Новый вариант — дописать union, coverOverlayTextures.ts и Preview.css. */
 export type CoverOverlayTextureId = 'none' | 'paper_grain' | 'fine_halftone';
 
-export interface EventSpeaker {
-  name: string;
-  /** Компания / роль — строка под именем на превью. */
-  company: string;
-  /** Data URL портрета или null — тогда показываем инициал. */
-  photo: string | null;
-}
-
 export interface CoverState {
   appMode: 'instagram' | 'website';
-  /** Смысловой формат поста; влияет на доступные поля и блок на превью. */
-  postFormat: PostFormat;
   /** Пресет шрифта для текста на обложке. */
   coverFontPreset: CoverFontPreset;
   title: string;
@@ -99,7 +83,6 @@ export interface CoverState {
   /** Непрозрачность текстуры, 0–100. */
   overlayTextureOpacity: number;
   ratio: 'vertical' | 'square' | 'horizontal' | 'story';
-  imageOrientation: 'vertical' | 'square' | 'horizontal';
   layoutMode: 'overlay' | 'split';
   template: 'bold' | 'minimal' | 'quote';
   overlayOpacity: number;
@@ -124,10 +107,4 @@ export interface CoverState {
   logoOpacity: number;
   /** Единый монохром для всех логотипов (CSS filter). */
   logoTint: 'original' | 'white' | 'black';
-  /** Выравнивание основного заголовка в анонсе (только postFormat event). */
-  eventTitleAlign: EventTitleAlign;
-  /** Дата, время, город (одна-две строки) — для формата «Мероприятие». */
-  eventMeta: string;
-  /** Спикеры: слева фото, справа имя и компания на превью. */
-  eventSpeakers: EventSpeaker[];
 }

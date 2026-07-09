@@ -3,7 +3,6 @@ import { Undo2, Redo2 } from 'lucide-react';
 import { Editor } from './components/Editor/Editor';
 import { Preview } from './components/Preview/Preview';
 import { STORAGE_KEY } from './constants/coverDefaults';
-import type { PostFormat } from './types/cover';
 import { useCoverUndoRedo } from '@/hooks/useCoverUndoRedo';
 import { loadCoverStateFromStorage, saveCoverStateToStorage } from './utils/sanitizeCoverState';
 import { Button } from '@/components/ui/button';
@@ -41,30 +40,6 @@ function App() {
       <header className="flex shrink-0 flex-col gap-2 border-b border-border bg-card px-3 py-2 md:h-11 md:flex-row md:items-center md:justify-between md:gap-3 md:py-0 md:px-4">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <span className="shrink-0 text-sm font-medium tracking-tight text-foreground">MediaGen Pro</span>
-          {state.appMode === 'instagram' && (
-            <ToggleGroup
-              type="single"
-              spacing={0}
-              variant="outline"
-              size="sm"
-              value={state.postFormat}
-              onValueChange={(v) => v && updateState({ postFormat: v as PostFormat })}
-              className={cn(
-                'max-md:w-full max-md:justify-stretch',
-                '[&_[data-slot=toggle-group-item]]:h-7 [&_[data-slot=toggle-group-item]]:px-2 [&_[data-slot=toggle-group-item]]:text-[11px]'
-              )}
-            >
-              <ToggleGroupItem value="news" className="max-md:flex-1">
-                News
-              </ToggleGroupItem>
-              <ToggleGroupItem value="event" className="max-md:flex-1">
-                Event
-              </ToggleGroupItem>
-              <ToggleGroupItem value="promo" className="max-md:flex-1">
-                Promo
-              </ToggleGroupItem>
-            </ToggleGroup>
-          )}
           <div className="flex items-center gap-0.5">
             <Button
               type="button"
